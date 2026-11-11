@@ -1,0 +1,31 @@
+{
+  "aviso": "Datos de demostración para el simulador del Desafío Fútbol. Jueces, juzgados y claves son ficticios y los publica la organización del hackathon; los usuarios y contraseñas son de demostración. Nada de esto sirve fuera del simulador.",
+  "jueces": [
+    {
+      "id": "jueza-laura-ficticia",
+      "nombre": "Dra. Laura Ficticia",
+      "juzgado_id": "jg-centro-3",
+      "juzgado_nombre": "Juzgado de Garantías N.º 3 (ficticio) — Distrito Judicial Centro",
+      "clave_firma_demo": "demo-clave-laura-0b7e",
+      "usuario": "laura",
+      "contrasena": "offside-laura"
+    },
+    {
+      "id": "juez-martin-ejemplo",
+      "nombre": "Dr. Martín Ejemplo",
+      "juzgado_id": "jg-norte-1",
+      "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
+      "clave_firma_demo": "demo-clave-martin-4c21",
+      "usuario": "martin",
+      "contrasena": "offside-martin"
+    }
+  ],
+  "operadores": [
+    {
+      "usuario": "fiscalia",
+      "contrasena": "offside-fiscalia",
+      "nombre": "Fiscalía (demostración)",
+      "rol": "fiscalia"
+    }
+  ]
+}

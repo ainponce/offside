@@ -1,0 +1,39 @@
+{
+  "name": "offside",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma federal de órdenes de bloqueo en vivo contra transmisiones ilegales. Hackathon Argentina Space 2026, Desafío Fútbol.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "tsx --disable-warning=ExperimentalWarning src/server/index.ts",
+    "dev": "tsx watch --disable-warning=ExperimentalWarning src/server/index.ts",
+    "dev:web": "vite",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --disable-warning=ExperimentalWarning --test pruebas/*.test.ts",
+    "ensayo": "tsx --disable-warning=ExperimentalWarning scripts/ensayo.ts",
+    "exportar": "tsx --disable-warning=ExperimentalWarning scripts/exportar.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.7",
+    "hono": "^4.13.18",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "tailwindcss": "^4.3.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
+  }
+}
