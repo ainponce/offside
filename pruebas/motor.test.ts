@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { aprobarMedida, rechazarMedida, reconsiderarMedida } from "../src/server/decisiones.ts";
 import { sha256Hex } from "../src/server/evidencia.ts";
+import { Motor } from "../src/server/motor.ts";
 import { armar, deteccion, eventos, filas, publicarYProcesar } from "./ayuda.ts";
 
 interface Medida {
@@ -285,17 +286,44 @@ test("si el envío se corta y el turno cambia antes del reenvío, no sale con la
   assert.ok(a.sim.recibidas().every((o) => o.juez_id === "juez-b" && o.juez_de_turno));
 });
 
-test("un corte de red seguido de 409 deja la orden como recibida, sin duplicar", async () => {
+test("tras un corte de red, Offside pregunta al proveedor antes de reenviar y no duplica la orden", async () => {
   const a = armar();
   await publicarYProcesar(a, deteccion({ id: "D-1", minuto: 2 }));
-  a.sim.cortesDespues = 1;
+  a.sim.cortesDespues = 1; // la orden llega al proveedor, pero la respuesta se pierde
   await aprobarMedida(a.ctx, medidas(a)[0]!.id, "jueza-a");
   assert.equal(a.sim.recibidas().length, 3);
+  const envios = a.sim.llamadasEnvio;
 
   await a.motor.tick();
+  // No hubo un segundo envío: un duplicado quedaría como "orden rechazada" en el registro del proveedor.
+  assert.equal(a.sim.llamadasEnvio, envios);
   assert.equal(a.sim.recibidas().length, 3);
   const estados = filas<{ estado: string }>(a.db, "SELECT estado FROM ordenes").map((o) => o.estado);
   assert.deepEqual(estados, ["recibida", "recibida", "recibida"]);
+});
+
+test("tras un corte de red sin entrega, la orden se reenvía con el mismo identificador", async () => {
+  const a = armar();
+  await publicarYProcesar(a, deteccion({ id: "D-1", minuto: 2 }));
+  a.sim.cortesAntes = 1; // la orden nunca llegó
+  await aprobarMedida(a.ctx, medidas(a)[0]!.id, "jueza-a");
+  assert.equal(a.sim.recibidas().length, 2);
+  const pendiente = filas<{ orden_id: string }>(a.db, "SELECT orden_id FROM ordenes WHERE estado = 'por_enviar'")[0]!;
+
+  await a.motor.tick();
+  assert.equal(a.sim.recibidas().length, 3);
+  assert.ok(a.sim.recibidas().some((o) => o.orden_id === pendiente.orden_id));
+  assert.equal(filas(a.db, "SELECT * FROM ordenes").length, 3);
+});
+
+test("una medida que quedó a medio aprobar por un corte del proceso vuelve a la cola al arrancar", async () => {
+  const a = armar();
+  await publicarYProcesar(a, deteccion({ id: "D-1", minuto: 2 }));
+  a.db.prepare("UPDATE medidas SET estado = 'aprobando'").run();
+  const reiniciado = new Motor(a.ctx);
+  await reiniciado.tick();
+  assert.equal(medidas(a)[0]!.estado, "pendiente");
+  assert.deepEqual(await aprobarMedida(a.ctx, medidas(a)[0]!.id, "jueza-a"), { ok: true });
 });
 
 test("si el simulador no responde, el motor sigue y retoma sin repetir detecciones", async () => {

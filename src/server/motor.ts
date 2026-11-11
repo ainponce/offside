@@ -46,6 +46,12 @@ export class Motor {
 
   constructor(ctx: Contexto) {
     this.ctx = ctx;
+    // Si el proceso se cortó en medio de una aprobación, la medida vuelve a la cola: no llegó a firmarse.
+    const colgadas = todas<{ id: string }>(ctx.db, "SELECT id FROM medidas WHERE estado = 'aprobando'");
+    for (const m of colgadas) {
+      ejecutar(ctx.db, "UPDATE medidas SET estado = 'pendiente' WHERE id = ?", m.id);
+      ctx.auditoria.registrar({ minuto: null, actor: "sistema", tipo: "medida_recuperada", datos: { medida_id: m.id } });
+    }
   }
 
   agregarPaso(paso: PasoExtra): void {

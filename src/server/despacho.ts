@@ -138,6 +138,32 @@ function anotarCorte(ctx: Contexto, orden: FilaOrden, minuto: number, error: str
   }
 }
 
+function marcarRecibida(ctx: Contexto, orden: FilaOrden, minuto: number, yaRecibida: boolean): void {
+  ejecutar(
+    ctx.db,
+    "UPDATE ordenes SET estado = 'recibida', enviada_min = ?, error = NULL WHERE orden_id = ?",
+    minuto,
+    orden.orden_id,
+  );
+  ctx.auditoria.registrar({
+    minuto,
+    actor: "sistema",
+    tipo: "orden_enviada",
+    datos: {
+      orden_id: orden.orden_id,
+      medida_id: orden.medida_id,
+      expediente_id: orden.expediente_id,
+      proveedor: orden.proveedor_id,
+      tipo: orden.tipo,
+      objetivo: orden.objetivo,
+      vence_min: orden.vence_min,
+      juez_id: orden.juez_id,
+      intento: orden.intento,
+      ya_recibida: yaRecibida,
+    },
+  });
+}
+
 /**
  * Envía una orden que está `por_enviar`. Un corte de red la deja `por_enviar`
  * para que el motor la reintente con el mismo `orden_id`; un 409 significa que el
@@ -189,6 +215,22 @@ export async function enviarOrden(
       return;
     }
 
+    // Si un intento anterior terminó en un corte, puede que la orden haya llegado igual.
+    // Se le pregunta al proveedor antes de reenviar: un duplicado quedaría como rechazo en su registro.
+    if (orden.error != null) {
+      let yaLlego = false;
+      try {
+        yaLlego = (await ctx.sim.ordenes(orden.proveedor_id)).some((o) => o.orden_id === orden.orden_id);
+      } catch (e) {
+        anotarCorte(ctx, orden, minuto, mensajeDe(e));
+        return;
+      }
+      if (yaLlego) {
+        marcarRecibida(ctx, orden, minuto, true);
+        return;
+      }
+    }
+
     let respuesta;
     try {
       respuesta = await ctx.sim.enviarOrden(orden.proveedor_id, {
@@ -207,29 +249,7 @@ export async function enviarOrden(
     }
 
     if (respuesta.ok || respuesta.estado === 409) {
-      ejecutar(
-        ctx.db,
-        "UPDATE ordenes SET estado = 'recibida', enviada_min = ?, error = NULL WHERE orden_id = ?",
-        minuto,
-        orden.orden_id,
-      );
-      ctx.auditoria.registrar({
-        minuto,
-        actor: "sistema",
-        tipo: "orden_enviada",
-        datos: {
-          orden_id: orden.orden_id,
-          medida_id: orden.medida_id,
-          expediente_id: orden.expediente_id,
-          proveedor: orden.proveedor_id,
-          tipo: orden.tipo,
-          objetivo: orden.objetivo,
-          vence_min: orden.vence_min,
-          juez_id: orden.juez_id,
-          intento: orden.intento,
-          ya_recibida: !respuesta.ok,
-        },
-      });
+      marcarRecibida(ctx, orden, minuto, !respuesta.ok);
     } else if (respuesta.estado >= 500) {
       anotarCorte(ctx, orden, minuto, `${respuesta.estado}: ${respuesta.error}`);
     } else {
