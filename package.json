@@ -16,7 +16,8 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --disable-warning=ExperimentalWarning --test pruebas/*.test.ts",
     "ensayo": "tsx --disable-warning=ExperimentalWarning scripts/ensayo.ts",
-    "exportar": "tsx --disable-warning=ExperimentalWarning scripts/exportar.ts"
+    "exportar": "tsx --disable-warning=ExperimentalWarning scripts/exportar.ts",
+    "demo": "tsx --disable-warning=ExperimentalWarning scripts/demo.ts"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.7",
