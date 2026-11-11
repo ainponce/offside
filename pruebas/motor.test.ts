@@ -354,3 +354,17 @@ test("cada cambio de estado avisa a la interfaz", async () => {
   await aprobarMedida(a.ctx, medidas(a)[0]!.id, "jueza-a");
   assert.ok(a.cambios.n > antes);
 });
+
+test("si el reloj del simulador vuelve atrás, Offside avisa que hace falta una base nueva", async () => {
+  const a = armar();
+  await publicarYProcesar(a, deteccion({ id: "D-1", minuto: 30 }));
+  assert.equal(a.ctx.estado.alertas.length, 0);
+
+  // El simulador se reinició: mismo partido, reloj en el minuto 2.
+  a.sim.minuto = 2;
+  await a.motor.tick();
+  await a.motor.tick();
+  assert.equal(a.ctx.estado.alertas.length, 1);
+  assert.match(a.ctx.estado.alertas[0]!, /--nuevo/);
+  assert.equal(eventos(a.db, "simulador_reiniciado").length, 1);
+});

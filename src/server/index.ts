@@ -9,8 +9,8 @@ import { serve } from "@hono/node-server";
 import { crearApi } from "./api.ts";
 import { Auditoria } from "./auditoria.ts";
 import { cargarConfig, cargarJueces } from "./config.ts";
-import { crearContexto } from "./contexto.ts";
-import { abrirDb } from "./db.ts";
+import { crearContexto, restaurarEstado } from "./contexto.ts";
+import { abrirDb, leerKv } from "./db.ts";
 import { Motor } from "./motor.ts";
 import { instalarReclamos } from "./reclamos.ts";
 import { Sesiones } from "./sesiones.ts";
@@ -20,22 +20,51 @@ const config = cargarConfig();
 const { jueces, operadores } = cargarJueces(config.juecesRuta);
 
 const nuevo = process.argv.includes("--nuevo") || process.env.OFFSIDE_NUEVO === "1";
-if (nuevo && config.dbRuta !== ":memory:" && existsSync(config.dbRuta)) {
+function archivarBase(motivo: string): void {
   const sello = new Date().toISOString().replace(/[:.]/g, "-");
   for (const sufijo of ["", "-wal", "-shm"]) {
     if (existsSync(config.dbRuta + sufijo)) renameSync(config.dbRuta + sufijo, `${config.dbRuta}.${sello}${sufijo}`);
   }
-  console.log(`Base anterior archivada como ${config.dbRuta}.${sello}`);
+  console.log(`${motivo} Base anterior archivada como ${config.dbRuta}.${sello}`);
 }
 
-const db = abrirDb(config.dbRuta);
+const sim = new SimuladorHttp(config.simuladorUrl);
+let db = abrirDb(config.dbRuta);
+
+// Si la base es de otro partido (otro id, o el reloj del simulador está por detrás
+// de lo último que vimos), se archiva sola y se empieza limpio. Evita arrancar el
+// partido final sobre los restos de un ensayo.
+if (!nuevo && config.dbRuta !== ":memory:") {
+  const ultimoMinuto = Number(leerKv(db, "ultimo_minuto") ?? "-1000000000");
+  const partidoGuardado = leerKv(db, "partido");
+  try {
+    const estado = await sim.estado();
+    const otroPartido = partidoGuardado !== null && (JSON.parse(partidoGuardado) as { id?: string }).id !== estado.partido;
+    if (otroPartido || ultimoMinuto - estado.minuto_actual > 1) {
+      db.close();
+      archivarBase("La base guardada es de otro partido.");
+      db = abrirDb(config.dbRuta);
+    }
+  } catch {
+    // El simulador todavía no responde: se sigue con la base que hay y el motor avisa si no corresponde.
+  }
+}
+
+if (nuevo && config.dbRuta !== ":memory:") {
+  // Con --nuevo siempre se empieza limpio.
+  db.close();
+  archivarBase("Partido nuevo.");
+  db = abrirDb(config.dbRuta);
+}
+
 const ctx = crearContexto({
   db,
-  sim: new SimuladorHttp(config.simuladorUrl),
+  sim,
   auditoria: new Auditoria(db),
   jueces,
   config,
 });
+restaurarEstado(ctx);
 const sesiones = new Sesiones(db, jueces, operadores);
 const { app } = crearApi(ctx, sesiones, { raizWeb: "dist" });
 const motor = new Motor(ctx);

@@ -40,6 +40,7 @@ export class Motor {
   private enCurso = false;
   /** Falso hasta leer partido y proveedores del simulador en este arranque. */
   private datosFrescos = false;
+  private reinicioAvisado = false;
   private temporizador: ReturnType<typeof setInterval> | null = null;
   private readonly pasosExtra: PasoExtra[] = [];
 
@@ -118,6 +119,21 @@ export class Motor {
       ctx.alCambiar();
     }
     if (previo !== actual) guardarKv(ctx.db, "turno", actual);
+
+    // Si el reloj vuelve atrás, el simulador se reinició: esta base es de otro partido.
+    const ultimo = Number(leerKv(ctx.db, "ultimo_minuto") ?? "-1000000000");
+    if (ultimo - estado.minuto_actual > 1 && !this.reinicioAvisado) {
+      this.reinicioAvisado = true;
+      ctx.auditoria.registrar({
+        minuto: estado.minuto_actual,
+        actor: "sistema",
+        tipo: "simulador_reiniciado",
+        datos: { minuto_anterior: ultimo, minuto_actual: estado.minuto_actual },
+      });
+      alertar(ctx, "El simulador se reinició (el reloj volvió atrás). Esta base es de otro partido: reiniciá Offside con --nuevo.");
+      ctx.alCambiar();
+    }
+    if (estado.minuto_actual >= ultimo) guardarKv(ctx.db, "ultimo_minuto", String(estado.minuto_actual));
 
     const cambioFinal = ctx.estado.finalizado !== estado.finalizado;
     ctx.estado.minuto = estado.minuto_actual;
