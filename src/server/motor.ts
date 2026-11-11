@@ -38,6 +38,8 @@ function esTexto(v: unknown): v is string {
 export class Motor {
   private readonly ctx: Contexto;
   private enCurso = false;
+  /** Falso hasta leer partido y proveedores del simulador en este arranque. */
+  private datosFrescos = false;
   private temporizador: ReturnType<typeof setInterval> | null = null;
   private readonly pasosExtra: PasoExtra[] = [];
 
@@ -68,8 +70,13 @@ export class Motor {
     const estabaConectado = ctx.estado.conectado;
     try {
       const estado = await ctx.sim.estado();
-      if (!ctx.estado.partido) ctx.estado.partido = await ctx.sim.partido();
-      if (ctx.estado.proveedores.length === 0) ctx.estado.proveedores = await ctx.sim.proveedores();
+      if (!ctx.estado.partido || !this.datosFrescos) {
+        ctx.estado.partido = await ctx.sim.partido();
+        ctx.estado.proveedores = await ctx.sim.proveedores();
+        guardarKv(ctx.db, "partido", JSON.stringify(ctx.estado.partido));
+        guardarKv(ctx.db, "proveedores", JSON.stringify(ctx.estado.proveedores));
+        this.datosFrescos = true;
+      }
       this.actualizarEstado(estado);
 
       await this.ingerirDetecciones(estado);

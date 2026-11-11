@@ -1,7 +1,7 @@
 // Lo que comparten el motor, las decisiones, el despacho y la API.
 
 import type { Auditoria } from "./auditoria.ts";
-import type { Db } from "./db.ts";
+import { type Db, leerKv } from "./db.ts";
 import type { Partido, Proveedor, Simulador } from "./simulador.ts";
 
 export interface Juez {
@@ -109,4 +109,13 @@ export function juezPorId(ctx: Contexto, id: string): Juez | undefined {
 
 export function alertar(ctx: Contexto, mensaje: string): void {
   if (!ctx.estado.alertas.includes(mensaje)) ctx.estado.alertas.push(mensaje);
+}
+
+/** Recupera el partido y los proveedores guardados, para mostrar o exportar sin el simulador. */
+export function restaurarEstado(ctx: Contexto): void {
+  const partido = leerKv(ctx.db, "partido");
+  const proveedores = leerKv(ctx.db, "proveedores");
+  if (partido && !ctx.estado.partido) ctx.estado.partido = JSON.parse(partido) as Partido;
+  if (proveedores && ctx.estado.proveedores.length === 0) ctx.estado.proveedores = JSON.parse(proveedores) as Proveedor[];
+  if (ctx.estado.partido && ctx.estado.fin_min === 0) ctx.estado.fin_min = ctx.estado.partido.fin_min;
 }
