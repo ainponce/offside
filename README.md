@@ -182,6 +182,14 @@ Con el error forzado (`OFFSIDE_SIMULACRO=1 pnpm ensayo -- --permitir-colateral`)
 | `entrega/` | Exportaciones y [propuesta normativa](entrega/propuesta-normativa.md) |
 | `docs/` | Diseño, plan, pitch, guion del video y guía del partido final |
 
+## Material de presentación
+
+- [Pitch](docs/pitch.md): versiones de 3 minutos y de 1 minuto, coreografía de la demo y preguntas probables.
+- [Guion del video](docs/guion-video.md) de hasta 3 minutos.
+- [Guía del partido final](docs/guia-partido-final.md), paso a paso.
+- [Entrega en Hacki](docs/entrega-en-hacki.md): textos para pegar y lista de requisitos.
+- [Propuesta normativa](entrega/propuesta-normativa.md) de una página.
+
 ## Supuestos
 
 - La marca de agua extraída que trae cada detección se toma como dada; Offside no la extrae del video.

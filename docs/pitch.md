@@ -2,6 +2,12 @@
 
 Tres versiones según el tiempo que den, la coreografía de la demo y las preguntas que conviene tener respondidas. Los números salen de los ensayos (ver el README); antes de presentar, reemplazalos por los del partido final si son distintos.
 
+## Diapositivas
+
+Nueve diapositivas con notas del orador: https://claude.ai/artifact/UvTJ5TLHwmLxAKvTiPfU8t
+
+Son privadas hasta que las compartas desde el menú Compartir de esa página; desde ahí también se descargan como PDF o PowerPoint, por si no hay red en la sala. En la última falta pegar el link al repositorio.
+
 ## En una frase
 
 Offside bloquea en vivo las transmisiones piratas con un juez firmando cada medida, sin tirar ningún sitio ajeno, porque persigue la filtración y no el servidor.
