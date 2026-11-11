@@ -1,0 +1,9 @@
+node_modules
+dist
+.simulador
+.superpowers
+datos/*.db*
+salida
+.env
+.DS_Store
+*.log
