@@ -146,7 +146,23 @@ pnpm ensayo -- --carpeta salida/escenario-7
 
 ### Resultados medidos
 
-<!-- RESULTADOS -->
+Medidos el 11 de noviembre de 2026 con `pnpm ensayo`, que usa el simulador y el verificador oficiales. El juez de ensayo firma tras la demora indicada, en minutos de partido; los tiempos de un juez real van a ser otros.
+
+| Partido | Demora del juez | Fases piratas bloqueadas | Primer bloqueo tras la detección | Visibilidad residual promedio | Daño colateral | Falsos positivos | Órdenes fuera de turno | Bloqueos por IP tras el partido |
+|---|---|---|---|---|---|---|---|---|
+| Práctica oficial, x60 | 0,5 min | 7 de 7 | 1,1 a 1,4 min | 4,8 % | 0 | 0 | 0 | 0 |
+| Práctica oficial, x6 | 1 min | 7 de 7 | 1,4 a 1,6 min | 5,6 % | 0 | 0 | 0 | 0 |
+| Propio, semilla 7 | 0,5 min | 9 de 9 | 1,1 a 1,4 min | 4,3 % | 0 | 0 | 0 | 0 |
+| Propio, semilla 21 | 0,5 min | 10 de 10 | 1,1 a 1,4 min | 5,4 % | 0 | 0 | 0 | 0 |
+| Propio, semilla 33 | 0,5 min | 10 de 10 | 1,1 a 1,4 min | 6,3 % | 0 | 0 | 0 | 0 |
+
+Cómo leerlo:
+
+- **El tiempo al primer bloqueo es la demora del juez más medio minuto.** El proveedor más grande del simulador aplica en alrededor de medio minuto de partido; el resto de la visibilidad residual son los proveedores más lentos (uno tarda unos seis minutos) y el que falla y hay que reintentar.
+- **Los escenarios propios tienen tres turnos de jueces**, un proveedor que solo bloquea por IP y los casos que la práctica no trae. En la semilla 33 hubo fallas de proveedor después de un cambio de turno: se resolvieron con ratificaciones del juez entrante y ninguna orden quedó fuera de turno.
+- **En el partido de práctica Offside dejó sin tocar 15 sitios legítimos** que comparten IP con dos de los piratas, y archivó sin medida al licenciatario y a un resumen de otro partido.
+
+Con el error forzado (`OFFSIDE_SIMULACRO=1 pnpm ensayo -- --permitir-colateral`), que bloquea por IP una IP compartida a propósito: el primer sitio afectado reclamó a los 3 minutos, el juez de ensayo levantó la orden 0,7 minutos después en todos los proveedores y la reemplazó por el dominio. Los demás sitios no llegaron a reclamar y el pirata siguió bloqueado.
 
 ## Estructura
 

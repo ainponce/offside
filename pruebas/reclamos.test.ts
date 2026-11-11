@@ -208,3 +208,18 @@ test("un reclamo por un bloqueo de dominio a un sitio legítimo se levanta sin r
   assert.equal(a.sim.levantamientos.length, 3);
   assert.equal(a.sim.recibidas().filter((o) => o.estado === "recibida" || o.estado === "aplicada").length, 0);
 });
+
+test("un reclamo que el simulador publica con un minuto ya pasado no se pierde", async () => {
+  // El simulador fecha el reclamo con su minuto programado y lo publica un instante después:
+  // puede aparecer con un minuto anterior al de nuestra última consulta.
+  const a = await bloqueoEquivocado();
+  a.sim.avanzar(9);
+  await a.motor.tick();
+  a.sim.emitirReclamo({ id: "R-777", minuto: 8.95, dominio: "panaderia.test", proveedor: "grande", mensaje: "No carga." });
+  a.sim.avanzar(9.1);
+  await a.motor.tick();
+  assert.deepEqual(
+    reclamos(a).map((r) => [r.id, r.estado]),
+    [["R-777", "verificado"]],
+  );
+});

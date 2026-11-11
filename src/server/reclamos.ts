@@ -6,7 +6,6 @@
 // los proveedores donde aplica y la reemplaza por un bloqueo más preciso.
 
 import { type Contexto, alertar, juezPorId } from "./contexto.ts";
-import { guardarKv, leerKv } from "./db.ts";
 import { registrarEjecutor } from "./decisiones.ts";
 import { type CacheDns, crearOrden, enviarOrden } from "./despacho.ts";
 import { dominioRegistrable } from "./dominio.ts";
@@ -175,8 +174,10 @@ async function procesarReclamo(ctx: Contexto, r: ReclamoSim, estado: EstadoSim, 
 }
 
 async function ingerirReclamos(ctx: Contexto, estado: EstadoSim): Promise<void> {
-  const desde = Number(leerKv(ctx.db, "cursor_reclamos") ?? "-1000000000");
-  const lote = await ctx.sim.reclamos(desde);
+  // Se piden siempre todos y se descartan los ya vistos por id. No sirve un cursor
+  // por minuto: el simulador fecha cada reclamo con su minuto programado y lo publica
+  // un instante después, así que puede aparecer "en el pasado" de la última consulta.
+  const lote = await ctx.sim.reclamos(-1_000_000_000);
   const cache: CacheDns = new Map();
   let huboCambios = false;
   for (const r of [...lote.reclamos].sort((a, b) => a.minuto - b.minuto)) {
@@ -184,7 +185,6 @@ async function ingerirReclamos(ctx: Contexto, estado: EstadoSim): Promise<void> 
     await procesarReclamo(ctx, r, estado, cache);
     huboCambios = true;
   }
-  guardarKv(ctx.db, "cursor_reclamos", String(lote.minuto_actual));
   if (huboCambios) ctx.alCambiar();
 }
 

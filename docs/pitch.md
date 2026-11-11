@@ -104,7 +104,7 @@ Cada entrada lleva el hash de la anterior, y un verificador independiente lo rec
 El reenvío no sale con la firma del juez saliente: le aparece al entrante como ratificación y la firma con un toque. El simulador mira el turno cuando el proveedor recibe la orden, y en los ensayos no hubo ninguna orden fuera de turno.
 
 **¿Y si Offside se equivoca?**
-El sitio afectado reclama, el reclamo se verifica contra las órdenes vigentes y el juez de turno levanta la orden en todos los proveedores y la reemplaza por una más precisa. Lo probamos forzando un error a propósito: tres reclamos, tres levantados.
+El sitio afectado reclama, el reclamo se verifica contra las órdenes vigentes y el juez de turno levanta la orden en todos los proveedores y la reemplaza por una más precisa. Lo probamos forzando un error a propósito: el primer sitio afectado reclamó, la orden se levantó en menos de un minuto de partido en todos los proveedores, y los demás sitios ni llegaron a reclamar.
 
 **¿Usa inteligencia artificial?**
 Para decidir, no: son reglas deterministas que cualquiera puede leer y auditar. Sí la usamos para escribir el código durante el hackathon, y está dicho en el README.
