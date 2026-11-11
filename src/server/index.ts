@@ -12,6 +12,7 @@ import { cargarConfig, cargarJueces } from "./config.ts";
 import { crearContexto } from "./contexto.ts";
 import { abrirDb } from "./db.ts";
 import { Motor } from "./motor.ts";
+import { instalarReclamos } from "./reclamos.ts";
 import { Sesiones } from "./sesiones.ts";
 import { SimuladorHttp } from "./simulador.ts";
 
@@ -38,6 +39,7 @@ const ctx = crearContexto({
 const sesiones = new Sesiones(db, jueces, operadores);
 const { app } = crearApi(ctx, sesiones, { raizWeb: "dist" });
 const motor = new Motor(ctx);
+instalarReclamos(motor);
 
 ctx.auditoria.registrar({
   minuto: null,
