@@ -1,0 +1,60 @@
+{
+  "formato": "offside-exportacion-v1",
+  "generado_iso": "2026-11-11T23:29:34.931Z",
+  "nota": "Partido de práctica oficial, corrido el 2026-11-11 a x6 con el juez de ensayo automático (demora de 1 minuto de partido). No es el partido final.",
+  "partido": null,
+  "minuto_de_partido": 110.606,
+  "expedientes": [
+    "EXP-2026-000001",
+    "EXP-2026-000002",
+    "EXP-2026-000003",
+    "EXP-2026-000004"
+  ],
+  "auditoria": {
+    "entradas": 151,
+    "cabecera": "920d4719407dab2d5bbcacf9a9c24e74dcacb6dff1e9f3bee4e09378e5fbdd20"
+  },
+  "archivos": [
+    {
+      "nombre": "expediente-EXP-2026-000001.json",
+      "sha256": "9535c0e60ec37e9fc4ea79547e533febf4ec92666fa20550cce435efab61b5ba"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000001.md",
+      "sha256": "69831ec74ad86a9ab5e46c961feffc3162b0e66b9e9eb0cd89f603c10acdc6ed"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000002.json",
+      "sha256": "998a6b8eaeed5e970cf83990e37bdcca4e39aa3289e7da98825c792ec3a0cfa9"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000002.md",
+      "sha256": "4aa45674a85c20382d41f48079fcaca5d8c4fca7b709c6f5f1ca0e1c9b6855a8"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000003.json",
+      "sha256": "15c83cb91f32c5344b3e83e4ea98a4886ddc1d02a86fff0765d2000cc9c1f855"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000003.md",
+      "sha256": "b3b000d0554baaa825f0cfcef61484f903cf562aeed51842cec2d630bce446cd"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000004.json",
+      "sha256": "75b6d1555e7930e3bf382404a160ee58c825fbc842fc0870e6fec1156e71203f"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000004.md",
+      "sha256": "b0d2ff5ecc11a8d1ca4abbfc148658ff7ba82fa3524c9b4a4381e3f624f90143"
+    },
+    {
+      "nombre": "detecciones-archivadas.json",
+      "sha256": "acd15b9a105bca02987ad2e83ac772ffc2ae5a7d90fe407db59ce8f6ff2ccc48"
+    },
+    {
+      "nombre": "auditoria.jsonl",
+      "sha256": "c8399e442f5faa78fec256fb198ce0d90f35eaf3d3c97e030a6c89d5b9169094"
+    }
+  ],
+  "como_verificar": "python3 herramientas/verificar_expediente.py <esta carpeta> --juzgados config/jueces.demo.json"
+}

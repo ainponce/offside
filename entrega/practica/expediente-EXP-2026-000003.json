@@ -1,0 +1,239 @@
+{
+  "formato": "offside-expediente-v1",
+  "expediente": {
+    "id": "EXP-2026-000003",
+    "marca": "LP26-PRA-OFI-S010457",
+    "prefijo": "LP26-PRA-OFI",
+    "origen_prefijo": "Señal oficial del titular (plataforma propia)",
+    "clave": "LP26-PRA-OFI-S010457",
+    "abierto_min": 9
+  },
+  "partido": null,
+  "detecciones": [
+    {
+      "id": "D-0004",
+      "minuto": 9,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0004\",\"minuto\":9,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"tv.verpartido-hd.test\",\"ip_servidor\":\"192.0.2.50\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S010457\",\"captura\":{\"capturada_min\":9,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R5ZW+FE1lPhjsVnEzdSZpMGTL1DXtIcHUPzBRZNIaZJw1k2CN88xkIJmNZS0qrErH2zcZzzs5C6gOPr/mhziJg==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}",
+      "sha256": "b572e29708b081cbd452605a2a240b0659e52435d9585562d90b0d8c17882855",
+      "captura_sha256": "b3e5dd0f6977847eea9f86d67cc43e2d8b9aa378b92a131fa358e10db718b796",
+      "recibida_min": 9,
+      "recibida_iso": "2026-11-11T23:07:55.047Z"
+    },
+    {
+      "id": "D-0007",
+      "minuto": 19,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0007\",\"minuto\":19,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"tv.verpartido-hd.test\",\"ip_servidor\":\"192.0.2.50\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S010457\",\"captura\":{\"capturada_min\":19,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R2rBe6HNyu0iyU2zt85gKL4aUwRnWwHqZ8G9QxiHZNGZFmTKHgGN1O966IryxqCy3quHyYKomNF3F7M4dLVa5g==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}",
+      "sha256": "24173a8ab7837fd3c37c48cee72333e8030e1b04bf5eb2c8d8c58f0682cc912d",
+      "captura_sha256": "bc6eae3469b9a893a1953f7834cc86e2c2294d13e269f0abfcbc299e5d67843e",
+      "recibida_min": 19,
+      "recibida_iso": "2026-11-11T23:09:35.078Z"
+    },
+    {
+      "id": "D-0011",
+      "minuto": 29,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0011\",\"minuto\":29,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"tv.verpartido-hd.test\",\"ip_servidor\":\"192.0.2.50\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S010457\",\"captura\":{\"capturada_min\":29,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R6OMQumK1kkNAE6w6ZMVnlnx/lXnkjEZ3DfaM1I8pG9LzASVarOvqndRcKYOj0MmlqnoL8lu6xd1MmTj2mqInA==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}",
+      "sha256": "bbc5d62f0a2414233eae81dcc1d7e963a66344024a5aac3fc911e6b3785ab430",
+      "captura_sha256": "ab0f61a33b7dfbb0ea3f5383224ad66b454c68aa7df3c4f9c8399972db3d9960",
+      "recibida_min": 29.01,
+      "recibida_iso": "2026-11-11T23:11:15.101Z"
+    },
+    {
+      "id": "D-0015",
+      "minuto": 39,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0015\",\"minuto\":39,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"tv.verpartido-hd.test\",\"ip_servidor\":\"192.0.2.50\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S010457\",\"captura\":{\"capturada_min\":39,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R68OvE0vGuYRco7Mk2aJ5ncA4eMch8LyHb7gz7+femvgXETO+iNdzr9RtOuy0nM0JSwQh6Wd2LVGYgik/3vtQQ==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}",
+      "sha256": "32a39ec17b23c911203ed2321a5711496afe46764a438d56cadbe77d880816f4",
+      "captura_sha256": "b30c8546299a611c6f1578c83537ec1c82c7d54a63bf550ca743bddfc5dce3e5",
+      "recibida_min": 39.01,
+      "recibida_iso": "2026-11-11T23:12:55.202Z"
+    },
+    {
+      "id": "D-0019",
+      "minuto": 49,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0019\",\"minuto\":49,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"tv.verpartido-hd.test\",\"ip_servidor\":\"192.0.2.50\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S010457\",\"captura\":{\"capturada_min\":49,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R/UnKBMftuIZmxQYXVQehwYLot4cLHpo9F+QhvfN0ZxOiwFzo+z2v1+/qMBbrub0IA37/8K+FnlRmrC36FrDzA==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}",
+      "sha256": "db2fbe4450d77e26fe1587741e79349d649f546aec729d56e9a39f885b04d5d8",
+      "captura_sha256": "aab0acb53f8cc1ca0f371d7ccdded80c2972c8c8349d25105769ea50e1a420b1",
+      "recibida_min": 49.01,
+      "recibida_iso": "2026-11-11T23:14:35.234Z"
+    },
+    {
+      "id": "D-0024",
+      "minuto": 59,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0024\",\"minuto\":59,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"tv.verpartido-hd.test\",\"ip_servidor\":\"192.0.2.50\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S010457\",\"captura\":{\"capturada_min\":59,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R+/684Wd4Cj1yZ08GffEA70VxI/95dx/iQ5mTrj9kRI7T6Mb5dm51NUbZfYb1FFQYaD1x1i1xXj+Rec46dUi6g==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}",
+      "sha256": "2fd7816bdda7ef5e692bd6009d49fdb2d14201c4bafa4c04b58f46631bf41b0d",
+      "captura_sha256": "4455adee60ab1cc6890589018efa0093e614a02f04d56e9d5fbd5e8daed6b37c",
+      "recibida_min": 59,
+      "recibida_iso": "2026-11-11T23:16:15.121Z"
+    },
+    {
+      "id": "D-0028",
+      "minuto": 69,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0028\",\"minuto\":69,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"tv.verpartido-hd.test\",\"ip_servidor\":\"192.0.2.50\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S010457\",\"captura\":{\"capturada_min\":69,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R++pIgORFr4ULovC1X2kWNFjWxJPFvSVasuL5YZjSbTJoXFCoh0fA4zHY1HPM46zPQt49qkIBOh8EYMVfqs2nw==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}",
+      "sha256": "ed025b1d3275837eca5f36ffeccc45791a290771205dc54ab2fb388ba31e0677",
+      "captura_sha256": "44aea620b8e7a89ec6207b5b1e5f210e4a5dd6664c158ffda8220db360fbab46",
+      "recibida_min": 69,
+      "recibida_iso": "2026-11-11T23:17:55.138Z"
+    },
+    {
+      "id": "D-0032",
+      "minuto": 79,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0032\",\"minuto\":79,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"tv.verpartido-hd.test\",\"ip_servidor\":\"192.0.2.50\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S010457\",\"captura\":{\"capturada_min\":79,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R6djxePl8a5qGXavLA8bdbLXchzfATooamhS3T81twjq8okYq7Tja9Q9vG46TAaMvxqWswaFS7aE+9Tk8GoLXA==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}",
+      "sha256": "83c3c7cd8276d83a95ff2bd0a6ff4a8b9cd5892851913c082f1464a0f8da5131",
+      "captura_sha256": "b5df180b02c8d417486b97d0c67135a95a88419794a652ce05e3ddb83452ebd0",
+      "recibida_min": 79.01,
+      "recibida_iso": "2026-11-11T23:19:35.164Z"
+    },
+    {
+      "id": "D-0037",
+      "minuto": 89,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0037\",\"minuto\":89,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"tv.verpartido-hd.test\",\"ip_servidor\":\"192.0.2.50\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S010457\",\"captura\":{\"capturada_min\":89,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R7z7Z7QN5LhapytJOi5JC9k4GHOlKAtS0BIA2me+863CevQBzX7KNjGdi/dEGF+5DUTDAVN58pOqDKM80jcRhQ==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}",
+      "sha256": "13a24a408c996b122b092cd0fdcc76d3e272864f89053c53bca6b9f71b15e30a",
+      "captura_sha256": "b8c2ceda8fa5a16f5dbf1831e22ee8d57915ee7f29ee666bd1373a01408b25ab",
+      "recibida_min": 89.01,
+      "recibida_iso": "2026-11-11T23:21:15.210Z"
+    },
+    {
+      "id": "D-0041",
+      "minuto": 99,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0041\",\"minuto\":99,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"tv.verpartido-hd.test\",\"ip_servidor\":\"192.0.2.50\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S010457\",\"captura\":{\"capturada_min\":99,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R3kuQ4pQ7MHDMDOfuRI2Sg0w9PLz36Hb2HecSLY3bttI7m4mt3nApurfua3QeqEkeu9PNFtQ+oDZKKye5Tq0+A==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}",
+      "sha256": "db87247aa2c4f736f93ff53356936e0888590cab109e9a94539aba79cea6302b",
+      "captura_sha256": "06062567f79111d4d3429ba8312b212bdfe69b8b2e37022449adaaf708ebdb8a",
+      "recibida_min": 99,
+      "recibida_iso": "2026-11-11T23:22:55.113Z"
+    }
+  ],
+  "servidores": [
+    {
+      "host": "tv.verpartido-hd.test",
+      "ip": "192.0.2.50",
+      "asn": 64620,
+      "organizacion": "Pampa Web Hosting Compartido (ficticio)",
+      "primera_deteccion_min": 9,
+      "riesgo": {
+        "tipo_recomendado": "dominio",
+        "cotenants": [
+          "verpartido-hd.test",
+          "panaderia-la-espiga.test",
+          "club-atletico-barrio-norte.test",
+          "escuela-tecnica-12.test",
+          "estudio-contable-ruiz.test"
+        ],
+        "terceros": [
+          "panaderia-la-espiga.test",
+          "club-atletico-barrio-norte.test",
+          "escuela-tecnica-12.test",
+          "estudio-contable-ruiz.test"
+        ],
+        "motivo": "La IP aloja 4 sitios ajenos al operador: se bloquea solo el dominio.",
+        "advertencias": []
+      }
+    }
+  ],
+  "medidas": [
+    {
+      "id": "M-0003",
+      "clase": "inicial",
+      "estado": "aprobada",
+      "creada_min": 9,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0003\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000003\",\"partido\":{\"id\":\"practica-01\",\"nombre\":\"Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-PRA-OFI-S010457\",\"prefijo\":\"LP26-PRA-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-PRA-OFI-S010457\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"tv.verpartido-hd.test\",\"ip\":\"192.0.2.50\",\"asn\":64620,\"organizacion\":\"Pampa Web Hosting Compartido (ficticio)\"},\"servidores_previos\":[],\"riesgo\":{\"tipo_recomendado\":\"dominio\",\"cotenants\":[\"verpartido-hd.test\",\"panaderia-la-espiga.test\",\"club-atletico-barrio-norte.test\",\"escuela-tecnica-12.test\",\"estudio-contable-ruiz.test\"],\"terceros\":[\"panaderia-la-espiga.test\",\"club-atletico-barrio-norte.test\",\"escuela-tecnica-12.test\",\"estudio-contable-ruiz.test\"],\"motivo\":\"La IP aloja 4 sitios ajenos al operador: se bloquea solo el dominio.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0004\",\"minuto\":9,\"capturada_min\":9,\"deteccion_sha256\":\"b572e29708b081cbd452605a2a240b0659e52435d9585562d90b0d8c17882855\",\"captura_sha256\":\"b3e5dd0f6977847eea9f86d67cc43e2d8b9aa378b92a131fa358e10db718b796\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://verpartido-hd.test/vivo\",\"stream_url\":\"https://tv.verpartido-hd.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/verpartidohd\",\"minuto\":7}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"dominio\",\"objetivo\":\"tv.verpartido-hd.test\"},{\"proveedor_id\":\"andina\",\"tipo\":\"dominio\",\"objetivo\":\"tv.verpartido-hd.test\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"tv.verpartido-hd.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"dominio\",\"objetivo\":\"tv.verpartido-hd.test\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":9,\"hora_partido_iso\":\"2026-11-11T21:09:00.000Z\",\"hora_local_iso\":\"2026-11-11T23:07:55.047Z\"}}",
+      "huella": "f51a6de8f70b2ab0f102c3f37bcbd0a25d402c23c05e0453964ecb21a167f69b",
+      "decision": {
+        "juez_id": "jueza-laura-ficticia",
+        "juez_nombre": "Dra. Laura Ficticia",
+        "juzgado_id": "jg-centro-3",
+        "juzgado_nombre": "Juzgado de Garantías N.º 3 (ficticio) — Distrito Judicial Centro",
+        "decidida_min": 10.01,
+        "decidida_iso": "2026-11-11T23:08:05.099Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000003-0003-andina-1-f51a6de8f70b2ab0",
+          "proveedor_id": "andina",
+          "tipo": "dominio",
+          "objetivo": "tv.verpartido-hd.test",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "bd07fa1f5f22d7edd1459133bdb7144c2ec00e1c328d33f631839f59c95a40e9",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 10.01,
+          "aplicada_min": 11.763,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000003-0003-aurora-1-f51a6de8f70b2ab0",
+          "proveedor_id": "aurora",
+          "tipo": "dominio",
+          "objetivo": "tv.verpartido-hd.test",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "41a34466d20ce8ae0e3fda3c92e3ba6dc48f7c4e1cdf207e3bcc38dc28580a89",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 10.01,
+          "aplicada_min": 10.496,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000003-0003-cumbre-1-f51a6de8f70b2ab0",
+          "proveedor_id": "cumbre",
+          "tipo": "dominio",
+          "objetivo": "tv.verpartido-hd.test",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "94103ff5325b7087f7c29ac1e9d7d981feaee7c15b7c8ca9ac96e42593b03241",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 10.01,
+          "aplicada_min": 13.122,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000003-0003-valle-1-f51a6de8f70b2ab0",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "tv.verpartido-hd.test",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "3c6feb613ec883f3aa1c903e518f6764bdcf3188aa08137c542f402d56a16660",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 10.01,
+          "aplicada_min": 17.299,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "aviso_titular": "Aviso al titular de derechos — Expediente EXP-2026-000003.\nLa señal con marca de agua LP26-PRA-OFI-S010457 se está retransmitiendo sin autorización desde 1 servidor: tv.verpartido-hd.test (192.0.2.50).\nEsa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.\nNota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse."
+}

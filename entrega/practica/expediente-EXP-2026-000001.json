@@ -1,0 +1,484 @@
+{
+  "formato": "offside-expediente-v1",
+  "expediente": {
+    "id": "EXP-2026-000001",
+    "marca": "LP26-PRA-OFI-S048211",
+    "prefijo": "LP26-PRA-OFI",
+    "origen_prefijo": "Señal oficial del titular (plataforma propia)",
+    "clave": "LP26-PRA-OFI-S048211",
+    "abierto_min": 2
+  },
+  "partido": null,
+  "detecciones": [
+    {
+      "id": "D-0001",
+      "minuto": 2,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0001\",\"minuto\":2,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s1.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s1.pelotaya.test\",\"ip_servidor\":\"203.0.113.10\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":2,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R78wa6jDSwxuvnrbaeujx9QA6W2SWznDA23chX6X64YQcfhYYZSMMZwcKXGjb2FxD+oQxdoJxuAnpRn0QxEQ0Q==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "6db4afccf99d4958f7b3098a599c4c4ab361e5add13ed3c616041a02e8d4ad01",
+      "captura_sha256": "77b14ea8874ef8bbbf99cc292fd820a9e8df09fa4d4c00ebaeb9003e6b9bfbe1",
+      "recibida_min": 2,
+      "recibida_iso": "2026-11-11T23:06:45.056Z"
+    },
+    {
+      "id": "D-0005",
+      "minuto": 12,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0005\",\"minuto\":12,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s1.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s1.pelotaya.test\",\"ip_servidor\":\"203.0.113.10\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":12,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"Rwf/pBtapzoGLDhfCsJLJNwQKbhJhPkSPxkXwpXrZb1FEdQSkHd5+TsbF3PVHXkHY+WWlhu47xMWu/5cpWGlMA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "95e22dfa201e9388400d95ed9d8638daaf571b88f0d836c60cd24da6f8c33ba2",
+      "captura_sha256": "531f3f50ce31a28677c30ebc39bf1b9ed1d3570262f136f4661bb57ae157948e",
+      "recibida_min": 12,
+      "recibida_iso": "2026-11-11T23:08:25.064Z"
+    },
+    {
+      "id": "D-0009",
+      "minuto": 22,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0009\",\"minuto\":22,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s1.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s1.pelotaya.test\",\"ip_servidor\":\"203.0.113.10\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":22,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RwKKZVlLXfW8XquUhw0JDQoon/A0/5nCMEG8TFhoaNkwUmnnIu+bmcN8nXFRvBs0VFbHAxCeTry74A4SzpIkCA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "a40a12712728f57e384bd803155d5792cbb1f2621926edd5dfed33e39ef38341",
+      "captura_sha256": "e292b8ce55850405b2bfccc50a8f615fdef40c74c7a59d9086bcf1b7d43810f1",
+      "recibida_min": 22.01,
+      "recibida_iso": "2026-11-11T23:10:05.108Z"
+    },
+    {
+      "id": "D-0012",
+      "minuto": 32,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0012\",\"minuto\":32,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s1.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s1.pelotaya.test\",\"ip_servidor\":\"203.0.113.10\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":32,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RzSp/AhOkE1PZ6epNnX6Oxq8DAXWTLlmOqui+MjxwLPQawnhtQdB5tpnK4pPN02SQwRrchYPtuQgHlSLFpuZgQ==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "525fc0445f2389a290d3f5bb5b1b7ec45269a44cc446170760b54c9a7118c134",
+      "captura_sha256": "ebd95d498f843ac52f7e0fcfe36a7013a510cfc5c1dcf3952929efdb583f30c8",
+      "recibida_min": 32.01,
+      "recibida_iso": "2026-11-11T23:11:45.124Z"
+    },
+    {
+      "id": "D-0014",
+      "minuto": 37.5,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0014\",\"minuto\":37.5,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s2.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s2.pelotaya.test\",\"ip_servidor\":\"203.0.113.11\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":37.5,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R4G2psD29qRNcRjBXhz26p6jlFAaX2qLfoxZdjZ8aQMen/BxHhgncoUUpHaWZIEYwwKXQ4GNJpILdyml+WJSAQ==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "022711219693e7dbc86bc37fd6e3477f95e9ffea3f5b7310cc277da9871af8f9",
+      "captura_sha256": "f27a4a5fba9cfc873c9750f4186c354c253b9dcb696de7b8c2bc789e0217ebe7",
+      "recibida_min": 37.5,
+      "recibida_iso": "2026-11-11T23:12:40.056Z"
+    },
+    {
+      "id": "D-0018",
+      "minuto": 47.5,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0018\",\"minuto\":47.5,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s2.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s2.pelotaya.test\",\"ip_servidor\":\"203.0.113.11\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":47.5,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R2BV16ooxjzmR6jWhOtYJlzHcZ/HFvbYGjoglK/uBdH+B0Q/Jtb4j/8H+UKQNUqNJ9BNIJMlC5PfAiq2BrEtkg==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "64f8f1bf3e263af9530734089f60bf616f7cba9b898e1a17592d3d9fde62dbfe",
+      "captura_sha256": "9599883ea344a37cae84b60cf0843560e94ab7e4ffcc20df5a6c594be29ab3ec",
+      "recibida_min": 47.5,
+      "recibida_iso": "2026-11-11T23:14:20.145Z"
+    },
+    {
+      "id": "D-0023",
+      "minuto": 57.5,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0023\",\"minuto\":57.5,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s2.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s2.pelotaya.test\",\"ip_servidor\":\"203.0.113.11\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":57.5,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R8hQvBJasZahfNQHcOpLuqVdYZTLA+5X1QMubyc1dmn24psFPugjgbzziDSKH0JAdhIuNLDGXFddfK0heSeZRw==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "bb81188d227e81b1481d36c5cfe70139cd185b7309ce619dedd380f625fac640",
+      "captura_sha256": "3ebbbcfccd44e067e86b258e0f6109a02ff5fdaed5907569135ce620a64e85d1",
+      "recibida_min": 57.51,
+      "recibida_iso": "2026-11-11T23:16:00.180Z"
+    },
+    {
+      "id": "D-0027",
+      "minuto": 67.5,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0027\",\"minuto\":67.5,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s2.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s2.pelotaya.test\",\"ip_servidor\":\"203.0.113.11\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":67.5,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R3KPPie57RcCrLDAQQqytMHTshvAYqqHPBro29/kXNMOg9CUvUHs50TVMGoA4AhxBG2qNMRrLvR0yipZYqKjmA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "ad9caaeabf292b1e2a9b8219f7b919e1efad8b5779277492eca7629bb065449b",
+      "captura_sha256": "7f3481262aaded72da331ecf29ed6d93be271a9d919919f5305bb092071849c6",
+      "recibida_min": 67.51,
+      "recibida_iso": "2026-11-11T23:17:40.203Z"
+    },
+    {
+      "id": "D-0029",
+      "minuto": 71,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0029\",\"minuto\":71,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s3.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s3.pelotaya.test\",\"ip_servidor\":\"198.51.100.77\",\"asn\":64630,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":71,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R55ddbmFCeuipPhv1IBxdOKuwe1R/bCqco/NkhitMfiiiSOmxMTTiGF+2fUOmeGSapQ2czxJdpglKu6qr0YHOw==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "4e234ee930b094613bb93fc8ea2f76a70f422e911b78d2768c5ffec1a904c074",
+      "captura_sha256": "d34e0c24d029af9fd4e51398efa7a3f96d8b96fc6f67cb145f9b285968d8e227",
+      "recibida_min": 71.01,
+      "recibida_iso": "2026-11-11T23:18:15.209Z"
+    },
+    {
+      "id": "D-0033",
+      "minuto": 81,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0033\",\"minuto\":81,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s3.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s3.pelotaya.test\",\"ip_servidor\":\"198.51.100.77\",\"asn\":64630,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":81,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R0qO0RWgi5mSzBtsk8k/y2RridSrYp18qe1A7DWGRR6IU14ubt+6VTk9vT1vdZSI1E3LIRsj+wKzSY4cP+s0ow==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "6214e13774b7c0de9e19b091e7bdd307532d08f8c5a0c670f7e278a06951df1c",
+      "captura_sha256": "2659f28233bf3a0be71a2de09bb21b5d831b9b3f6014b196908685cfd63107ab",
+      "recibida_min": 81.01,
+      "recibida_iso": "2026-11-11T23:19:55.240Z"
+    },
+    {
+      "id": "D-0038",
+      "minuto": 91,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0038\",\"minuto\":91,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s3.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s3.pelotaya.test\",\"ip_servidor\":\"198.51.100.77\",\"asn\":64630,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":91,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RzeKq06NCaCzmDiPvqv03flGa9s5tl9C0GvUnFl8B8buUqYHmePuV77ArqSapqjHgsqGSHEqbm8gnr770ngn4w==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "881b254fcb06ca6ee74c36d721504dc4ee4aaee8f455c6c52f1b24226b01c9d7",
+      "captura_sha256": "0aeff816862f08f953b136ce68fef8cbe089759c6f1a8d7987049d5039604926",
+      "recibida_min": 91,
+      "recibida_iso": "2026-11-11T23:21:35.124Z"
+    },
+    {
+      "id": "D-0042",
+      "minuto": 101,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0042\",\"minuto\":101,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s3.pelotaya.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"s3.pelotaya.test\",\"ip_servidor\":\"198.51.100.77\",\"asn\":64630,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S048211\",\"captura\":{\"capturada_min\":101,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R8XqGEYKv8sq3FlJRPS/cUmffOnbeS6fndiuY/NL33iafA/TuBg0cNMbstILmwbDr46RORgnjXD2akP5+R5zoA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}",
+      "sha256": "2924a2ab8ee549aba4fa05c93b882e44add1a9c048056afad14adcebf506803b",
+      "captura_sha256": "5d37f9ff4e0419484ce90efbc45e31fc9d9aed994aedf844fe01b0bba0e92188",
+      "recibida_min": 101.01,
+      "recibida_iso": "2026-11-11T23:23:15.179Z"
+    }
+  ],
+  "servidores": [
+    {
+      "host": "s1.pelotaya.test",
+      "ip": "203.0.113.10",
+      "asn": 64600,
+      "organizacion": "Bruma Hosting Dedicado (ficticio)",
+      "primera_deteccion_min": 2,
+      "riesgo": {
+        "tipo_recomendado": "ip",
+        "cotenants": [
+          "s1-respaldo.pelotaya.test"
+        ],
+        "terceros": [],
+        "motivo": "La IP solo aloja dominios del mismo operador (pelotaya.test): se bloquea la IP.",
+        "advertencias": []
+      }
+    },
+    {
+      "host": "s2.pelotaya.test",
+      "ip": "203.0.113.11",
+      "asn": 64600,
+      "organizacion": "Bruma Hosting Dedicado (ficticio)",
+      "primera_deteccion_min": 37.5,
+      "riesgo": {
+        "tipo_recomendado": "ip",
+        "cotenants": [],
+        "terceros": [],
+        "motivo": "La IP solo aloja este servidor: se bloquea la IP.",
+        "advertencias": []
+      }
+    },
+    {
+      "host": "s3.pelotaya.test",
+      "ip": "198.51.100.77",
+      "asn": 64630,
+      "organizacion": "Servidores Litoral (ficticio)",
+      "primera_deteccion_min": 71,
+      "riesgo": {
+        "tipo_recomendado": "ip",
+        "cotenants": [
+          "espejo.pelotaya.test"
+        ],
+        "terceros": [],
+        "motivo": "La IP solo aloja dominios del mismo operador (pelotaya.test): se bloquea la IP.",
+        "advertencias": []
+      }
+    }
+  ],
+  "medidas": [
+    {
+      "id": "M-0001",
+      "clase": "inicial",
+      "estado": "aprobada",
+      "creada_min": 2,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0001\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000001\",\"partido\":{\"id\":\"practica-01\",\"nombre\":\"Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-PRA-OFI-S048211\",\"prefijo\":\"LP26-PRA-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-PRA-OFI-S048211\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"s1.pelotaya.test\",\"ip\":\"203.0.113.10\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[\"s1-respaldo.pelotaya.test\"],\"terceros\":[],\"motivo\":\"La IP solo aloja dominios del mismo operador (pelotaya.test): se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0001\",\"minuto\":2,\"capturada_min\":2,\"deteccion_sha256\":\"6db4afccf99d4958f7b3098a599c4c4ab361e5add13ed3c616041a02e8d4ad01\",\"captura_sha256\":\"77b14ea8874ef8bbbf99cc292fd820a9e8df09fa4d4c00ebaeb9003e6b9bfbe1\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s1.pelotaya.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.10\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.10\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"s1.pelotaya.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.10\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":2,\"hora_partido_iso\":\"2026-11-11T21:02:00.000Z\",\"hora_local_iso\":\"2026-11-11T23:06:45.056Z\"}}",
+      "huella": "087da1639e7d1d406ae5e48b006a8efd5b4d4d20903b5106797e5ab33a86d69a",
+      "decision": {
+        "juez_id": "jueza-laura-ficticia",
+        "juez_nombre": "Dra. Laura Ficticia",
+        "juzgado_id": "jg-centro-3",
+        "juzgado_nombre": "Juzgado de Garantías N.º 3 (ficticio) — Distrito Judicial Centro",
+        "decidida_min": 3,
+        "decidida_iso": "2026-11-11T23:06:55.077Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000001-0001-andina-1-087da1639e7d1d40",
+          "proveedor_id": "andina",
+          "tipo": "ip",
+          "objetivo": "203.0.113.10",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "cb44b0f3b81a5f0fa0568cfebe116aaf9f3962c097556d37320c9759a397795e",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 3,
+          "aplicada_min": 5.395,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0001-aurora-1-087da1639e7d1d40",
+          "proveedor_id": "aurora",
+          "tipo": "ip",
+          "objetivo": "203.0.113.10",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "5ad30c26451cede743d80a34bf133f053a223edb5f7cc4fd7a273987bf6501c0",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 3,
+          "aplicada_min": 3.455,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0001-cumbre-1-087da1639e7d1d40",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.10",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "655adf01df630e6151ad83212b6599af0e3f4c15d93e8598c206ed2bc60688ea",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 3,
+          "aplicada_min": 6.673,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0001-valle-1-087da1639e7d1d40",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "s1.pelotaya.test",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "d66df323c113020605ccdae742584b3c3b454f577ff33b7b7c98e09e961f7865",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 3,
+          "aplicada_min": 7.472,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    },
+    {
+      "id": "M-0004",
+      "clase": "ampliacion",
+      "estado": "aprobada",
+      "creada_min": 37.5,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0004\",\"clase\":\"ampliacion\",\"expediente_id\":\"EXP-2026-000001\",\"partido\":{\"id\":\"practica-01\",\"nombre\":\"Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-PRA-OFI-S048211\",\"prefijo\":\"LP26-PRA-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-PRA-OFI-S048211\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"s2.pelotaya.test\",\"ip\":\"203.0.113.11\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[{\"host\":\"s1.pelotaya.test\",\"ip\":\"203.0.113.10\",\"medida_id\":\"M-0001\",\"estado\":\"aprobada\"}],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[],\"terceros\":[],\"motivo\":\"La IP solo aloja este servidor: se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0014\",\"minuto\":37.5,\"capturada_min\":37.5,\"deteccion_sha256\":\"022711219693e7dbc86bc37fd6e3477f95e9ffea3f5b7310cc277da9871af8f9\",\"captura_sha256\":\"f27a4a5fba9cfc873c9750f4186c354c253b9dcb696de7b8c2bc789e0217ebe7\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s2.pelotaya.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.11\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.11\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"s2.pelotaya.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.11\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":37.5,\"hora_partido_iso\":\"2026-11-11T21:37:30.000Z\",\"hora_local_iso\":\"2026-11-11T23:12:40.056Z\"}}",
+      "huella": "34857af1926ab31044731cd3bd48be86286343be6c9a044e415293442f505fa2",
+      "decision": {
+        "juez_id": "jueza-laura-ficticia",
+        "juez_nombre": "Dra. Laura Ficticia",
+        "juzgado_id": "jg-centro-3",
+        "juzgado_nombre": "Juzgado de Garantías N.º 3 (ficticio) — Distrito Judicial Centro",
+        "decidida_min": 38.5,
+        "decidida_iso": "2026-11-11T23:12:50.139Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000001-0004-andina-1-34857af1926ab310",
+          "proveedor_id": "andina",
+          "tipo": "ip",
+          "objetivo": "203.0.113.11",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "3b2b04c449c71145ac11e96871b2609c2ce339cd55678fc06911195e3012c543",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 38.5,
+          "aplicada_min": 40.84,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0004-aurora-1-34857af1926ab310",
+          "proveedor_id": "aurora",
+          "tipo": "ip",
+          "objetivo": "203.0.113.11",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "139aa1d889b45c67ac69c232ca0f7f142ce98e960751a0e24c8e11bc81ad8476",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 38.5,
+          "aplicada_min": 39.049,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0004-cumbre-1-34857af1926ab310",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.11",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "98fbea7860d4e8fd2802034891d2e748f4d8c9a2537e9cf346345f2e97c6fa76",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 38.5,
+          "aplicada_min": 40.931,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0004-valle-1-34857af1926ab310",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "s2.pelotaya.test",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "f1c1fecd8ddc3f211315c5daab6ef333e5ff7e358ce68456d563596a8d5008fc",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 38.5,
+          "aplicada_min": 44.333,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    },
+    {
+      "id": "M-0006",
+      "clase": "ampliacion",
+      "estado": "aprobada",
+      "creada_min": 71.01,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0006\",\"clase\":\"ampliacion\",\"expediente_id\":\"EXP-2026-000001\",\"partido\":{\"id\":\"practica-01\",\"nombre\":\"Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-PRA-OFI-S048211\",\"prefijo\":\"LP26-PRA-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-PRA-OFI-S048211\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"s3.pelotaya.test\",\"ip\":\"198.51.100.77\",\"asn\":64630,\"organizacion\":\"Servidores Litoral (ficticio)\"},\"servidores_previos\":[{\"host\":\"s1.pelotaya.test\",\"ip\":\"203.0.113.10\",\"medida_id\":\"M-0001\",\"estado\":\"aprobada\"},{\"host\":\"s2.pelotaya.test\",\"ip\":\"203.0.113.11\",\"medida_id\":\"M-0004\",\"estado\":\"aprobada\"}],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[\"espejo.pelotaya.test\"],\"terceros\":[],\"motivo\":\"La IP solo aloja dominios del mismo operador (pelotaya.test): se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0029\",\"minuto\":71,\"capturada_min\":71,\"deteccion_sha256\":\"4e234ee930b094613bb93fc8ea2f76a70f422e911b78d2768c5ffec1a904c074\",\"captura_sha256\":\"d34e0c24d029af9fd4e51398efa7a3f96d8b96fc6f67cb145f9b285968d8e227\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://pelotaya.test/en-vivo\",\"stream_url\":\"https://s3.pelotaya.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolya_ok/status/1001\",\"minuto\":1}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"198.51.100.77\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"198.51.100.77\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"s3.pelotaya.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"198.51.100.77\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":71.01,\"hora_partido_iso\":\"2026-11-11T22:11:00.600Z\",\"hora_local_iso\":\"2026-11-11T23:18:15.209Z\"}}",
+      "huella": "bab071ab3913e373e39621d8ba982659097f9e64cc52bb2562aabff88c1f09ce",
+      "decision": {
+        "juez_id": "juez-martin-ejemplo",
+        "juez_nombre": "Dr. Martín Ejemplo",
+        "juzgado_id": "jg-norte-1",
+        "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
+        "decidida_min": 72.02,
+        "decidida_iso": "2026-11-11T23:18:25.270Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000001-0006-andina-1-bab071ab3913e373",
+          "proveedor_id": "andina",
+          "tipo": "ip",
+          "objetivo": "198.51.100.77",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "2302ebac0a5e1ec72818334dbbfa4b5c9fb01c5249da33a98dbb9393886845d0",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 72.02,
+          "aplicada_min": 74.426,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0006-aurora-1-bab071ab3913e373",
+          "proveedor_id": "aurora",
+          "tipo": "ip",
+          "objetivo": "198.51.100.77",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "94eeec5628e24439c9aaf52fdcc14a9325532745e767e7dda5d2f1aca6c539a4",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 72.02,
+          "aplicada_min": 72.374,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0006-cumbre-1-bab071ab3913e373",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "198.51.100.77",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "9dc3b6f08448976b2cdaf13a889ae6ea356b23f4d72a81f9006ae31ad92053e9",
+          "intento": 1,
+          "estado": "fallida",
+          "enviada_min": 72.02,
+          "aplicada_min": null,
+          "finalizada_min": null,
+          "error": "Error interno del proveedor. Reenviar la orden con un nuevo orden_id."
+        },
+        {
+          "orden_id": "OFS-000001-0006-cumbre-2-bab071ab3913e373",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "198.51.100.77",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "82dbc76c368c95a292a5e581a5047c6d22c0a145e5307b3a1f7fb47816a4603b",
+          "intento": 2,
+          "estado": "fallida",
+          "enviada_min": 75.7,
+          "aplicada_min": null,
+          "finalizada_min": null,
+          "error": "Error interno del proveedor. Reenviar la orden con un nuevo orden_id."
+        },
+        {
+          "orden_id": "OFS-000001-0006-cumbre-3-bab071ab3913e373",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "198.51.100.77",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "d084411136ef036c813825aad0cd33d66c45a67f02dfa16a592c0f5b05cb1012",
+          "intento": 3,
+          "estado": "vencida",
+          "enviada_min": 79.02,
+          "aplicada_min": 82.065,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0006-valle-1-bab071ab3913e373",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "s3.pelotaya.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "6f570d82fbcf2d1b8ca8aec5295b7f27d57de7526ca88950de6e3f3abad7c576",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 72.02,
+          "aplicada_min": 77.131,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "aviso_titular": "Aviso al titular de derechos — Expediente EXP-2026-000001.\nLa señal con marca de agua LP26-PRA-OFI-S048211 se está retransmitiendo sin autorización desde 3 servidores: s1.pelotaya.test (203.0.113.10), s2.pelotaya.test (203.0.113.11), s3.pelotaya.test (198.51.100.77).\nEsa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.\nNota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse."
+}

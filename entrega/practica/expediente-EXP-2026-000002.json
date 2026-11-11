@@ -1,0 +1,252 @@
+{
+  "formato": "offside-expediente-v1",
+  "expediente": {
+    "id": "EXP-2026-000002",
+    "marca": "LP26-PRA-OFI-S077310",
+    "prefijo": "LP26-PRA-OFI",
+    "origen_prefijo": "Señal oficial del titular (plataforma propia)",
+    "clave": "LP26-PRA-OFI-S077310",
+    "abierto_min": 6
+  },
+  "partido": null,
+  "detecciones": [
+    {
+      "id": "D-0003",
+      "minuto": 6,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0003\",\"minuto\":6,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"live.golazo-libre.test\",\"ip_servidor\":\"198.51.100.20\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S077310\",\"captura\":{\"capturada_min\":6,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R0VCZSIFk8ZdS4KLyWGvZyBgTRG3Q/r7zN01hN4BLIEDSu1jEEsjRysDQA8huKd7Tc/NcICJPD9uel6f0LcElw==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}",
+      "sha256": "fb5132088f7fadeaf2d3dd16133c6de9f234fa575e9251a52cf1ed12a02c94b9",
+      "captura_sha256": "485b937379e696ae00920a738d03b3062ef615309dda5a10b2eb90a001f6665e",
+      "recibida_min": 6,
+      "recibida_iso": "2026-11-11T23:07:25.037Z"
+    },
+    {
+      "id": "D-0006",
+      "minuto": 16,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0006\",\"minuto\":16,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"live.golazo-libre.test\",\"ip_servidor\":\"198.51.100.20\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S077310\",\"captura\":{\"capturada_min\":16,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R+a4lbguTMvLWNMVx1/Dsgn3HifREFaYl4rA1Fx5aWvaUx86RoM0s5Lei2Sr4qt/qKrGlSt/mHW3TwWV6nZrLg==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}",
+      "sha256": "b1267e74a2b748388801d8ef1cde2b2c5a7ebd5e5dbbf7760a09d07d01684d45",
+      "captura_sha256": "476df8927ad67696430a56012f698616b16ce9dd741a912c9b0e2ab2ee65fa4d",
+      "recibida_min": 16,
+      "recibida_iso": "2026-11-11T23:09:05.048Z"
+    },
+    {
+      "id": "D-0010",
+      "minuto": 26,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0010\",\"minuto\":26,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"live.golazo-libre.test\",\"ip_servidor\":\"198.51.100.20\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S077310\",\"captura\":{\"capturada_min\":26,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RzX96ps9sQiyIc5ePHgQx51Fghind94JJWoBKNN3dBOw3v7km/qw+10fxqnDfDT73SaWxd7AAUo/T5w2+ics8w==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}",
+      "sha256": "7eb9c2715c110127d6e55f6745cced5e484f8753df869c9fb5cbccdd9fcbc7fd",
+      "captura_sha256": "335deef52e9f3ea119b518bc373389011d542ae75000b76acd3e92c28299a1d4",
+      "recibida_min": 26.01,
+      "recibida_iso": "2026-11-11T23:10:45.087Z"
+    },
+    {
+      "id": "D-0013",
+      "minuto": 36,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0013\",\"minuto\":36,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"live.golazo-libre.test\",\"ip_servidor\":\"198.51.100.20\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S077310\",\"captura\":{\"capturada_min\":36,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R2upwTDISNiE5DV9i9sltEKk2CIdz1R0wnf4kHU2VbgkwhLxQV9jdX71M8zyetiec03Pwson95PX0GhfLcYaKw==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}",
+      "sha256": "2cc20731e9b328fcc880063ca5a392deed3c4c63cd9193f00f69b663571fd50f",
+      "captura_sha256": "95c46e4fc8389fba2285acb68bfbf5e56a7bfdc820f9073c61c11c84870e727a",
+      "recibida_min": 36.01,
+      "recibida_iso": "2026-11-11T23:12:25.113Z"
+    },
+    {
+      "id": "D-0017",
+      "minuto": 46,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0017\",\"minuto\":46,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"live.golazo-libre.test\",\"ip_servidor\":\"198.51.100.20\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S077310\",\"captura\":{\"capturada_min\":46,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R9Zg4USD3lcsaelwCJyMDcrr/X2llgbMXZ0hYMF4s1HQe5T93ME1lkdYaX8MX9KjcSIimwm2hOFb5u14ncDDAg==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}",
+      "sha256": "25b977f3d226631ae2fe3c997b8f49d188d2ef9a837161717375d73fbc01189e",
+      "captura_sha256": "f1d7e43b8cac01917e90cff9a6cbd802f0ee31622476c0a4ab969c9d3c3ac744",
+      "recibida_min": 46.01,
+      "recibida_iso": "2026-11-11T23:14:05.203Z"
+    },
+    {
+      "id": "D-0022",
+      "minuto": 56,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0022\",\"minuto\":56,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"live.golazo-libre.test\",\"ip_servidor\":\"198.51.100.20\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S077310\",\"captura\":{\"capturada_min\":56,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R8j3BQ0hhvnXtE5SR+zi2vsQ/MbGmjkcRqjcf6tJcEM41Kx0OeMdbu+y5vOZexI/FJKV+Hq+KaNIOlSKfnYnXQ==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}",
+      "sha256": "f433b03fc1d5df6608a4aca65272b5d294f59d8fa100d5ab84161533453ed05a",
+      "captura_sha256": "ffeddb9173b097b7e760a1388ab086fed9bd5eb4b3c6fa931a716d7f029c5514",
+      "recibida_min": 56,
+      "recibida_iso": "2026-11-11T23:15:45.095Z"
+    },
+    {
+      "id": "D-0026",
+      "minuto": 66,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0026\",\"minuto\":66,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"live.golazo-libre.test\",\"ip_servidor\":\"198.51.100.20\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S077310\",\"captura\":{\"capturada_min\":66,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R3RN342iqKK4DBDFeKe0f54uQ8HgFSyNyEdvPqbP0qhOh91ydVWMrH8MCVbge/KvBAOswQ/KvJF3iky4HB2XjA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}",
+      "sha256": "32b01934fc2eab9cd623f3e43aea1830184d1d6be879677f17ef28542b8f8fe1",
+      "captura_sha256": "851ec43052c6e057945fb369b9a127034f6c7ce58ec2dcc12ded6e0aa645c611",
+      "recibida_min": 66,
+      "recibida_iso": "2026-11-11T23:17:25.121Z"
+    },
+    {
+      "id": "D-0031",
+      "minuto": 76,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0031\",\"minuto\":76,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"live.golazo-libre.test\",\"ip_servidor\":\"198.51.100.20\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S077310\",\"captura\":{\"capturada_min\":76,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RxL/ahq5TkDpI4hnMhA4rjMK8pHDlA5L8LLf4917mDW4erUqDyew6TAuagxu4jViJE+v+e6hD0f66Cqvh/Q4qA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}",
+      "sha256": "9e37b7d54bbc2d0c5cc13bf4bba8e45757043dd35d969bc303387e4ffe290571",
+      "captura_sha256": "64ff450fa777ea9ca2b7ce36c90bfe3c6f89a7254c091aec2db746371e969985",
+      "recibida_min": 76,
+      "recibida_iso": "2026-11-11T23:19:05.133Z"
+    },
+    {
+      "id": "D-0036",
+      "minuto": 86,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0036\",\"minuto\":86,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"live.golazo-libre.test\",\"ip_servidor\":\"198.51.100.20\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S077310\",\"captura\":{\"capturada_min\":86,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R+XMMDKAhiuuIXruzddy4e1nVO+IPUlwuK+/II1Im5fmLUFEVOPnyHo2NF6XcAhLfJLHQfvzmjmKKgCZvOvcgw==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}",
+      "sha256": "64a3de7f03b07d917394c5102a42954a86205bd5792ae6029caf02cc90d87da6",
+      "captura_sha256": "a37d351e9aea24382ed7c483772536ec713791b0e769b9bf87e0c44b1ef40432",
+      "recibida_min": 86.01,
+      "recibida_iso": "2026-11-11T23:20:45.180Z"
+    },
+    {
+      "id": "D-0040",
+      "minuto": 96,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0040\",\"minuto\":96,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"live.golazo-libre.test\",\"ip_servidor\":\"198.51.100.20\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S077310\",\"captura\":{\"capturada_min\":96,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RzCRJuWHMJax9R1Vo+Obt7636yFrwl0eQ/y3/qPxe/BLQr8ZZK9qKwZnqKa3zP+IIpzdpmdUQFrQ5HgMlxjF/A==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}",
+      "sha256": "195757cc3c370909020cae933afbc6941da842d74a07ca2ed6df6861c16a9099",
+      "captura_sha256": "cc4ea1fc07084930b6dd357bfc3adb38dc42ccd75433e4d6a896233618219572",
+      "recibida_min": 96.01,
+      "recibida_iso": "2026-11-11T23:22:25.240Z"
+    }
+  ],
+  "servidores": [
+    {
+      "host": "live.golazo-libre.test",
+      "ip": "198.51.100.20",
+      "asn": 64610,
+      "organizacion": "NubeRápida CDN (ficticia)",
+      "primera_deteccion_min": 6,
+      "riesgo": {
+        "tipo_recomendado": "dominio",
+        "cotenants": [
+          "tienda-mate-y-yerba.test",
+          "noticias-del-valle.test",
+          "turismo-cafayate.example",
+          "radio-comunitaria-fm.test",
+          "municipio-ejemplo.example",
+          "biblioteca-popular-norte.test",
+          "delivery-salta-ejemplo.test",
+          "clinica-veterinaria-sol.test",
+          "inmobiliaria-ejemplo.test",
+          "academia-de-ingles.test",
+          "feria-artesanal.example"
+        ],
+        "terceros": [
+          "tienda-mate-y-yerba.test",
+          "noticias-del-valle.test",
+          "turismo-cafayate.example",
+          "radio-comunitaria-fm.test",
+          "municipio-ejemplo.example",
+          "biblioteca-popular-norte.test",
+          "delivery-salta-ejemplo.test",
+          "clinica-veterinaria-sol.test",
+          "inmobiliaria-ejemplo.test",
+          "academia-de-ingles.test",
+          "feria-artesanal.example"
+        ],
+        "motivo": "La IP aloja 11 sitios ajenos al operador: se bloquea solo el dominio.",
+        "advertencias": []
+      }
+    }
+  ],
+  "medidas": [
+    {
+      "id": "M-0002",
+      "clase": "inicial",
+      "estado": "aprobada",
+      "creada_min": 6,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0002\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000002\",\"partido\":{\"id\":\"practica-01\",\"nombre\":\"Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-PRA-OFI-S077310\",\"prefijo\":\"LP26-PRA-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-PRA-OFI-S077310\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"live.golazo-libre.test\",\"ip\":\"198.51.100.20\",\"asn\":64610,\"organizacion\":\"NubeRápida CDN (ficticia)\"},\"servidores_previos\":[],\"riesgo\":{\"tipo_recomendado\":\"dominio\",\"cotenants\":[\"tienda-mate-y-yerba.test\",\"noticias-del-valle.test\",\"turismo-cafayate.example\",\"radio-comunitaria-fm.test\",\"municipio-ejemplo.example\",\"biblioteca-popular-norte.test\",\"delivery-salta-ejemplo.test\",\"clinica-veterinaria-sol.test\",\"inmobiliaria-ejemplo.test\",\"academia-de-ingles.test\",\"feria-artesanal.example\"],\"terceros\":[\"tienda-mate-y-yerba.test\",\"noticias-del-valle.test\",\"turismo-cafayate.example\",\"radio-comunitaria-fm.test\",\"municipio-ejemplo.example\",\"biblioteca-popular-norte.test\",\"delivery-salta-ejemplo.test\",\"clinica-veterinaria-sol.test\",\"inmobiliaria-ejemplo.test\",\"academia-de-ingles.test\",\"feria-artesanal.example\"],\"motivo\":\"La IP aloja 11 sitios ajenos al operador: se bloquea solo el dominio.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0003\",\"minuto\":6,\"capturada_min\":6,\"deteccion_sha256\":\"fb5132088f7fadeaf2d3dd16133c6de9f234fa575e9251a52cf1ed12a02c94b9\",\"captura_sha256\":\"485b937379e696ae00920a738d03b3062ef615309dda5a10b2eb90a001f6665e\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://golazo-libre.test/partido\",\"stream_url\":\"https://live.golazo-libre.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/golazolibre/status/2207\",\"minuto\":4},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/golazo-hoy\",\"minuto\":5}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"dominio\",\"objetivo\":\"live.golazo-libre.test\"},{\"proveedor_id\":\"andina\",\"tipo\":\"dominio\",\"objetivo\":\"live.golazo-libre.test\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"live.golazo-libre.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"dominio\",\"objetivo\":\"live.golazo-libre.test\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":6,\"hora_partido_iso\":\"2026-11-11T21:06:00.000Z\",\"hora_local_iso\":\"2026-11-11T23:07:25.037Z\"}}",
+      "huella": "4d9f8da7a46d456f3dc3070969f670c60446c852b22757dd1bbd3d915ac08df0",
+      "decision": {
+        "juez_id": "jueza-laura-ficticia",
+        "juez_nombre": "Dra. Laura Ficticia",
+        "juzgado_id": "jg-centro-3",
+        "juzgado_nombre": "Juzgado de Garantías N.º 3 (ficticio) — Distrito Judicial Centro",
+        "decidida_min": 7,
+        "decidida_iso": "2026-11-11T23:07:35.031Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000002-0002-andina-1-4d9f8da7a46d456f",
+          "proveedor_id": "andina",
+          "tipo": "dominio",
+          "objetivo": "live.golazo-libre.test",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "254e1930cc0446c0243bedb95b1902e9f71cb966ec0ebd0e3116fd2fd8b04c0a",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 7,
+          "aplicada_min": 9.222,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000002-0002-aurora-1-4d9f8da7a46d456f",
+          "proveedor_id": "aurora",
+          "tipo": "dominio",
+          "objetivo": "live.golazo-libre.test",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "82df6f5ced918f9c5a3b5350862640055bd8459c19da9e5be082686fa02a5d72",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 7,
+          "aplicada_min": 7.507,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000002-0002-cumbre-1-4d9f8da7a46d456f",
+          "proveedor_id": "cumbre",
+          "tipo": "dominio",
+          "objetivo": "live.golazo-libre.test",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "c084621f8454f18d6aa999861f0519e13122a2131f01e67b86598a675876e90a",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 7,
+          "aplicada_min": 9.321,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000002-0002-valle-1-4d9f8da7a46d456f",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "live.golazo-libre.test",
+          "vence_min": 105,
+          "juez_id": "jueza-laura-ficticia",
+          "juzgado_id": "jg-centro-3",
+          "firma": "1cb830d1842a8e9d6954cfafc5e4b18462d68f025b3961ef14265e7de1571bb6",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 7,
+          "aplicada_min": 13.613,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "aviso_titular": "Aviso al titular de derechos — Expediente EXP-2026-000002.\nLa señal con marca de agua LP26-PRA-OFI-S077310 se está retransmitiendo sin autorización desde 1 servidor: live.golazo-libre.test (198.51.100.20).\nEsa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.\nNota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse."
+}
