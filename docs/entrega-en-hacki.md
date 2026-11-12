@@ -26,7 +26,7 @@ Textos listos para pegar en [Hacki](https://hacki.crecimiento.build/h/competenci
 
 **Repositorio:** https://github.com/ainponce/offside
 
-**Video:** *(subir `salida/video/offside-demo.mp4`, 2:36, y pegar el link)*
+**Video:** *(subir `salida/video/offside-demo.mp4`, 2:47, y pegar el link)*
 
 ## Lo que exige el desafío
 
@@ -35,7 +35,7 @@ Textos listos para pegar en [Hacki](https://hacki.crecimiento.build/h/competenci
 | Repositorio público con el código | https://github.com/ainponce/offside | Publicado |
 | README: cómo correrlo, supuestos, qué existía antes | [README.md](../README.md) | Listo |
 | La plataforma corre el circuito completo contra el simulador en el partido final | [Guía del partido final](guia-partido-final.md) | Se hace el viernes |
-| Video de hasta 3 minutos con el circuito completo | `salida/video/offside-demo.mp4` (2:36); [guion](guion-video.md) | Grabado; falta subirlo |
+| Video de hasta 3 minutos con el circuito completo | `salida/video/offside-demo.mp4` (2:47); [guion](guion-video.md) | Grabado; falta subirlo |
 | `entrega/`: un expediente y la auditoría del partido final | `entrega/final` (hoy hay un ejemplo en `entrega/practica`) | Se exporta el viernes |
 | `entrega/`: propuesta normativa de una página | [entrega/propuesta-normativa.md](../entrega/propuesta-normativa.md) | Lista |
 | Pitch ante el jurado | [Pitch](pitch.md) | Listo para ensayar |
