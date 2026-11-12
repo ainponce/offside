@@ -83,9 +83,17 @@ Si el simulador se reinicia con Offside en marcha (el reloj vuelve atrás, cambi
 | Ruta | Para quién | Qué muestra |
 |---|---|---|
 | `/juez` | Juez (pensada para el celular) | La cola de medidas, cada una con cuatro verificaciones, el plan por proveedor y dos acciones: firmar o rechazar |
-| `/tablero` | Fiscalía | El partido en vivo: expedientes, saltos de servidor, estado por proveedor, daño evitado y auditoría |
+| `/tablero` | Fiscalía | El partido en vivo: expedientes, saltos de servidor (en carriles o en el mapa), estado por proveedor, daño evitado y auditoría |
 | `/expediente/:id` | Juez y fiscalía | El expediente completo, imprimible |
 | `/transparencia` | Público | Qué está bloqueado, por orden de quién y hasta cuándo |
+
+### Mapa de filtraciones
+
+En el tablero, «Mapa» muestra cada servidor en su ciudad y el recorrido de cada filtración: una curva por salto, con el minuto en que apareció el servidor nuevo. El anillo de cada servidor es la proporción de clientes del país que ya tiene el bloqueo aplicado; el borde punteado marca una IP compartida, donde solo se bloquea el dominio. Se hace zoom con la rueda, se arrastra, y al tocar un servidor se resalta su expediente; el botón de ampliar lo lleva a todo el tablero (Esc vuelve).
+
+La cartografía (Natural Earth 1:10M, dominio público) viaja con la app: no usa tiles ni internet, así que funciona igual en la red del partido final. Las Malvinas y las Georgias del Sur se dibujan como territorio argentino.
+
+Las IPs del desafío son de documentación (RFC 5737) y no tienen ubicación real. Por eso la ubicación es simulada y determinista ([src/server/geo.ts](src/server/geo.ts)): cada organización cae siempre en el mismo centro de datos ficticio de una ciudad argentina, según su nombre o su ASN. En producción la daría una base GeoIP con la IP real. La ubicación no entra en la instantánea que ve el juez ni en lo que se firma, así que no cambia ninguna huella. `pnpm tsx scripts/geodatos.ts` regenera la cartografía.
 
 ## Reglas de decisión
 
@@ -199,6 +207,7 @@ Con el error forzado (`pnpm ensayo -- --simulacro --permitir-colateral`), que bl
 | `src/server/reclamos.ts` | Reclamos y levantamientos |
 | `src/server/evidencia.ts`, `auditoria.ts`, `exportar.ts` | Hashes, registro encadenado y exportación |
 | `src/server/api.ts`, `vistas.ts`, `sesiones.ts` | API, textos que lee el juez e ingreso |
+| `src/server/geo.ts`, `src/web/mapa/` | Ubicación simulada de los servidores y mapa del tablero |
 | `src/compartido/tipos.ts` | Contrato entre el servidor y la interfaz |
 | `src/web/` | Interfaz (React) |
 | `herramientas/` | Verificador independiente y generador de escenarios |

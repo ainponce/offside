@@ -19,6 +19,7 @@ import type {
   VerificacionDTO,
 } from "../compartido/tipos.ts";
 import { type Contexto, nombreProveedor } from "./contexto.ts";
+import { ubicarServidor } from "./geo.ts";
 import {
   type FilaDeteccion,
   type FilaExpediente,
@@ -456,6 +457,7 @@ function servidorDTO(ctx: Contexto, s: FilaServidor): ServidorDTO {
     cobertura_pct: actual,
     cobertura_max_pct: Math.max(actual, coberturaMaxima(ctx, ordenes, total)),
     por_proveedor: porProveedor,
+    ubicacion: ubicarServidor(s),
   };
 }
 

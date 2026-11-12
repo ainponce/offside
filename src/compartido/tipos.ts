@@ -204,6 +204,20 @@ export interface ColaDTO {
 
 export type EstadoCelda = EstadoOrden | "sin_orden" | "sin_cobertura";
 
+/**
+ * Dónde está el servidor, a nivel de ciudad. Simulada: las IPs del desafío son de documentación y no
+ * tienen ubicación real (ver src/server/geo.ts). Orientativa: no es parte de lo que firma el juez.
+ */
+export interface UbicacionDTO {
+  /** Centro de datos ficticio; varios servidores pueden compartirlo. */
+  sitio: string;
+  ciudad: string;
+  provincia: string;
+  lat: number;
+  lon: number;
+  fuente: "simulada";
+}
+
 export interface ServidorDTO {
   id: number;
   host: string;
@@ -225,6 +239,7 @@ export interface ServidorDTO {
   cobertura_max_pct: number;
   /** Una celda por proveedor del registro, en el mismo orden que TableroDTO.proveedores. */
   por_proveedor: { proveedor_id: string; estado: EstadoCelda; tipo: TipoBloqueo | null; intento: number }[];
+  ubicacion: UbicacionDTO;
 }
 
 export interface ExpedienteResumenDTO {

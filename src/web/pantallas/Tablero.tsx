@@ -1,7 +1,7 @@
 // Tablero en vivo: se proyecta en el pitch (1440 y 1920). Una sola pantalla, sin
 // desplazamiento. La escala de 0 a 105 ordena el reloj, los carriles y el vencimiento.
 
-import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Fragment, Suspense, lazy, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { AuditoriaItemDTO, EstadoCelda, EstadoDTO, ExpedienteResumenDTO, ServidorDTO, TableroDTO, TipoBloqueo } from "../../compartido/tipos.ts";
 import { Cargando, Cortes, HashCompleto, Luz, Marca, PildoraTurno, RelojPartido, useFondo, useTitulo } from "../componentes/comunes.tsx";
@@ -26,6 +26,31 @@ import {
 import { sincronizarReloj, useMinuto } from "../nucleo/reloj.ts";
 import { salir, useSesion } from "../nucleo/sesion.ts";
 import { useVivo } from "../nucleo/vivo.ts";
+
+// El mapa trae su propia cartografía: se carga recién cuando alguien lo abre.
+const MapaFiltraciones = lazy(() => import("../mapa/Mapa.tsx"));
+
+type Vista = "carriles" | "mapa";
+const CLAVE_VISTA = "offside.tablero.vista";
+
+function useVista(): [Vista, (v: Vista) => void] {
+  const [vista, setVista] = useState<Vista>(() => {
+    try {
+      return localStorage.getItem(CLAVE_VISTA) === "mapa" ? "mapa" : "carriles";
+    } catch {
+      return "carriles";
+    }
+  });
+  const cambiar = (v: Vista) => {
+    setVista(v);
+    try {
+      localStorage.setItem(CLAVE_VISTA, v);
+    } catch {
+      // Sin almacenamiento, la elección dura lo que dure la pestaña.
+    }
+  };
+  return [vista, cambiar];
+}
 
 type Proveedor = TableroDTO["proveedores"][number];
 
@@ -78,6 +103,7 @@ export function Tablero() {
 
   // La auditoría trae las últimas 40 entradas: los traspasos de turno vistos se recuerdan.
   const traspasos = useRef(new Map<number, AuditoriaItemDTO>());
+  const [mapaAmpliado, setMapaAmpliado] = useState(false);
   const pico = useRef<number | null>(null);
   if (t) {
     for (const a of t.auditoria.ultimas) if (a.tipo === "traspaso_turno") traspasos.current.set(a.seq, a);
@@ -100,7 +126,7 @@ export function Tablero() {
   const ahora = t.estado.finalizado ? fin : Math.min(minuto, fin);
 
   return (
-    <div className="tablero">
+    <div className="tablero" data-mapa-ampliado={mapaAmpliado ? "" : undefined}>
       <CabezaTablero t={t} sinServidor={sinServidor} />
       <Cortes estado={t.estado} sinServidor={sinServidor} />
       {(t.estado.alertas.length > 0 || t.estado.simulacro) && <Avisos estado={t.estado} />}
@@ -111,7 +137,7 @@ export function Tablero() {
             <BloqueReloj estado={t.estado} cambios={cambios} ahora={ahora} />
             <Cifras t={t} cobertura={cobertura} />
           </section>
-          <Filtraciones t={t} ahora={ahora} />
+          <Filtraciones t={t} ahora={ahora} ampliado={mapaAmpliado} onAmpliar={setMapaAmpliado} />
         </div>
         <div className="tb-derecha">
           <DanoEvitado t={t} />
@@ -439,7 +465,22 @@ function distribuir(expedientes: ExpedienteResumenDTO[], disponible: number, pie
   return { ...chica, plegar: true, pie: 0, visibles, ocultos: expedientes.filter((e) => fuera.has(e.id)) };
 }
 
-function Filtraciones({ t, ahora }: { t: TableroDTO; ahora: number }) {
+function Filtraciones({
+  t,
+  ahora,
+  ampliado,
+  onAmpliar,
+}: {
+  t: TableroDTO;
+  ahora: number;
+  ampliado: boolean;
+  onAmpliar: (v: boolean) => void;
+}) {
+  const [vista, setVistaGuardada] = useVista();
+  const setVista = (v: Vista) => {
+    setVistaGuardada(v);
+    if (v !== "mapa") onAmpliar(false);
+  };
   const servidores = t.expedientes.reduce((a, e) => a + e.servidores.length, 0);
   const marcas = new Set(t.expedientes.map((e) => e.marca)).size;
   const rem = useRem();
@@ -481,25 +522,42 @@ function Filtraciones({ t, ahora }: { t: TableroDTO; ahora: number }) {
               : `${plural(marcas, "marca", "marcas")}, ${plural(servidores, "servidor", "servidores")}, ${plural(t.metricas.detecciones, "detección", "detecciones")}`}
           </span>
         </h2>
-        <ul className="tb-leyenda" aria-label="Estados de las órdenes">
-          <li>
-            <Luz tono="verde" /> Aplicada
-          </li>
-          <li>
-            <Luz tono="ambar" /> Recibida
-          </li>
-          <li>
-            <Luz tono="roja" /> Falló
-          </li>
-          <li>
-            <Luz tono="apagada" /> Venció
-          </li>
-          <li>2.º reenvío</li>
-        </ul>
+        {vista === "mapa" ? null : (
+          <ul className="tb-leyenda" aria-label="Estados de las órdenes">
+            <li>
+              <Luz tono="verde" /> Aplicada
+            </li>
+            <li>
+              <Luz tono="ambar" /> Recibida
+            </li>
+            <li>
+              <Luz tono="roja" /> Falló
+            </li>
+            <li>
+              <Luz tono="apagada" /> Venció
+            </li>
+            <li>2.º reenvío</li>
+          </ul>
+        )}
+        <div className="tb-vista" role="radiogroup" aria-label="Vista de las filtraciones">
+          {(["carriles", "mapa"] as const).map((v) => (
+            <button key={v} type="button" role="radio" aria-checked={vista === v} className="tb-vista-opcion" onClick={() => setVista(v)}>
+              {v === "carriles" ? "Carriles" : "Mapa"}
+            </button>
+          ))}
+        </div>
       </header>
-      <div ref={zona} className="tb-zona">
-        <Matriz t={t} d={d} rem={rem} ahora={ahora} />
-        <PieFiltraciones t={t} archivadas={archivadas} lineas={d.pie} />
+      <div ref={zona} className="tb-zona" data-vista={vista}>
+        {vista === "mapa" ? (
+          <Suspense fallback={<p className="mp-cargando">Cargando el mapa…</p>}>
+            <MapaFiltraciones t={t} ahora={ahora} ampliado={ampliado} onAmpliar={onAmpliar} />
+          </Suspense>
+        ) : (
+          <>
+            <Matriz t={t} d={d} rem={rem} ahora={ahora} />
+            <PieFiltraciones t={t} archivadas={archivadas} lineas={d.pie} />
+          </>
+        )}
       </div>
     </section>
   );
