@@ -6,7 +6,7 @@ Tres versiones según el tiempo que den, la coreografía de la demo y las pregun
 
 Nueve diapositivas con notas del orador: https://claude.ai/artifact/UvTJ5TLHwmLxAKvTiPfU8t
 
-Son privadas hasta que las compartas desde el menú Compartir de esa página; desde ahí también se descargan como PDF o PowerPoint, por si no hay red en la sala. En la última falta pegar el link al repositorio.
+Son privadas hasta que las compartas desde el menú Compartir de esa página; desde ahí también se descargan como PDF o PowerPoint, por si no hay red en la sala. La última lleva el link al repositorio, github.com/ainponce/offside.
 
 ## En una frase
 
