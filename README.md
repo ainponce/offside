@@ -43,6 +43,12 @@ El material oficial del desafío no está copiado en este repositorio. Este scri
 bash scripts/traer-simulador.sh
 ```
 
+Opcional, para ubicar IPs reales en el mapa: baja la base GeoIP gratuita de DB-IP (60 MB) a `datos/geoip/`, que git ignora. Sin ella todo funciona igual; las IPs del simulador tienen ubicación simulada.
+
+```bash
+pnpm geoip
+```
+
 ```bash
 pnpm build
 ```
@@ -71,6 +77,7 @@ SIMULADOR_URL=http://DIRECCION:PUERTO pnpm start -- --nuevo
 | `OFFSIDE_DB` | Base local | `datos/offside.db` |
 | `OFFSIDE_JUECES` | Jueces, claves de firma y usuarios. Las contraseñas de demostración son públicas; para el final, `pnpm jueces-locales` escribe `config/jueces.local.json` (fuera del repositorio) con contraseñas nuevas | `config/jueces.demo.json` |
 | `OFFSIDE_INTERVALO_MS` | Cada cuánto se consulta al simulador | `300` |
+| `OFFSIDE_GEOIP` | Base GeoIP en formato MaxMind (.mmdb) para ubicar IPs públicas en el mapa | `datos/geoip/dbip-city-lite.mmdb`, si existe |
 
 El simulacro (un bloqueo equivocado a propósito, para mostrar los reclamos) solo se activa con la bandera `--simulacro` en la línea de comandos (`pnpm start -- --simulacro`, `pnpm demo -- --simulacro`, `pnpm ensayo -- --simulacro`), nunca por una variable de entorno.
 
@@ -89,11 +96,28 @@ Si el simulador se reinicia con Offside en marcha (el reloj vuelve atrás, cambi
 
 ### Mapa de filtraciones
 
-En el tablero, «Mapa» muestra cada servidor en su ciudad y el recorrido de cada filtración: una curva por salto, con el minuto en que apareció el servidor nuevo. El anillo de cada servidor es la proporción de clientes del país que ya tiene el bloqueo aplicado; el borde punteado marca una IP compartida, donde solo se bloquea el dominio. Se hace zoom con la rueda, se arrastra, y al tocar un servidor se resalta su expediente; el botón de ampliar lo lleva a todo el tablero (Esc vuelve).
+En el tablero, «Mapa» muestra cada servidor en su ciudad, en cualquier país, y el recorrido de cada filtración: una curva por salto, con el minuto en que apareció el servidor nuevo. El anillo de cada servidor es la proporción de clientes del país que ya tiene el bloqueo aplicado; el borde punteado marca una IP compartida o una CDN, donde solo se bloquea el dominio. La cámara encuadra Argentina y todos los servidores, y se mueve sola cuando la filtración salta a otro país; «Argentina» y «Mundo» fijan la vista. Se hace zoom con la rueda, se arrastra, y al tocar un servidor se resalta su expediente; el botón de ampliar lo lleva a todo el tablero (Esc vuelve). «Ubicar una IP real» busca cualquier IP en la misma base y la marca en el mapa.
 
-La cartografía (Natural Earth 1:10M, dominio público) viaja con la app: no usa tiles ni internet, así que funciona igual en la red del partido final. Las Malvinas y las Georgias del Sur se dibujan como territorio argentino.
+La cartografía (Natural Earth, dominio público) viaja con la app: no usa tiles ni internet, así que funciona igual en la red del partido final. Sudamérica se dibuja a escala 1:10M y el resto del mundo a 1:110M. Las Malvinas y las Georgias del Sur se dibujan como territorio argentino.
 
-Las IPs del desafío son de documentación (RFC 5737) y no tienen ubicación real. Por eso la ubicación es simulada y determinista ([src/server/geo.ts](src/server/geo.ts)): cada organización cae siempre en el mismo centro de datos ficticio de una ciudad argentina, según su nombre o su ASN. En producción la daría una base GeoIP con la IP real. La ubicación no entra en la instantánea que ve el juez ni en lo que se firma, así que no cambia ninguna huella. `pnpm tsx scripts/geodatos.ts` regenera la cartografía.
+**De dónde sale la ubicación** ([src/server/geo.ts](src/server/geo.ts)):
+
+| IP | Ubicación |
+|---|---|
+| Pública | La base GeoIP local, a nivel de ciudad. Por defecto, IP to City Lite de [DB-IP](https://db-ip.com) (CC BY 4.0), que se baja con `pnpm geoip`; también sirve una GeoLite2 City con `OFFSIDE_GEOIP`. Es local a propósito: no le manda las IPs a un tercero y no depende de internet durante el partido. |
+| De documentación (RFC 5737), como todas las del simulador | Simulada y determinista: no existen en ninguna base. Cada organización cae siempre en el mismo centro de datos ficticio, en el país o en el exterior, según su nombre o su ASN. El mapa dice «simulada». |
+| Privada o reservada | Ninguna. El servidor se bloquea igual y aparece como «sin ubicar». |
+
+La ubicación no entra en la instantánea que ve el juez ni en lo que se firma, así que no cambia ninguna huella. `pnpm tsx scripts/geodatos.ts` regenera la cartografía.
+
+**Si el servidor está en otro país.** El bloqueo lo aplican los proveedores argentinos a sus clientes, así que funciona igual esté donde esté el servidor: la orden no depende de su ubicación. Lo que cambia es lo que se puede hacer además, y la ficha de cada servidor lo dice: en Argentina, la fiscalía puede pedirle la baja al hosting; en el exterior, la baja necesita cooperación internacional o el contacto de abuso del hosting. Los saltos entre países llegan al mismo expediente, porque los ata la marca de agua.
+
+**Si hay redirecciones o proxies.**
+
+- *Redirecciones.* Offside no persigue la página de entrada sino el video: la detección trae el host que sirve el stream, y la marca de agua viaja en la señal. Si la página redirige a otro dominio o el reproductor carga el stream desde otro servidor, ese servidor es el que se bloquea, y llega como ampliación del mismo expediente.
+- *CDN y proxies inversos.* La IP que se ve es la de un borde compartido con miles de sitios, y su ubicación es la del borde, no la del origen. Offside los reconoce por el ASN (Cloudflare, Akamai, Fastly y otras redes de borde), por el nombre de la organización y por el DNS pasivo, que muestra muchos dominios ajenos en la misma IP. En esos casos nunca bloquea la IP, bloquea el dominio, y el mapa avisa que el origen no se ve: hay que pedírselo a la CDN con la orden judicial.
+- *Un proxy propio del pirata* delante del origen (un servidor alquilado que solo reenvía) se ve como un servidor común. Bloquearlo corta la señal para quien mira, que es lo que importa durante el partido, y la ubicación es la del proxy. Si el pirata lo cambia, el proxy nuevo trae la misma marca de agua y llega como ampliación.
+- *Lo que no hace:* Offside no descarga los streams por su cuenta, así que no ve cabeceras HTTP (`Via`, `Server: cloudflare`), certificados ni latencias, que ayudarían a encontrar el origen detrás de un proxy. Esa información la tendría que traer el feed de detecciones.
 
 ## Reglas de decisión
 

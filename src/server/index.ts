@@ -17,6 +17,7 @@ import { instalarReclamos } from "./reclamos.ts";
 import { archivarBase as archivar } from "./reinicio.ts";
 import { Sesiones } from "./sesiones.ts";
 import { SimuladorHttp } from "./simulador.ts";
+import { cargarGeoIP } from "./geo.ts";
 
 const config = cargarConfig();
 const { jueces, operadores } = cargarJueces(config.juecesRuta);
@@ -86,6 +87,8 @@ const servidor = serve({ fetch: app.fetch, port: config.puerto, hostname: config
     console.log("  Usuarios de demostración (contraseñas públicas). Para el partido final: pnpm jueces-locales.");
   }
   console.log(`Simulador: ${config.simuladorUrl}`);
+  const geoip = cargarGeoIP();
+  console.log(geoip ? `GeoIP: ${geoip}` : "GeoIP: sin base; las IPs públicas quedan sin ubicación (pnpm geoip la baja).");
   if (config.simulacro) console.log("SIMULACRO ACTIVO: se va a forzar un bloqueo equivocado para mostrar los reclamos.");
 });
 

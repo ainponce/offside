@@ -205,17 +205,32 @@ export interface ColaDTO {
 export type EstadoCelda = EstadoOrden | "sin_orden" | "sin_cobertura";
 
 /**
- * Dónde está el servidor, a nivel de ciudad. Simulada: las IPs del desafío son de documentación y no
- * tienen ubicación real (ver src/server/geo.ts). Orientativa: no es parte de lo que firma el juez.
+ * Dónde está el servidor, a nivel de ciudad (ver src/server/geo.ts). Orientativa: no es parte de lo
+ * que firma el juez.
+ * - `geoip`: una IP pública, buscada en la base GeoIP local.
+ * - `simulada`: una IP de documentación (RFC 5737), como las del simulador, que no tiene ubicación real.
  */
 export interface UbicacionDTO {
-  /** Centro de datos ficticio; varios servidores pueden compartirlo. */
+  /** Clave para agrupar: varios servidores pueden compartir centro de datos o ciudad. */
   sitio: string;
-  ciudad: string;
-  provincia: string;
+  ciudad: string | null;
+  provincia: string | null;
+  /** ISO 3166-1 alfa-2. */
+  pais: string;
+  pais_nombre: string;
+  en_argentina: boolean;
   lat: number;
   lon: number;
-  fuente: "simulada";
+  /** Radio de precisión que declara la base, si lo declara. */
+  precision_km: number | null;
+  fuente: "geoip" | "simulada";
+}
+
+/** Qué base GeoIP está cargada. Sin base, las IPs públicas quedan sin ubicación. */
+export interface GeoEstadoDTO {
+  base: string | null;
+  /** Texto de atribución que pide la licencia de la base, si lo pide. */
+  atribucion: string | null;
 }
 
 export interface ServidorDTO {
@@ -239,7 +254,10 @@ export interface ServidorDTO {
   cobertura_max_pct: number;
   /** Una celda por proveedor del registro, en el mismo orden que TableroDTO.proveedores. */
   por_proveedor: { proveedor_id: string; estado: EstadoCelda; tipo: TipoBloqueo | null; intento: number }[];
-  ubicacion: UbicacionDTO;
+  /** null: IP privada o reservada, sin base GeoIP o que la base no conoce. */
+  ubicacion: UbicacionDTO | null;
+  /** Si la IP es de una CDN o un proxy inverso: la ubicación es la del borde, no la del origen. */
+  intermediario: string | null;
 }
 
 export interface ExpedienteResumenDTO {
@@ -302,6 +320,7 @@ export interface TableroDTO {
     medida_id: string | null;
   }[];
   auditoria: { entradas: number; cabecera: string; ultimas: AuditoriaItemDTO[] };
+  geo: GeoEstadoDTO;
 }
 
 export interface ExpedienteDTO extends ExpedienteResumenDTO {

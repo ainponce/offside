@@ -3903,6 +3903,10 @@ p.sello {
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
+.mp-vecino[data-anfitrion] {
+  fill: #f6f7f9;
+  stroke: rgb(21 23 28 / 0.5);
+}
 .mp-argentina {
   fill: var(--porcelana);
   stroke: rgb(21 23 28 / 0.62);
@@ -4157,17 +4161,14 @@ p.sello {
   color: var(--grafito);
   font-weight: 550;
 }
-.mp-ficha-lugar small {
-  margin-left: 0.375rem;
-  padding: 0.0625rem 0.375rem;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px var(--filete-2);
-  color: var(--tinta-3);
-  font-size: 0.65625rem;
-  font-weight: 550;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  vertical-align: 0.0625rem;
+.mp-ficha-jurisdiccion {
+  margin-top: 0.375rem !important;
+  color: var(--tinta-2);
+  font-size: 0.75rem;
+}
+.mp-ficha-jurisdiccion[data-exterior],
+.mp-ficha-jurisdiccion[data-cdn] {
+  color: var(--grafito);
 }
 .mp-ficha-datos {
   display: grid;
@@ -4210,12 +4211,20 @@ p.sello {
 }
 
 /* controles */
-.mp-controles {
+.mp-arriba {
   position: absolute;
   top: 0.875rem;
   left: 0.875rem;
   z-index: 3;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  max-width: calc(100% - min(21rem, 42%) - 2.5rem);
+}
+.mp-controles {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 2px;
   padding: 3px;
@@ -4269,6 +4278,116 @@ p.sello {
 }
 .mp-boton-texto {
   padding: 0 0.625rem;
+}
+.mp-boton[aria-pressed="true"]:not(:disabled) {
+  background: var(--porcelana);
+  box-shadow:
+    0 1px 2px rgb(21 23 28 / 0.12),
+    0 0 0 0.5px rgb(21 23 28 / 0.08);
+}
+
+/* consulta de una IP */
+.mp-consulta-caja {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 17.5rem;
+  max-width: 100%;
+}
+.mp-consulta {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 3px 3px 3px 0.625rem;
+  border-radius: 0.75rem;
+  background: var(--material);
+  -webkit-backdrop-filter: var(--material-filtro);
+  backdrop-filter: var(--material-filtro);
+  box-shadow: var(--sombra-panel);
+}
+.mp-consulta > svg {
+  flex: none;
+  width: 0.875rem;
+  height: 0.875rem;
+  fill: none;
+  stroke: var(--tinta-3);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.mp-consulta input {
+  flex: 1;
+  min-width: 0;
+  height: 1.875rem;
+  padding: 0 0.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--grafito);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.mp-consulta input::placeholder {
+  color: var(--tinta-3);
+}
+.mp-consulta:focus-within {
+  box-shadow:
+    var(--sombra-panel),
+    0 0 0 2px var(--grafito);
+}
+.mp-consulta-resultado {
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.875rem;
+  background: var(--porcelana);
+  box-shadow: var(--sombra-tarjeta);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  animation: mp-ficha 160ms var(--ease-salida);
+  user-select: text;
+  -webkit-user-select: text;
+}
+.mp-consulta-resultado p {
+  margin: 0;
+}
+.mp-consulta-lugar {
+  font-weight: 600;
+}
+.mp-consulta-lugar small,
+.mp-ficha-lugar small {
+  margin-left: 0.375rem;
+  padding: 0.0625rem 0.375rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--filete-2);
+  color: var(--tinta-3);
+  font-size: 0.65625rem;
+  font-weight: 550;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: 0.0625rem;
+}
+.mp-consulta-nota {
+  margin-top: 0.125rem !important;
+  color: var(--tinta-2);
+}
+
+/* sonda: la IP consultada */
+.mp-sonda-aro {
+  fill: rgb(255 255 255 / 0.7);
+  stroke: var(--grafito);
+  stroke-width: 1.5;
+}
+.mp-sonda-cruz {
+  stroke: var(--grafito);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+}
+.mp-sonda-centro {
+  fill: var(--grafito);
 }
 .mp-controles-sep {
   width: 1px;
@@ -4463,6 +4582,12 @@ p.sello {
   background: rgb(201 136 0 / 0.12);
   color: var(--ambar-tinta);
 }
+.mp-ruta-paises {
+  grid-column: 1 / -1;
+  color: var(--tinta-2);
+  font-size: 0.6875rem;
+  font-weight: 550;
+}
 .mp-ruta-marca {
   grid-column: 1 / -1;
   overflow: hidden;
@@ -4526,8 +4651,24 @@ p.sello {
   white-space: nowrap;
 }
 .mp-paso-ciudad {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
   color: var(--tinta-3);
   white-space: nowrap;
+}
+.mp-paso-ciudad abbr {
+  padding: 0 0.3125rem;
+  border-radius: 0.3125rem;
+  box-shadow: inset 0 0 0 1px var(--filete-2);
+  color: var(--grafito);
+  font-size: 0.625rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+.mp-paso-ciudad[data-sin-ubicar] {
+  font-style: italic;
 }
 .mp-paso-luz {
   width: 0.5rem;
@@ -4598,6 +4739,11 @@ p.sello {
 }
 .mp-rutas-pie p + p {
   margin-top: 0.375rem;
+}
+.mp-rutas-pie a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .mp-reloj {

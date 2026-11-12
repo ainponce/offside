@@ -19,7 +19,7 @@ import type {
   VerificacionDTO,
 } from "../compartido/tipos.ts";
 import { type Contexto, nombreProveedor } from "./contexto.ts";
-import { ubicarServidor } from "./geo.ts";
+import { estadoGeo, intermediarioDe, ubicarServidor } from "./geo.ts";
 import {
   type FilaDeteccion,
   type FilaExpediente,
@@ -458,6 +458,7 @@ function servidorDTO(ctx: Contexto, s: FilaServidor): ServidorDTO {
     cobertura_max_pct: Math.max(actual, coberturaMaxima(ctx, ordenes, total)),
     por_proveedor: porProveedor,
     ubicacion: ubicarServidor(s),
+    intermediario: intermediarioDe(s),
   };
 }
 
@@ -682,6 +683,7 @@ export function tableroDTO(ctx: Contexto, seq: number): TableroDTO {
       medida_id: r.medida_id,
     })),
     auditoria: { entradas: cabecera.seq, cabecera: cabecera.hash, ultimas: auditoriaItems(ctx, ultimas) },
+    geo: estadoGeo(),
   };
 }
 

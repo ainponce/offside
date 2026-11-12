@@ -6,6 +6,7 @@ import { type Context, Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import type { Rol } from "../compartido/tipos.ts";
 import type { Contexto } from "./contexto.ts";
+import { consultarIp } from "./geo.ts";
 import { type Resultado, aprobarMedida, rechazarMedida, reconsiderarMedida } from "./decisiones.ts";
 import type { Sesiones, UsuarioBase } from "./sesiones.ts";
 import { colaDTO, estadoDTO, expedienteDTO, tableroDTO, transparenciaDTO, usuarioDTO } from "./vistas.ts";
@@ -162,6 +163,14 @@ export function crearApi(
   });
 
   // --- tablero y expedientes ------------------------------------------------------------
+
+  // Consulta manual de la fiscalía: dónde está una IP cualquiera, con la misma base que el mapa.
+  app.get("/api/geo", (c) => {
+    const u = exigir(c, ["juez", "fiscalia"]);
+    if (u instanceof Response) return u;
+    const ip = (c.req.query("ip") ?? "").trim().slice(0, 64);
+    return c.json(consultarIp(ip));
+  });
 
   app.get("/api/tablero", (c) => {
     const u = exigir(c, ["juez", "fiscalia"]);

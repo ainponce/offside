@@ -8,3 +8,4 @@ salida
 .env
 .DS_Store
 *.log
+datos/geoip

@@ -1,6 +1,7 @@
-// Genera src/web/mapa/sudamerica.json: los países de Sudamérica, las Malvinas y las Georgias del
-// Sur, de Natural Earth (dominio público) vía world-atlas. Se corre una vez y el resultado queda
-// en el repositorio: el mapa no depende de internet ni de un servidor de mapas.
+// Genera src/web/mapa/mundo.json: todos los países del mundo (menos la Antártida) de Natural Earth
+// (dominio público) vía world-atlas. Sudamérica, las Malvinas y las Georgias del Sur salen de la
+// escala 1:10M, porque se ven de cerca; el resto, de la 1:110M (alcanza para ubicar un país). Se corre una vez y el resultado
+// queda en el repositorio: el mapa no depende de internet ni de un servidor de mapas.
 //
 //   pnpm tsx scripts/geodatos.ts
 
@@ -9,10 +10,14 @@ import { createRequire } from "node:module";
 import { feature } from "topojson-client";
 import type { Topology, GeometryCollection } from "topojson-specification";
 import type { Feature, FeatureCollection, Geometry, Position } from "geojson";
+import paises from "i18n-iso-countries";
 
 const require = createRequire(import.meta.url);
-const ruta = require.resolve("world-atlas/countries-10m.json");
-const topo = JSON.parse(readFileSync(ruta, "utf8")) as Topology<{ countries: GeometryCollection<{ name: string }> }>;
+type Mapa = Topology<{ countries: GeometryCollection<{ name: string }> }>;
+const leer = (archivo: string) => JSON.parse(readFileSync(require.resolve(`world-atlas/${archivo}`), "utf8")) as Mapa;
+const topo = leer("countries-10m.json");
+const topoMundo = leer("countries-110m.json");
+const ANTARTIDA = "010";
 
 // Códigos ISO 3166 numéricos. Las Malvinas (238) y las Georgias del Sur (239) se dibujan como
 // territorio argentino, igual que en la cartografía oficial.
@@ -35,9 +40,9 @@ const NOMBRES: Record<string, string> = {
 const ARGENTINA = new Set(["032", "238", "239"]);
 
 // Argentina con más detalle que los vecinos: se ve de cerca.
-const PASO = { argentina: 0.01, vecinos: 0.05 };
+const PASO = { argentina: 0.01, vecinos: 0.05, mundo: 0.1 };
 // Islotes que no se ven a la escala del mapa (en grados cuadrados del rectángulo que los encierra).
-const AREA_MINIMA = { argentina: 0.004, vecinos: 0.08 };
+const AREA_MINIMA = { argentina: 0.004, vecinos: 0.08, mundo: 0.4 };
 
 function area(a: Position[]): number {
   const xs = a.map((p) => p[0]!);
@@ -86,14 +91,23 @@ for (const f of todos.features) {
   const propia = ARGENTINA.has(id);
   const g = geometria(f.geometry, propia ? PASO.argentina : PASO.vecinos, propia ? AREA_MINIMA.argentina : AREA_MINIMA.vecinos);
   if (!g) continue;
-  features.push({ type: "Feature", id, properties: { nombre, argentina: ARGENTINA.has(id) }, geometry: g });
+  features.push({ type: "Feature", id, properties: { nombre, iso: paises.numericToAlpha2(id) ?? null, argentina: propia }, geometry: g });
+}
+
+const resto = feature(topoMundo, topoMundo.objects.countries) as FeatureCollection<Geometry, { name: string }>;
+for (const f of resto.features) {
+  const id = String(f.id);
+  if (NOMBRES[id] || id === ANTARTIDA || id === "undefined") continue;
+  const g = geometria(f.geometry, PASO.mundo, AREA_MINIMA.mundo);
+  if (!g) continue;
+  features.push({ type: "Feature", id, properties: { nombre: f.properties.name, iso: paises.numericToAlpha2(id) ?? null, argentina: false }, geometry: g });
 }
 
 const salida = {
   type: "FeatureCollection",
-  fuente: "Natural Earth 1:10M (dominio público), vía world-atlas 2.0.2",
+  fuente: "Natural Earth 1:10M y 1:110M (dominio público), vía world-atlas 2.0.2",
   features,
 };
-const destino = new URL("../src/web/mapa/sudamerica.json", import.meta.url);
+const destino = new URL("../src/web/mapa/mundo.json", import.meta.url);
 writeFileSync(destino, JSON.stringify(salida));
 console.log(`${features.length} países, ${(JSON.stringify(salida).length / 1024).toFixed(0)} KB`);
