@@ -1,7 +1,7 @@
 // Reloj del partido. El servidor informa el minuto cada tanto; entre un dato y
 // otro se interpola con la aceleración del simulador (minutos de partido por minuto real).
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { EstadoDTO } from "../../compartido/tipos.ts";
 
 interface Base {
@@ -52,12 +52,67 @@ export function aceleracion(): number {
   return base.acelerar;
 }
 
-/** Vuelve a dibujar el componente cada `ms` y devuelve el minuto interpolado. */
+// Un solo tic por intervalo para toda la página: todos los relojes que piden el mismo
+// intervalo leen el mismo valor, tomado en el mismo instante. Dos relojes en una pantalla
+// nunca marcan horas distintas.
+interface Tic {
+  valor: number;
+  oyentes: Set<() => void>;
+  id: number | undefined;
+}
+const tics = new Map<number, Tic>();
+
+function ticDe(ms: number): Tic {
+  let t = tics.get(ms);
+  if (!t) {
+    t = { valor: minutoAhora(), oyentes: new Set(), id: undefined };
+    tics.set(ms, t);
+  }
+  return t;
+}
+
+const suscriptores = new Map<number, (oyente: () => void) => () => void>();
+function suscriptorDe(ms: number): (oyente: () => void) => () => void {
+  let s = suscriptores.get(ms);
+  if (!s) {
+    s = (oyente) => {
+      const t = ticDe(ms);
+      t.oyentes.add(oyente);
+      if (t.id === undefined) {
+        t.valor = minutoAhora();
+        t.id = window.setInterval(() => {
+          t.valor = minutoAhora();
+          for (const o of [...t.oyentes]) o();
+        }, ms);
+      }
+      return () => {
+        t.oyentes.delete(oyente);
+        if (t.oyentes.size === 0 && t.id !== undefined) {
+          window.clearInterval(t.id);
+          t.id = undefined;
+        }
+      };
+    };
+    suscriptores.set(ms, s);
+  }
+  return s;
+}
+
+/** Vuelve a dibujar el componente cada `ms` y devuelve el minuto interpolado, el mismo para todos. */
 export function useMinuto(ms = 250): number {
-  const [, marcar] = useState(0);
+  return useSyncExternalStore(suscriptorDe(ms), () => ticDe(ms).valor);
+}
+
+/** Verdadero mientras `condicion(minutoAhora())` se cumpla; se revisa cada `ms`, sin redibujar si no cambia. */
+export function useCondicionMinuto(condicion: (minuto: number) => boolean, ms = 250): boolean {
+  const [valor, setValor] = useState(() => condicion(minutoAhora()));
+  const ref = useRef(condicion);
+  ref.current = condicion;
   useEffect(() => {
-    const id = window.setInterval(() => marcar((n) => (n + 1) % 1_000_000), ms);
+    const revisar = () => setValor(ref.current(minutoAhora()));
+    revisar();
+    const id = window.setInterval(revisar, ms);
     return () => window.clearInterval(id);
   }, [ms]);
-  return minutoAhora();
+  return valor;
 }

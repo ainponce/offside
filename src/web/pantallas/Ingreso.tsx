@@ -1,33 +1,30 @@
-// Ingreso con usuario y contraseña. La sesión queda en esta pestaña.
+// Ingreso de jueces y fiscalía. La sesión queda en esta pestaña: dos jueces pueden
+// estar abiertos en dos pestañas del mismo navegador.
 
 import { type FormEvent, useEffect, useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import type { EstadoDTO, RespuestaIngreso } from "../../compartido/tipos.ts";
-import { Marca, useTema, useTitulo } from "../componentes/comunes.tsx";
+import { Marca, RelojPartido, useFondo, useTitulo } from "../componentes/comunes.tsx";
 import { ErrorApi, guardarSesion, pedir } from "../nucleo/api.ts";
+import { partidoBreve } from "../nucleo/formato.ts";
+import { sincronizarReloj } from "../nucleo/reloj.ts";
 import { inicioDe, useSesion } from "../nucleo/sesion.ts";
 import { prepararSonido } from "../nucleo/sonido.ts";
+import { useVivo } from "../nucleo/vivo.ts";
 
 export function Ingreso() {
-  useTema("papel");
-  useTitulo("Offside · Ingreso");
+  useFondo("aluminio");
+  useTitulo("Offside, ingreso");
   const sesion = useSesion();
   const ubicacion = useLocation();
   const [usuario, setUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [estado, setEstado] = useState<EstadoDTO | null>(null);
+  const { datos: estado } = useVivo<EstadoDTO>(sesion ? null : "/api/estado", { publica: true, alRecibir: sincronizarReloj });
 
   useEffect(() => {
     prepararSonido();
-    let vigente = true;
-    pedir<EstadoDTO>("/api/estado", { publica: true })
-      .then((e) => vigente && setEstado(e))
-      .catch(() => {});
-    return () => {
-      vigente = false;
-    };
   }, []);
 
   if (sesion) {
@@ -39,6 +36,10 @@ export function Ingreso() {
   const ingresar = async (e: FormEvent) => {
     e.preventDefault();
     if (enviando) return;
+    if (!usuario.trim() || !contrasena) {
+      setError(!usuario.trim() && !contrasena ? "Escribí tu usuario y tu contraseña." : !usuario.trim() ? "Escribí tu usuario." : "Escribí tu contraseña.");
+      return;
+    }
     setEnviando(true);
     setError(null);
     try {
@@ -49,21 +50,27 @@ export function Ingreso() {
       });
       guardarSesion({ token: r.token, usuario: r.usuario });
     } catch (causa) {
-      setError(causa instanceof ErrorApi ? causa.message : "No se pudo ingresar.");
+      const codigo = causa instanceof ErrorApi ? causa.codigo : 0;
+      setError(codigo === 401 ? "Usuario o contraseña incorrectos." : causa instanceof ErrorApi ? causa.message : "No se pudo ingresar.");
       setEnviando(false);
     }
   };
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col px-5 pb-8 pt-[12vh]">
-      <Marca className="text-[3.25rem]" />
-      <p className="m-0 mt-4 font-serif text-[1.3125rem] leading-snug text-tinta">Órdenes de bloqueo en vivo, firmadas por el juez de turno.</p>
-      {estado?.partido && <p className="m-0 mt-2 text-[0.9375rem] leading-snug text-tinta-2">{estado.partido.nombre}</p>}
+    <main className="ingreso">
+      <section className="ingreso-tarjeta" aria-labelledby="titulo-ingreso">
+        <h1 id="titulo-ingreso" className="sr-only">
+          Ingreso a Offside
+        </h1>
+        <Marca />
+        <p className="ingreso-sub">Ingreso de jueces y fiscalía</p>
 
-      <form onSubmit={ingresar} className="mt-9 grid gap-4" noValidate>
-        <label className="block">
-          <span className="mb-1.5 block font-semibold">Usuario</span>
+        <form onSubmit={ingresar} noValidate>
+          <label className="campo-rotulo" htmlFor="usuario">
+            Usuario
+          </label>
           <input
+            id="usuario"
             className="campo"
             name="usuario"
             autoComplete="username"
@@ -75,31 +82,39 @@ export function Ingreso() {
             value={usuario}
             onChange={(e) => setUsuario(e.target.value)}
           />
-        </label>
-        <label className="block">
-          <span className="mb-1.5 block font-semibold">Contraseña</span>
-          <input className="campo" name="contrasena" type="password" autoComplete="current-password" required value={contrasena} onChange={(e) => setContrasena(e.target.value)} />
-        </label>
-        {error && (
-          <p role="alert" className="m-0 border-l-[3px] border-tinta bg-hundido px-3 py-2.5 font-semibold leading-snug">
-            {error}
+          <label className="campo-rotulo" htmlFor="contrasena">
+            Contraseña
+          </label>
+          <input
+            id="contrasena"
+            className="campo"
+            name="contrasena"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={contrasena}
+            onChange={(e) => setContrasena(e.target.value)}
+          />
+          {error && (
+            <p role="alert" className="ingreso-error">
+              {error}
+            </p>
+          )}
+          <button type="submit" className="boton boton-grafito" aria-disabled={enviando || undefined}>
+            <span>{enviando ? "Ingresando…" : "Ingresar"}</span>
+          </button>
+        </form>
+
+        {estado?.partido && (
+          <p className="ingreso-partido">
+            <span>{partidoBreve(estado.partido.nombre)}</span>
+            <RelojPartido estado={estado} />
           </p>
         )}
-        <button type="submit" className="boton boton-firma mt-1 h-[58px] text-[1.125rem]" disabled={enviando || !usuario.trim() || !contrasena}>
-          {enviando ? "Ingresando…" : "Ingresar"}
-        </button>
-      </form>
-
-      <p className="m-0 mt-8 text-[0.9375rem] leading-snug text-tinta-2">
-        Sin usuario se puede consultar el{" "}
-        <Link to="/transparencia" className="enlace font-semibold">
-          registro público de bloqueos
-        </Link>
-        .
-      </p>
-      <div className="flex-1" />
-      <p className="m-0 mt-10 text-[0.8125rem] leading-snug text-tinta-3">
-        Hackathon Argentina Space 2026, Desafío Fútbol. Los datos son ficticios y vienen del simulador oficial. La sesión vale solo para esta pestaña.
+      </section>
+      <p className="ingreso-pie">
+        Sin usuario se puede ver el <Link to="/transparencia">registro público de bloqueos</Link>.
+        <small>La sesión vale solo para esta pestaña. Datos ficticios del simulador oficial del desafío.</small>
       </p>
     </main>
   );

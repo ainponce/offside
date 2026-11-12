@@ -1,5 +1,5 @@
 // Formatos y rótulos compartidos por las pantallas. Los textos de fondo
-// (verificaciones, pedido, resúmenes de auditoría) los escribe el servidor.
+// (verificaciones, pedido, resúmenes de auditoría) los escribe el servidor y no se tocan.
 
 import type { ClaseMedida, EstadoCelda, EstadoMedida, TipoBloqueo } from "../../compartido/tipos.ts";
 
@@ -15,14 +15,27 @@ export function reloj(minuto: number): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-/** Minuto de un hecho: 23,42 -> "23,4". Va acompañado de la palabra "min" o del signo ′. */
+/** Minuto de un hecho: 23,42 -> "23,4". */
 export function minuto(m: number | null | undefined): string {
   return m == null ? "—" : dec1.format(m);
+}
+
+/** Minuto entero, para marcas de la escala: 37,5 -> "37". */
+export function minutoEntero(m: number): string {
+  return entero.format(Math.floor(m + 1e-6));
 }
 
 export function numero(n: number | null | undefined, decimales: 0 | 1 | 2 = 0): string {
   if (n == null) return "—";
   return decimales === 0 ? entero.format(n) : decimales === 1 ? dec1.format(n) : dec2.format(n);
+}
+
+/** Porcentaje con un decimal salvo en 0 y 100: "96,2", "100". */
+export function porcentaje(n: number | null | undefined): string {
+  if (n == null) return "—";
+  if (n <= 0) return "0";
+  if (n >= 100) return "100";
+  return dec1.format(n);
 }
 
 /** Tiempo real que representan `min` minutos de partido, como "0:06" o "2:14". */
@@ -31,10 +44,22 @@ export function tiempoReal(min: number, acelerar: number): string {
   return `${Math.floor(seg / 60)}:${String(seg % 60).padStart(2, "0")}`;
 }
 
+/** Espera en tiempo real, para la cabeza de la tarjeta: "hace 24 s", "hace 1:05". */
+export function haceReal(min: number, acelerar: number): string {
+  const seg = Math.max(0, Math.floor((min * 60) / (acelerar > 0 ? acelerar : 1)));
+  if (seg < 60) return `hace ${seg} s`;
+  return `hace ${Math.floor(seg / 60)}:${String(seg % 60).padStart(2, "0")}`;
+}
+
 export function clientes(n: number): string {
   if (n >= 1_000_000) return `${dec1.format(n / 1_000_000)} M`;
   if (n >= 1000) return `${entero.format(n / 1000)} mil`;
   return entero.format(n);
+}
+
+/** Millones con un decimal, sin unidad: 5 040 000 -> "5,0". */
+export function millones(n: number): string {
+  return dec1.format(n / 1_000_000);
 }
 
 export function horaLocal(iso: string | null | undefined): string {
@@ -44,20 +69,28 @@ export function horaLocal(iso: string | null | undefined): string {
   return d.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
 }
 
-export function fechaHoraLocal(iso: string | null | undefined): string {
+export function fechaLocal(iso: string | null | undefined): string {
   if (!iso) return "—";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "—";
-  return `${d.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" })} ${horaLocal(iso)}`;
+  return d.toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
 }
 
-export function huellaCorta(huella: string | null | undefined, largo = 16): string {
-  return huella ? huella.slice(0, largo) : "sin huella";
+/** Una huella en grupos de cuatro: "5200 1c2c ce78". `caracteres` 0 = completa. */
+export function enGrupos(huella: string | null | undefined, caracteres = 0): string {
+  const h = (huella ?? "").toLowerCase();
+  const parte = caracteres > 0 ? h.slice(0, caracteres) : h;
+  return parte.replace(/(.{4})(?=.)/g, "$1 ");
 }
 
-/** Los datos del simulador llevan "(ficticio)" en cada nombre; en los lugares chicos se omite. */
+/** Los datos del simulador llevan "(ficticio)" en cada nombre; se omite y se aclara una vez por pantalla. */
 export function sinFicticio(nombre: string | null | undefined): string {
   return (nombre ?? "").replace(/\s*\(fictici[oa]s?\)/gi, "").trim();
+}
+
+/** Nombre del proveedor para filas: "Cooperativa Cumbre Conecta (ficticio)" -> "Cumbre Conecta". */
+export function nombreProveedor(nombre: string): string {
+  return sinFicticio(nombre).replace(/^cooperativa\s+/i, "");
 }
 
 /** Nombre de una palabra para columnas angostas: "Conectividad Aurora" -> "Aurora". */
@@ -68,19 +101,54 @@ export function nombreBreve(nombre: string): string {
   return propias[0] ?? limpio;
 }
 
+/** "Juzgado de Garantías N.º 3 (ficticio) — Distrito Judicial Centro" -> "Juzgado de Garantías N.º 3, Distrito Judicial Centro". */
 export function juzgadoBreve(nombre: string | null | undefined): string {
-  return sinFicticio(nombre).split("—")[0]!.trim();
+  return sinFicticio(nombre)
+    .split(/\s+—\s+/)
+    .join(", ")
+    .trim();
+}
+
+/** Primer rótulo del host, para el recorrido: "s2.pelotaya.test" -> "s2". */
+export function hostCorto(host: string): string {
+  return host.split(".")[0] ?? host;
+}
+
+/** El nombre del partido sin el prefijo del simulador. */
+export function partidoBreve(nombre: string | null | undefined): string {
+  return sinFicticio(nombre).replace(/^partido de práctica\s+—\s+/i, "");
 }
 
 export function plural(n: number, uno: string, muchos: string): string {
   return `${entero.format(n)} ${n === 1 ? uno : muchos}`;
 }
 
+/** Une una lista con comas y una "y" final. */
+export function lista(items: string[]): string {
+  if (items.length <= 1) return items.join("");
+  return `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}`;
+}
+
 export const CLASE: Record<ClaseMedida, string> = {
   inicial: "Nueva filtración",
   ampliacion: "Ampliación",
   ratificacion: "Ratificación",
+  levantamiento: "Levantamiento",
+};
+
+/** Comienzo del nombre accesible de cada tarjeta. */
+export const CLASE_ACCESIBLE: Record<ClaseMedida, string> = {
+  inicial: "Nueva filtración",
+  ampliacion: "Ampliación",
+  ratificacion: "Ratificación",
   levantamiento: "Reclamo",
+};
+
+export const CLASE_ACTO: Record<ClaseMedida, string> = {
+  inicial: "medida inicial",
+  ampliacion: "ampliación",
+  ratificacion: "ratificación",
+  levantamiento: "levantamiento",
 };
 
 export const ESTADO_MEDIDA: Record<EstadoMedida, string> = {
@@ -91,21 +159,24 @@ export const ESTADO_MEDIDA: Record<EstadoMedida, string> = {
 };
 
 export const TIPO: Record<TipoBloqueo, string> = { ip: "IP", dominio: "Dominio" };
+export const TIPO_CELDA: Record<TipoBloqueo, string> = { ip: "IP", dominio: "Dom." };
 
-export type TonoEstado = "verde" | "ambar" | "roja" | "neutro" | "vacio";
+/** Luz de un estado: los tres colores, un anillo, una luz apagada o nada. */
+export type TonoLuz = "verde" | "ambar" | "roja" | "anillo" | "apagada" | "ninguna";
+export type TintaEstado = "verde" | "ambar" | "roja" | "neutra";
 
 /** Rótulo y luz de cada estado de orden. Verde, ámbar y rojo solo se usan acá y en las verificaciones. */
-export const ESTADO_ORDEN: Record<EstadoCelda, { rotulo: string; tono: TonoEstado }> = {
-  por_enviar: { rotulo: "Por enviar", tono: "ambar" },
-  recibida: { rotulo: "Recibida", tono: "ambar" },
-  aplicada: { rotulo: "Aplicada", tono: "verde" },
-  fallida: { rotulo: "Falló", tono: "roja" },
-  vencida: { rotulo: "Vencida", tono: "neutro" },
-  levantada: { rotulo: "Levantada", tono: "neutro" },
-  rechazada: { rotulo: "Rechazada", tono: "roja" },
-  no_enviada: { rotulo: "No enviada", tono: "roja" },
-  sin_orden: { rotulo: "Sin orden", tono: "vacio" },
-  sin_cobertura: { rotulo: "Sin cobertura", tono: "vacio" },
+export const ESTADO_ORDEN: Record<EstadoCelda, { rotulo: string; luz: TonoLuz; tinta: TintaEstado }> = {
+  por_enviar: { rotulo: "Por enviar", luz: "anillo", tinta: "neutra" },
+  recibida: { rotulo: "Recibida", luz: "ambar", tinta: "ambar" },
+  aplicada: { rotulo: "Aplicada", luz: "verde", tinta: "verde" },
+  fallida: { rotulo: "Falló", luz: "roja", tinta: "roja" },
+  rechazada: { rotulo: "Rechazada", luz: "roja", tinta: "roja" },
+  vencida: { rotulo: "Venció", luz: "apagada", tinta: "neutra" },
+  levantada: { rotulo: "Levantada", luz: "anillo", tinta: "neutra" },
+  no_enviada: { rotulo: "No enviada", luz: "ninguna", tinta: "neutra" },
+  sin_orden: { rotulo: "Sin orden", luz: "ninguna", tinta: "neutra" },
+  sin_cobertura: { rotulo: "Sin cobertura", luz: "ninguna", tinta: "neutra" },
 };
 
 export const ESTADO_EXPEDIENTE: Record<"pendiente" | "activo" | "rechazado" | "cerrado", string> = {
@@ -115,11 +186,12 @@ export const ESTADO_EXPEDIENTE: Record<"pendiente" | "activo" | "rechazado" | "c
   cerrado: "Cerrado",
 };
 
-export const VEREDICTO: Record<string, string> = {
-  licenciatario_autorizado: "Licenciatario autorizado",
-  no_es_la_senal: "No es la señal",
-  anomalia: "Anomalía",
-  pirata: "Pirata",
+/** Estado de un servidor previo, dicho en masculino ("contra s2, aprobado"). */
+export const ESTADO_PREVIO: Record<string, string> = {
+  aprobada: "aprobado",
+  pendiente: "sin firmar todavía",
+  rechazada: "rechazado",
+  sin_efecto: "sin efecto",
 };
 
 export const RED: Record<string, string> = {

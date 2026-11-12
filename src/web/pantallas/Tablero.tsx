@@ -1,550 +1,841 @@
-// Tablero en vivo: se proyecta durante el pitch (1440 px). Una fila por servidor,
-// agrupadas por filtración; una celda por proveedor. Los únicos colores son los estados.
+// Tablero en vivo: se proyecta en el pitch (1440 y 1920). Una sola pantalla, sin
+// desplazamiento. La escala de 0 a 105 ordena el reloj, los carriles y el vencimiento.
 
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import type { EstadoCelda, EstadoDTO, ExpedienteResumenDTO, ServidorDTO, TableroDTO, TipoBloqueo } from "../../compartido/tipos.ts";
-import { Cargando, Cortes, Huella, Marca, useTema, useTitulo } from "../componentes/comunes.tsx";
+import type { AuditoriaItemDTO, EstadoCelda, EstadoDTO, ExpedienteResumenDTO, ServidorDTO, TableroDTO, TipoBloqueo } from "../../compartido/tipos.ts";
+import { Cargando, Cortes, HashCompleto, Luz, Marca, PildoraTurno, RelojPartido, useFondo, useTitulo } from "../componentes/comunes.tsx";
+import { FichaAhora, MarcasRegla, TrazoFiltracion, fraccion, useAncho, usePrimerDibujo } from "../componentes/Escala.tsx";
+import { HostPartido } from "../componentes/Medida.tsx";
+import { cambiosDeTurno, coberturaMaxima } from "../nucleo/extras.ts";
 import {
-  ESTADO_EXPEDIENTE,
   ESTADO_ORDEN,
-  TIPO,
-  VEREDICTO,
+  TIPO_CELDA,
   clientes,
   juzgadoBreve,
-  minuto,
+  lista,
+  minutoEntero,
   nombreBreve,
   numero,
+  partidoBreve,
   plural,
+  porcentaje,
   reloj,
   sinFicticio,
 } from "../nucleo/formato.ts";
 import { sincronizarReloj, useMinuto } from "../nucleo/reloj.ts";
 import { salir, useSesion } from "../nucleo/sesion.ts";
-import { useFlujoAbierto, useVivo } from "../nucleo/vivo.ts";
+import { useVivo } from "../nucleo/vivo.ts";
 
 type Proveedor = TableroDTO["proveedores"][number];
 
+/** El tablero fija su propia escala: 1rem = 16 px a 1440 x 900 y crece con la pantalla. */
+function useEscalaTablero(): void {
+  useLayoutEffect(() => {
+    const raiz = document.documentElement;
+    raiz.dataset.pantalla = "tablero";
+    return () => {
+      delete raiz.dataset.pantalla;
+    };
+  }, []);
+}
+
+/** Tamaño de 1rem en px, al día con cada cambio de tamaño de la ventana. */
+function useRem(): number {
+  const [rem, setRem] = useState(16);
+  useLayoutEffect(() => {
+    const medir = () => setRem(parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
+    medir();
+    window.addEventListener("resize", medir);
+    return () => window.removeEventListener("resize", medir);
+  }, []);
+  return rem;
+}
+
+/** Cobertura al pitazo final, si el servidor no informa la máxima: la parte de los clientes con el bloqueo vigente al vencer. */
+function coberturaAlFinal(t: TableroDTO): number | null {
+  const total = t.proveedores.reduce((a, p) => a + p.clientes, 0);
+  const servidores = t.expedientes.flatMap((e) => e.servidores).filter((s) => s.medida_estado === "aprobada");
+  if (!servidores.length || total <= 0) return null;
+  const porServidor = servidores.map((s) => {
+    const cubiertos = s.por_proveedor.reduce((a, c) => {
+      const p = t.proveedores.find((x) => x.id === c.proveedor_id);
+      return a + (c.estado === "vencida" || c.estado === "aplicada" ? (p?.clientes ?? 0) : 0);
+    }, 0);
+    return (100 * cubiertos) / total;
+  });
+  return porServidor.reduce((a, b) => a + b, 0) / porServidor.length;
+}
+
 export function Tablero() {
-  useTema("noche");
-  useTitulo("Offside · Tablero");
+  useFondo("aluminio");
+  useEscalaTablero();
+  useTitulo("Offside, tablero");
   const sesion = useSesion();
-  const flujo = useFlujoAbierto();
   const { datos: t, error, sinServidor } = useVivo<TableroDTO>("/api/tablero", { alRecibir: (d) => sincronizarReloj(d.estado) });
+  // Un solo tic para toda la pantalla: el reloj grande, la ficha de la regla y los carriles marcan lo mismo.
+  const minuto = useMinuto(200);
+
+  // La auditoría trae las últimas 40 entradas: los traspasos de turno vistos se recuerdan.
+  const traspasos = useRef(new Map<number, AuditoriaItemDTO>());
+  const pico = useRef<number | null>(null);
+  if (t) {
+    for (const a of t.auditoria.ultimas) if (a.tipo === "traspaso_turno") traspasos.current.set(a.seq, a);
+    const c = t.metricas.cobertura_media_pct;
+    if (!t.estado.finalizado && c != null) pico.current = Math.max(pico.current ?? 0, c);
+  }
 
   if (!t) {
     return (
-      <div className="min-h-dvh">
+      <div className="tablero tablero-cargando">
         <Cortes estado={null} sinServidor={sinServidor} />
-        <Cargando texto={error && error.codigo !== 0 ? error.message : "Cargando el tablero…"} />
+        <Cargando texto={error && error.codigo !== 0 ? error.message : "Conectando con Offside…"} />
       </div>
     );
   }
 
-  const enVivo = flujo && !sinServidor && t.estado.conectado;
-  // La primera columna se achica un poco en proyectores de 1280 px para que la matriz entre sin desplazar.
-  const columnas = `minmax(clamp(236px, 19vw, 280px), 1.25fr) repeat(${t.proveedores.length}, minmax(100px, 1fr)) 124px`;
+  const cambios = cambiosDeTurno(t.estado, [...traspasos.current.values()]);
+  const cobertura = t.estado.finalizado ? (coberturaMaxima(t) ?? pico.current ?? coberturaAlFinal(t)) : t.metricas.cobertura_media_pct;
+  const fin = t.estado.fin_min || 105;
+  const ahora = t.estado.finalizado ? fin : Math.min(minuto, fin);
 
   return (
-    <div className="min-h-dvh pb-10">
-      <header className="border-b border-regla">
-        <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3 3xl:px-10">
-          <Marca className="text-[1.75rem]" />
-          <p className="m-0 min-w-[12rem] flex-1 truncate text-tinta-2" title={t.estado.partido?.nombre ?? undefined}>
-            {t.estado.partido?.nombre ?? "Sin partido"}
-          </p>
-          <Turno estado={t.estado} />
-          <span className="flex flex-none items-center gap-2 font-semibold" role="status">
-            <span aria-hidden="true" className={`inline-block size-2.5 rounded-full ${enVivo ? "animate-latir bg-firma" : "border-2 border-tinta-3"}`} />
-            {enVivo ? "En vivo" : sinServidor ? "Sin conexión" : !t.estado.conectado ? "Sin simulador" : "Reconectando"}
-          </span>
-          <nav className="flex flex-none items-center gap-4 text-[0.9375rem]">
-            {sesion?.usuario.rol === "juez" && (
-              <Link to="/juez" className="enlace font-semibold">
-                Mi cola
-              </Link>
-            )}
-            <Link to="/transparencia" className="enlace font-semibold">
-              Registro público
-            </Link>
-            <button type="button" className="boton boton-chico" onClick={() => void salir()}>
-              Salir
-            </button>
-          </nav>
-        </div>
-      </header>
+    <div className="tablero">
+      <CabezaTablero t={t} sinServidor={sinServidor} />
       <Cortes estado={t.estado} sinServidor={sinServidor} />
+      {(t.estado.alertas.length > 0 || t.estado.simulacro) && <Avisos estado={t.estado} />}
 
-      <div className="mx-auto max-w-[1760px] px-6 3xl:px-10">
-        <Marcador t={t} />
-        {t.estado.alertas.length > 0 && <Alertas alertas={t.estado.alertas} />}
-
-        <div className="mt-5 grid gap-x-10 gap-y-8 xl:grid-cols-[minmax(0,1fr)_360px] min-[1440px]:grid-cols-[minmax(0,1fr)_392px] 3xl:grid-cols-[minmax(0,1fr)_460px]">
-          <div className="min-w-0">
-            <section aria-label="Filtraciones y proveedores">
-              <div className="overflow-x-auto">
-                <div className="min-w-[780px]">
-                  <div className="grid items-end gap-x-2 pb-2" style={{ gridTemplateColumns: columnas }}>
-                    <h2 className="m-0 text-[1.25rem] font-extrabold leading-tight">
-                      Filtraciones
-                      <span className="ml-3 text-[0.9375rem] font-normal text-tinta-2">una fila por servidor, una celda por proveedor</span>
-                    </h2>
-                    {t.proveedores.map((p) => (
-                      <EncabezadoProveedor key={p.id} p={p} total={t.proveedores.reduce((a, x) => a + x.clientes, 0)} />
-                    ))}
-                    <p className="m-0 text-right text-[0.8125rem] leading-tight text-tinta-2">Clientes cubiertos y demora del primer bloqueo</p>
-                  </div>
-
-                  {t.expedientes.length === 0 ? (
-                    <p className="m-0 border-t border-regla py-10 text-[1.0625rem] text-tinta-2">
-                      Todavía no se detectó ninguna filtración. Cuando aparezca una retransmisión, se abre su expediente acá.
-                    </p>
-                  ) : (
-                    t.expedientes.map((e) => <Carril key={e.id} e={e} proveedores={t.proveedores} columnas={columnas} finalizado={t.estado.finalizado} />)
-                  )}
-                </div>
-              </div>
-              <Leyenda />
-            </section>
-
-            <div className="mt-10 grid gap-8 lg:grid-cols-2">
-              <Archivadas t={t} />
-              <Reclamos t={t} />
-            </div>
-          </div>
-
-          <aside className="grid min-w-0 content-start gap-8">
-            <DanoEvitado t={t} />
-            <Auditoria t={t} />
-          </aside>
+      <div className="tb-cuerpo">
+        <div className="tb-izquierda">
+          <section className="tb-franja" aria-label="Minuto y cifras del partido">
+            <BloqueReloj estado={t.estado} cambios={cambios} ahora={ahora} />
+            <Cifras t={t} cobertura={cobertura} />
+          </section>
+          <Filtraciones t={t} ahora={ahora} />
         </div>
+        <div className="tb-derecha">
+          <DanoEvitado t={t} />
+          <Registro t={t} />
+        </div>
+      </div>
 
-        <p className="m-0 mt-10 border-t border-regla pt-3 text-[0.8125rem] text-tinta-3">
-          Jueces, juzgados, proveedores y dominios son ficticios: los provee el simulador oficial del Desafío Fútbol.
+      <footer className="tb-pie">
+        <p>Nombres, IPs y juzgados ficticios del simulador oficial del desafío.</p>
+        <nav className="tb-nav" aria-label="Navegación">
+          {sesion?.usuario.rol === "juez" && <Link to="/juez">Mi cola</Link>}
+          <Link to="/transparencia">Registro público</Link>
+          <button type="button" className="boton-texto" onClick={() => void salir()}>
+            Salir
+          </button>
+        </nav>
+      </footer>
+    </div>
+  );
+}
+
+// --- cabecera ------------------------------------------------------------------------------------
+
+function CabezaTablero({ t, sinServidor }: { t: TableroDTO; sinServidor: boolean }) {
+  const e = t.estado;
+  const juez = e.jueces_de_turno[0] ?? null;
+  const simulador = sinServidor ? "Sin conexión con Offside" : e.conectado ? "Simulador conectado" : "Sin conexión con el simulador";
+  const partido = partidoBreve(e.partido?.nombre) || "Sin partido";
+  const titular = sinFicticio(e.partido?.titular_derechos);
+  return (
+    <header className="tb-cabeza">
+      <div className="tb-cabeza-izq">
+        <Marca />
+        <span className="tb-sep" aria-hidden="true" />
+        <p className="tb-partido" title={titular ? `${partido}. ${titular}` : partido}>
+          <b>{partido}</b>
+          {titular && <span>{titular}</span>}
         </p>
+      </div>
+      <div className="tb-cabeza-der">
+        <p className="tb-simulador">
+          <b>{simulador}</b>
+          <span className="num">tiempo ×{numero(e.acelerar, 2)}</span>
+        </p>
+        <span className="tb-sep" aria-hidden="true" />
+        {juez ? (
+          <>
+            <PildoraTurno deTurno texto={e.finalizado ? "Último turno" : "De turno"} />
+            <p className="tb-juez">
+              <b>{lista(e.jueces_de_turno.map((j) => j.nombre))}</b>
+              <span>{juzgadoBreve(juez.juzgado_nombre)}</span>
+            </p>
+          </>
+        ) : (
+          <p className="tb-juez">
+            <b>Sin juez de turno</b>
+          </p>
+        )}
+      </div>
+    </header>
+  );
+}
+
+function Avisos({ estado }: { estado: EstadoDTO }) {
+  return (
+    <div className="tb-avisos">
+      {estado.alertas.map((a, i) => (
+        <p key={`${i}-${a}`} className="tb-aviso" role="status">
+          <Luz tono="ambar" />
+          {a}
+        </p>
+      ))}
+      {estado.simulacro && <p className="tb-aviso">Simulacro de reclamos activo: hay un bloqueo equivocado a propósito.</p>}
+    </div>
+  );
+}
+
+// --- reloj y cifras ----------------------------------------------------------------------------------
+
+function BloqueReloj({ estado, cambios, ahora }: { estado: EstadoDTO; cambios: number[]; ahora: number }) {
+  const fin = estado.fin_min || 105;
+  return (
+    <div className="tb-reloj">
+      <p className="tb-rotulo">Minuto de partido</p>
+      <RelojPartido estado={estado} minuto={ahora} className="tb-reloj-cifra" />
+      <div className="tb-reloj-regla" aria-hidden="true">
+        <span className="tb-via">
+          <i style={{ transform: `scaleX(${fraccion(ahora, fin)})` }} />
+        </span>
+        {cambios.map((c) => (
+          <span key={c} className="tb-turno-marca" style={{ left: `${fraccion(c, fin) * 100}%` }} />
+        ))}
+        <span className="tb-via-numeros">
+          {[0, 15, 30, 45, 60, 75, 90, 105]
+            .filter((x) => x <= fin && !cambios.some((c) => Math.abs(c - x) < 7))
+            .map((x) => (
+              <span key={x} className="num" style={{ left: `${fraccion(x, fin) * 100}%` }} data-borde={x === 0 ? "inicio" : x >= fin ? "fin" : undefined}>
+                {x}
+              </span>
+            ))}
+          {cambios.map((c) => (
+            <span key={`t${c}`} className="tb-turno-rotulo" style={{ left: `${fraccion(c, fin) * 100}%` }}>
+              turno
+            </span>
+          ))}
+        </span>
+      </div>
+      <p className="tb-reloj-pie">
+        {estado.finalizado ? (
+          <span>Partido terminado. Todo venció a los {minutoEntero(fin)}′.</span>
+        ) : (
+          <>
+            <span>
+              Faltan <b className="num">{reloj(Math.max(0, fin - ahora))}</b>
+            </span>
+            <span>A los {minutoEntero(fin)}′ vence todo</span>
+          </>
+        )}
+      </p>
+    </div>
+  );
+}
+
+function Cifra({ rotulo, valor, unidad, pie }: { rotulo: string; valor: string; unidad?: string; pie: string }) {
+  return (
+    <div className="tb-cifra">
+      <p className="tb-rotulo">{rotulo}</p>
+      <p className="tb-cifra-valor">
+        <span className="cifra">{valor}</span>
+        {unidad && valor !== "—" && <small>{unidad}</small>}
+      </p>
+      <p className="tb-cifra-pie">{pie}</p>
+    </div>
+  );
+}
+
+function Cifras({ t, cobertura }: { t: TableroDTO; cobertura: number | null }) {
+  const m = t.metricas;
+  const total = t.proveedores.reduce((a, p) => a + p.clientes, 0);
+  const conOrdenes = new Set(
+    t.expedientes.flatMap((e) => e.servidores.flatMap((s) => s.por_proveedor.filter((c) => c.estado === "aplicada" || c.estado === "recibida").map((c) => c.proveedor_id))),
+  ).size;
+  const fin = t.estado.finalizado;
+  return (
+    <div className="tb-cifras">
+      <Cifra
+        rotulo="Primer bloqueo"
+        valor={m.tiempo_medio_primer_bloqueo_min == null ? "—" : reloj(m.tiempo_medio_primer_bloqueo_min)}
+        pie="promedio, desde la detección"
+      />
+      <Cifra
+        rotulo={fin ? "Cobertura máxima" : "Cobertura"}
+        valor={cobertura == null ? "—" : porcentaje(cobertura)}
+        unidad="%"
+        pie={total > 0 ? `de ${clientes(total)} de clientes` : "sin proveedores registrados"}
+      />
+      <Cifra
+        rotulo="Esperan firma"
+        valor={numero(m.medidas_pendientes)}
+        pie={m.medidas_pendientes === 0 ? (fin ? "no quedan medidas" : "nada espera al juez") : "medidas, del juez de turno"}
+      />
+      <Cifra
+        rotulo="Órdenes vigentes"
+        valor={numero(m.ordenes_activas)}
+        pie={fin ? `vencieron a los ${minutoEntero(t.estado.fin_min)}′` : m.ordenes_activas === 0 ? "ningún bloqueo activo" : `en ${plural(conOrdenes, "proveedor", "proveedores")}`}
+      />
+    </div>
+  );
+}
+
+// --- daño evitado ------------------------------------------------------------------------------------
+
+function DanoEvitado({ t }: { t: TableroDTO }) {
+  const grupos = useMemo(() => {
+    const porIp = new Map<string, { ip: string; organizacion: string | null; sitios: string[] }>();
+    for (const e of t.expedientes) {
+      for (const s of e.servidores) {
+        if (s.tipo_recomendado !== "dominio" || s.terceros.length === 0) continue;
+        const g = porIp.get(s.ip) ?? { ip: s.ip, organizacion: s.organizacion, sitios: [] };
+        for (const x of s.terceros) if (!g.sitios.includes(x)) g.sitios.push(x);
+        porIp.set(s.ip, g);
+      }
+    }
+    return [...porIp.values()];
+  }, [t.expedientes]);
+  const total = t.metricas.dano_evitado.sitios.length || grupos.reduce((a, g) => a + g.sitios.length, 0);
+  if (total === 0) {
+    return (
+      <section className="tb-panel tb-dano" aria-label="Daño evitado" data-vacio="">
+        <p className="tb-rotulo">Daño evitado</p>
+        <p className="tb-dano-titulo">Ningún sitio legítimo en riesgo todavía</p>
+        <p className="tb-dano-texto">Si un pirata comparte la IP con sitios legítimos, se bloquea solo su dominio y esos sitios aparecen acá, en línea.</p>
+      </section>
+    );
+  }
+  return (
+    <section className="tb-panel tb-dano" aria-label="Daño evitado">
+      <div className="tb-dano-cabeza">
+        <span className="tb-dano-cifra cifra">{numero(total)}</span>
+        <div>
+          <p className="tb-rotulo">Daño evitado</p>
+          <p className="tb-dano-titulo">{total === 1 ? "sitio legítimo sigue en línea" : "sitios legítimos siguen en línea"}</p>
+        </div>
+      </div>
+      <p className="tb-dano-texto">Compartían la IP con un sitio pirata. Un bloqueo automático por IP los habría tirado; se bloqueó solo el dominio.</p>
+      {grupos.map((g) => (
+        <div key={g.ip} className="tb-dano-grupo">
+          <p className="tb-dano-ip">
+            <b className="num">{g.ip}</b>
+            {g.organizacion && <span>{sinFicticio(g.organizacion)}</span>}
+          </p>
+          <p className="tb-dano-sitios">
+            {g.sitios.map((x, i) => (
+              <Fragment key={x}>
+                <span>
+                  <HostPartido texto={x} />
+                  {i < g.sitios.length - 1 ? "," : ""}
+                </span>
+                {i < g.sitios.length - 1 ? " " : ""}
+              </Fragment>
+            ))}
+          </p>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+// --- filtraciones --------------------------------------------------------------------------------------
+
+const ARCHIVO: Record<string, string> = {
+  licenciatario_autorizado: "licenciatario en su dominio",
+  no_es_la_senal: "marca de otro partido",
+  anomalia: "anomalía en la marca",
+};
+
+function resumenExpediente(e: ExpedienteResumenDTO): string {
+  const s = e.servidores[e.servidores.length - 1];
+  const saltos = e.servidores.length - 1;
+  if (!s) return "";
+  if (s.terceros.length > 0) {
+    return `IP compartida, ${plural(s.terceros.length, "sitio", "sitios")}${s.tipo_recomendado === "ip" ? ", bloqueo por IP" : ""}`;
+  }
+  return `IP exclusiva${saltos > 0 ? `, ${plural(saltos, "salto", "saltos")}` : ""}`;
+}
+
+// Altos de cada parte del panel, en rem. Tienen que coincidir con estilos.css.
+const CABEZA_REM = 1.75;
+const BORDE_REM = 0.0625;
+const REGLA_REM = 3.0625;
+const OCULTOS_REM = 1.75;
+/** Escalones de compactación: primero se achican las filas; por debajo de 2rem la IP pasa al título del host. */
+const FILAS: { fila: number; compacto: boolean }[] = [
+  { fila: 2.5, compacto: false },
+  { fila: 2.25, compacto: false },
+  { fila: 2.125, compacto: false },
+  { fila: 2, compacto: false },
+  { fila: 1.75, compacto: true },
+  { fila: 1.625, compacto: true },
+];
+/** Un expediente de más servidores que esto se pliega en el primero, una fila "+N saltos" y los dos últimos. */
+const MAX_SIN_PLEGAR = 3;
+
+function altoPie(lineas: number): number {
+  return lineas === 0 ? 0 : 1.3125 + lineas * 1.375 + (lineas - 1) * 0.25;
+}
+
+function renglones(e: ExpedienteResumenDTO, plegar: boolean): number {
+  const n = e.servidores.length;
+  return plegar && n > MAX_SIN_PLEGAR ? 4 : n;
+}
+
+interface Distribucion {
+  fila: number;
+  compacto: boolean;
+  plegar: boolean;
+  /** Renglones del pie (no llegaron al juez, reclamos). */
+  pie: number;
+  visibles: ExpedienteResumenDTO[];
+  ocultos: ExpedienteResumenDTO[];
+}
+
+/**
+ * Qué entra en el panel y cómo. En orden: achicar las filas, plegar los expedientes de muchos
+ * saltos, reducir el pie a un renglón y después sacarlo, y recién entonces ocultar expedientes:
+ * primero los de un solo servidor, del más viejo al más nuevo. Nunca se oculta uno que espera
+ * la firma ni el que más saltó (es el que cuenta "seguir la filtración").
+ */
+function distribuir(expedientes: ExpedienteResumenDTO[], disponible: number, pieNatural: number): Distribucion {
+  const alto = (lista: ExpedienteResumenDTO[], fila: number, plegar: boolean) =>
+    lista.reduce((a, e) => a + CABEZA_REM + renglones(e, plegar) * fila + BORDE_REM, 0);
+  const entra = (lista: ExpedienteResumenDTO[], fila: number, plegar: boolean, pie: number, conOcultos: boolean) =>
+    alto(lista, fila, plegar) + altoPie(pie) + (conOcultos ? OCULTOS_REM : 0) <= disponible + 0.01;
+
+  for (const f of FILAS) {
+    if (entra(expedientes, f.fila, false, pieNatural, false)) return { ...f, plegar: false, pie: pieNatural, visibles: expedientes, ocultos: [] };
+  }
+  const chica = FILAS[FILAS.length - 1]!;
+  for (const pie of [...new Set([pieNatural, Math.min(1, pieNatural), 0])]) {
+    if (entra(expedientes, chica.fila, true, pie, false)) return { ...chica, plegar: true, pie, visibles: expedientes, ocultos: [] };
+  }
+
+  const masSaltos = expedientes.reduce<ExpedienteResumenDTO | null>(
+    (mejor, e) => (e.servidores.length > 1 && (!mejor || e.servidores.length >= mejor.servidores.length) ? e : mejor),
+    null,
+  );
+  const cerrado = (e: ExpedienteResumenDTO) => e.estado === "cerrado" || e.estado === "rechazado";
+  const protegido = (e: ExpedienteResumenDTO) => e === masSaltos || e.estado === "pendiente" || e.servidores.some((s) => s.medida_estado === "pendiente");
+  const candidatos = expedientes
+    .filter((e) => !protegido(e))
+    .sort(
+      (a, b) =>
+        Number(a.servidores.length > 1) - Number(b.servidores.length > 1) ||
+        Number(!cerrado(a)) - Number(!cerrado(b)) ||
+        Number(a.servidores.some((s) => s.terceros.length > 0)) - Number(b.servidores.some((s) => s.terceros.length > 0)) ||
+        a.abierto_min - b.abierto_min,
+    );
+  const fuera = new Set<string>();
+  let visibles = expedientes;
+  for (const c of candidatos) {
+    if (entra(visibles, chica.fila, true, 0, fuera.size > 0)) break;
+    fuera.add(c.id);
+    visibles = expedientes.filter((e) => !fuera.has(e.id));
+  }
+  return { ...chica, plegar: true, pie: 0, visibles, ocultos: expedientes.filter((e) => fuera.has(e.id)) };
+}
+
+function Filtraciones({ t, ahora }: { t: TableroDTO; ahora: number }) {
+  const servidores = t.expedientes.reduce((a, e) => a + e.servidores.length, 0);
+  const marcas = new Set(t.expedientes.map((e) => e.marca)).size;
+  const rem = useRem();
+  const zona = useRef<HTMLDivElement | null>(null);
+  const [disponible, setDisponible] = useState(0);
+  useEffect(() => {
+    const el = zona.current;
+    if (!el) return;
+    const medir = () => setDisponible(el.getBoundingClientRect().height);
+    const ro = new ResizeObserver(medir);
+    ro.observe(el);
+    medir();
+    return () => ro.disconnect();
+  }, []);
+
+  const archivadas = useMemo(() => {
+    const porHost = new Map<string, { host: string; motivo: string; veces: number }>();
+    for (const a of t.archivadas) {
+      const previo = porHost.get(a.host);
+      if (previo) previo.veces += 1;
+      else porHost.set(a.host, { host: a.host, motivo: ARCHIVO[a.veredicto] ?? sinFicticio(a.motivo), veces: 1 });
+    }
+    return [...porHost.values()];
+  }, [t.archivadas]);
+  const pieNatural = (archivadas.length > 0 ? 1 : 0) + (t.reclamos.length > 0 ? 1 : 0);
+  const d: Distribucion =
+    disponible > 0
+      ? distribuir(t.expedientes, disponible / rem - REGLA_REM, pieNatural)
+      : { fila: 2.5, compacto: false, plegar: false, pie: pieNatural, visibles: t.expedientes, ocultos: [] };
+
+  return (
+    <section className="tb-panel tb-filtraciones" aria-label="Filtraciones">
+      <header className="tb-panel-cabeza">
+        <h2>
+          Filtraciones
+          <span>
+            {servidores === 0
+              ? "Sin filtraciones todavía"
+              : `${plural(marcas, "marca", "marcas")}, ${plural(servidores, "servidor", "servidores")}, ${plural(t.metricas.detecciones, "detección", "detecciones")}`}
+          </span>
+        </h2>
+        <ul className="tb-leyenda" aria-label="Estados de las órdenes">
+          <li>
+            <Luz tono="verde" /> Aplicada
+          </li>
+          <li>
+            <Luz tono="ambar" /> Recibida
+          </li>
+          <li>
+            <Luz tono="roja" /> Falló
+          </li>
+          <li>
+            <Luz tono="apagada" /> Venció
+          </li>
+          <li>2.º reenvío</li>
+        </ul>
+      </header>
+      <div ref={zona} className="tb-zona">
+        <Matriz t={t} d={d} rem={rem} ahora={ahora} />
+        <PieFiltraciones t={t} archivadas={archivadas} lineas={d.pie} />
+      </div>
+    </section>
+  );
+}
+
+function Matriz({ t, d, rem, ahora }: { t: TableroDTO; d: Distribucion; rem: number; ahora: number }) {
+  const [refEscala, ancho] = useAncho<HTMLDivElement>();
+  const fin = t.estado.fin_min || 105;
+  const sinAnimar = usePrimerDibujo();
+  const total = t.proveedores.reduce((a, p) => a + p.clientes, 0);
+  const enVivo = !t.estado.finalizado;
+
+  return (
+    <div className="tb-matriz" style={{ ["--fila" as string]: `${d.fila}rem` }} data-compacto={d.compacto ? "" : undefined}>
+      <div className="tb-grilla tb-regla">
+        <p className="tb-col-cab">
+          Servidor<small>e IP</small>
+        </p>
+        <div ref={refEscala} className="tb-regla-escala">
+          <MarcasRegla fin={fin} ahora={enVivo ? ahora : null} ocultarCerca={11} ancho={ancho} rem={rem} />
+        </div>
+        <div className="tb-celdas tb-prov-cab">
+          {t.proveedores.map((p) => (
+            <Encabezado key={p.id} p={p} total={total} />
+          ))}
+        </div>
+        <p className="tb-col-cab tb-col-demora">
+          Demora<small>a bloquear</small>
+        </p>
+      </div>
+
+      <div className="tb-carriles">
+        {t.expedientes.length === 0 ? (
+          <p className="tb-vacio">Todavía no se detectó ninguna filtración. Cuando aparezca una retransmisión pirata, se abre su expediente acá.</p>
+        ) : (
+          d.visibles.map((e) => (
+            <BloqueExpediente key={e.id} e={e} proveedores={t.proveedores} ancho={ancho} d={d} rem={rem} fin={fin} ahora={ahora} sinAnimar={sinAnimar} />
+          ))
+        )}
+        {d.ocultos.length > 0 && (
+          <p className="tb-ocultos">
+            {d.ocultos.every((e) => e.estado === "cerrado" || e.estado === "rechazado") ? "No entran en pantalla, ya cerrados: " : "No entran en pantalla: "}
+            {d.ocultos.map((e, i) => (
+              <Fragment key={e.id}>
+                {i > 0 ? ", " : ""}
+                <Link to={`/expediente/${encodeURIComponent(e.id)}`}>{e.id}</Link>
+              </Fragment>
+            ))}
+          </p>
+        )}
+      </div>
+
+      <div className="tb-capa-escala" aria-hidden="true">
+        <span className="tb-vence" />
+        {enVivo && <FichaAhora minuto={ahora} fin={fin} />}
       </div>
     </div>
   );
 }
 
-// --- cabecera y marcador ---------------------------------------------------------------------------
-
-function Turno({ estado }: { estado: EstadoDTO }) {
-  const jueces = estado.jueces_de_turno;
+function Encabezado({ p, total }: { p: Proveedor; total: number }) {
   return (
-    <p className="m-0 flex-none text-right leading-tight">
-      <span className="block text-[0.8125rem] text-tinta-2">{estado.finalizado ? "Partido terminado. Último turno" : "Juez de turno"}</span>
-      {jueces.length > 0 ? (
-        <span className="block font-bold">
-          {jueces.map((j) => j.nombre).join(", ")}
-          <span className="ml-2 font-normal text-tinta-2">{juzgadoBreve(jueces[0]!.juzgado_nombre)}</span>
-        </span>
-      ) : (
-        <span className="block font-bold">Nadie de turno</span>
-      )}
+    <p className="tb-prov" title={`${sinFicticio(p.nombre)}: ${clientes(p.clientes)} de clientes (${porcentaje((100 * p.clientes) / Math.max(1, total))} %)`}>
+      {nombreBreve(p.nombre)}
+      <small className="num">{clientes(p.clientes)}</small>
     </p>
   );
 }
 
-/** Una franja: reloj y avance del partido a la izquierda, cifras clave a la derecha. */
-function Marcador({ t }: { t: TableroDTO }) {
-  const m = t.metricas;
+/** Renglones de un carril: un servidor cada uno, o una fila "+N saltos" con los del medio de un expediente plegado. */
+type Renglon = { tipo: "servidor"; s: ServidorDTO } | { tipo: "saltos"; servidores: ServidorDTO[] };
+
+function BloqueExpediente(p: {
+  e: ExpedienteResumenDTO;
+  proveedores: Proveedor[];
+  ancho: number;
+  d: Distribucion;
+  rem: number;
+  fin: number;
+  ahora: number;
+  sinAnimar: boolean;
+}) {
+  const { e, d } = p;
+  const n = e.servidores.length;
+  const plegado = d.plegar && n > MAX_SIN_PLEGAR;
+  const filas: Renglon[] = plegado
+    ? [
+        { tipo: "servidor", s: e.servidores[0]! },
+        { tipo: "saltos", servidores: e.servidores.slice(1, n - 2) },
+        { tipo: "servidor", s: e.servidores[n - 2]! },
+        { tipo: "servidor", s: e.servidores[n - 1]! },
+      ]
+    : e.servidores.map((s) => ({ tipo: "servidor", s }));
+  // Con el carril plegado, los servidores del medio comparten el segundo renglón.
+  const filaDe = plegado ? (i: number) => (i === 0 ? 0 : i >= n - 2 ? i - (n - 4) : 1) : undefined;
   return (
-    <section className="grid items-end gap-x-10 gap-y-5 border-b border-regla pb-4 pt-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]" aria-label="Estado del partido">
-      <RelojConAvance t={t} />
-      <dl className="m-0 grid grid-cols-2 gap-y-4 sm:grid-cols-4">
-        <Cifra
-          rotulo="De la detección al primer bloqueo"
-          valor={m.tiempo_medio_primer_bloqueo_min == null ? "—" : numero(m.tiempo_medio_primer_bloqueo_min, 1)}
-          unidad={m.tiempo_medio_primer_bloqueo_min == null ? "" : "min"}
-          nota="promedio, en minutos de partido"
-        />
-        {t.estado.finalizado ? (
-          <Cifra rotulo="Cobertura media" valor="—" nota="los bloqueos vencieron con el final" />
-        ) : (
-          <Cifra
-            rotulo="Cobertura media"
-            valor={m.cobertura_media_pct == null ? "—" : numero(m.cobertura_media_pct, m.cobertura_media_pct % 1 === 0 ? 0 : 1)}
-            unidad={m.cobertura_media_pct == null ? "" : "%"}
-            nota="de los clientes, por servidor firmado"
-          />
-        )}
-        <Cifra rotulo="Medidas pendientes" valor={numero(m.medidas_pendientes)} nota={m.medidas_pendientes === 1 ? "espera al juez de turno" : "esperan al juez de turno"} />
-        <Cifra rotulo="Órdenes activas" valor={numero(m.ordenes_activas)} nota="recibidas o aplicadas ahora" />
-      </dl>
-      <p className="m-0 text-[0.9375rem] text-tinta-2 xl:col-span-2">
-        {plural(m.detecciones, "detección", "detecciones")} en {plural(m.expedientes, "expediente", "expedientes")}.{" "}
-        {plural(m.archivadas, "archivada", "archivadas")} sin llegar al juez. {plural(m.reclamos, "reclamo", "reclamos")}. Todo bloqueo vence en el minuto{" "}
-        {numero(t.estado.fin_min)}.{t.estado.acelerar !== 1 ? ` Simulador a ${numero(t.estado.acelerar, t.estado.acelerar % 1 === 0 ? 0 : 1)}×.` : ""}
-      </p>
-    </section>
-  );
-}
-
-function RelojConAvance({ t }: { t: TableroDTO }) {
-  const e = t.estado;
-  const ahora = useMinuto(200);
-  const m = e.finalizado ? e.fin_min : ahora;
-  const fin = e.fin_min > 0 ? e.fin_min : 1;
-  const avance = Math.min(100, Math.max(0, (m / fin) * 100));
-  const marcas: number[] = [];
-  for (let x = 0; x <= fin; x += 15) marcas.push(x);
-  const saltos = t.expedientes.flatMap((x) => x.servidores.map((s) => s.primera_deteccion_min));
-  return (
-    <div className="flex items-end gap-6">
-      <p className="m-0 flex-none leading-none">
-        <span className="block text-[0.8125rem] text-tinta-2">{e.finalizado ? "Final del partido" : "Minuto de partido"}</span>
-        <span className="muy-angosta cifras mt-1 block min-w-[4.3ch] text-[4.5rem] font-extrabold leading-[0.9]" role="timer">
-          {reloj(m)}
-        </span>
-      </p>
-      <div className="min-w-0 flex-1 pb-1.5">
-        <div className="relative h-9" aria-hidden="true">
-          {saltos.map((s, i) => (
-            <span key={`${s}|${i}`} className="absolute top-[7px] size-[7px] -translate-x-1/2 rounded-full border-[1.5px] border-tinta-2" style={{ left: `${Math.min(100, (s / fin) * 100)}%` }} />
-          ))}
-          <div className="absolute inset-x-0 bottom-0 h-[6px] bg-regla" />
-          <div className="absolute bottom-0 left-0 h-[6px] bg-tinta" style={{ width: `${avance}%` }} />
-          <div className="absolute bottom-[-5px] top-0 w-[3px] -translate-x-1/2 bg-firma" style={{ left: `${avance}%` }} />
-        </div>
-        <div className="relative mt-1.5 h-4 text-[0.75rem] text-tinta-3" aria-hidden="true">
-          {marcas.map((x) => (
-            <span key={x} className="cifras absolute -translate-x-1/2 first:translate-x-0" style={{ left: `${(x / fin) * 100}%` }}>
-              {x}
-            </span>
-          ))}
-          {marcas[marcas.length - 1] !== fin && <span className="cifras absolute right-0">{fin}</span>}
-        </div>
-        <p className="m-0 mt-1 text-[0.8125rem] text-tinta-3">Cada punto es un servidor nuevo detectado.</p>
-      </div>
-    </div>
-  );
-}
-
-function Cifra(p: { rotulo: string; valor: string; unidad?: string; nota: string }) {
-  return (
-    <div className="row-span-3 grid min-w-0 grid-rows-subgrid gap-y-1 border-l border-regla pl-4 first:border-l-0 first:pl-0 max-sm:odd:border-l-0 max-sm:odd:pl-0">
-      <dt className="self-end text-[0.8125rem] leading-tight text-tinta-2">{p.rotulo}</dt>
-      <dd className="m-0 whitespace-nowrap leading-none">
-        <span className="angosta cifras text-[2.75rem] font-extrabold leading-none">{p.valor}</span>
-        {p.unidad && <span className="angosta ml-1.5 text-[1.25rem] font-bold">{p.unidad}</span>}
-      </dd>
-      <dd className="m-0 text-[0.8125rem] leading-tight text-tinta-3">{p.nota}</dd>
-    </div>
-  );
-}
-
-/** Los sitios legítimos que comparten IP con un servidor pirata y siguen en línea. Es el punto del pitch. */
-function DanoEvitado({ t }: { t: TableroDTO }) {
-  const { sitios, senales_legitimas: senales } = t.metricas.dano_evitado;
-  const muchos = sitios.length > 18;
-  return (
-    <section className="flex min-w-0 gap-4" aria-label="Daño evitado">
-      <span className="linea-offside" aria-hidden="true" />
-      <div className="min-w-0 flex-1">
-        <h2 className="m-0 flex items-end gap-3 leading-none">
-          <span className="muy-angosta cifras text-[4.5rem] font-extrabold leading-[0.82] text-firma">{numero(sitios.length)}</span>
-          <span className="pb-0.5 text-[1.5rem] font-extrabold leading-none">Daño evitado</span>
-        </h2>
-        <p className="m-0 mt-2 text-[0.9375rem] leading-snug text-tinta-2">
-          {sitios.length === 1 ? "Sitio legítimo que habría caído" : "Sitios legítimos que habrían caído"} con un bloqueo automático por IP. Siguen en línea.
-        </p>
-        {sitios.length === 0 ? (
-          <p className="m-0 mt-3 leading-snug text-tinta-2">Hasta ahora ningún servidor pirata comparte IP con sitios ajenos.</p>
-        ) : (
-          <ul className={`m-0 mt-3 list-none p-0 font-semibold ${muchos ? "columns-2 gap-x-5 text-[0.875rem] leading-[1.5]" : "text-[1.0625rem] leading-[1.45]"}`}>
-            {sitios.map((s) => (
-              <li key={s} className="truncate" title={s}>
-                {s}
-              </li>
-            ))}
-          </ul>
-        )}
-        {senales.length > 0 && (
-          <p className="m-0 mt-3 text-[0.875rem] leading-snug text-tinta-2">
-            {senales.length === 1 ? "Señal legítima reconocida y no tocada:" : "Señales legítimas reconocidas y no tocadas:"}{" "}
-            <span className="font-semibold text-tinta wrap-anywhere">{senales.join(", ")}</span>
-          </p>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function Alertas({ alertas }: { alertas: string[] }) {
-  return (
-    <section role="alert" className="mt-5 flex items-stretch border-2 border-tinta" aria-label="Alertas">
-      <span aria-hidden="true" className="rayado w-5 flex-none" />
-      <ul className="m-0 flex-1 list-none px-4 py-2.5 text-[1.0625rem] font-semibold leading-snug">
-        {alertas.map((a, i) => (
-          <li key={`${a}|${i}`}>{a}</li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-// --- matriz ---------------------------------------------------------------------------------------------
-
-function EncabezadoProveedor({ p, total }: { p: Proveedor; total: number }) {
-  const parte = total > 0 ? (100 * p.clientes) / total : 0;
-  return (
-    <div className="min-w-0 leading-tight" title={`${sinFicticio(p.nombre)}: ${clientes(p.clientes)} clientes`}>
-      <p className="angosta m-0 truncate text-[1.0625rem] font-extrabold">{nombreBreve(p.nombre)}</p>
-      <p className="cifras m-0 text-[0.8125rem] text-tinta-2">
-        {numero(parte, parte < 10 ? 1 : 0)} % <span className="text-tinta-3">{p.capacidades.length === 1 ? `solo ${TIPO[p.capacidades[0]!].toLowerCase()}` : ""}</span>
-      </p>
-      <div className="mt-1 h-[3px] bg-regla" aria-hidden="true">
-        <div className="h-full bg-tinta-2" style={{ width: `${Math.max(parte, 1.5)}%` }} />
-      </div>
-    </div>
-  );
-}
-
-const ESTILO_LANE: Record<ExpedienteResumenDTO["estado"], string> = {
-  activo: "text-tinta",
-  pendiente: "text-firma",
-  rechazado: "text-tinta-2",
-  cerrado: "text-tinta-2",
-};
-
-/** Un expediente: la filtración (su marca) y los servidores por los que fue saltando. */
-function Carril({ e, proveedores, columnas, finalizado }: { e: ExpedienteResumenDTO; proveedores: Proveedor[]; columnas: string; finalizado: boolean }) {
-  return (
-    <section className="border-t-2 border-tinta-3 pb-3 pt-2.5" aria-label={`Expediente ${e.id}`}>
-      <header className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
-        <h3 className="m-0 font-mono text-[1.1875rem] font-semibold leading-tight">{e.marca}</h3>
-        <Link to={`/expediente/${encodeURIComponent(e.id)}`} className="enlace huella text-[0.9375rem]">
+    <div className="tb-expediente" data-estado={e.estado}>
+      <p className="tb-exp-cabeza">
+        <Link to={`/expediente/${encodeURIComponent(e.id)}`} className="tb-exp-id num">
           {e.id}
         </Link>
-        <span className={`font-bold ${ESTILO_LANE[e.estado]}`}>{ESTADO_EXPEDIENTE[e.estado]}</span>
-        <span className="text-[0.9375rem] text-tinta-2">
-          {e.servidores.length === 1 ? "1 servidor" : `${e.servidores.length} servidores: saltó ${plural(e.servidores.length - 1, "vez", "veces")}`}
+        <span className="huella tb-exp-marca">{e.marca}</span>
+        <span className="tb-exp-resumen">
+          {resumenExpediente(e)}
+          {e.estado === "pendiente" ? ", espera firma" : e.estado === "rechazado" ? ", rechazado" : ""}
         </span>
-        <span className="cifras ml-auto hidden text-[0.875rem] text-tinta-3 min-[1440px]:inline">abierto en el min {minuto(e.abierto_min)}</span>
-      </header>
-      <ol className="m-0 mt-2 list-none p-0">
-        {e.servidores.map((s, i) => (
-          <FilaServidor key={s.id} s={s} orden={i + 1} ultimo={i === e.servidores.length - 1} proveedores={proveedores} columnas={columnas} finalizado={finalizado} />
-        ))}
-      </ol>
-    </section>
-  );
-}
-
-function FilaServidor(p: { s: ServidorDTO; orden: number; ultimo: boolean; proveedores: Proveedor[]; columnas: string; finalizado: boolean }) {
-  const { s } = p;
-  const celdas = new Map(s.por_proveedor.map((c) => [c.proveedor_id, c]));
-  const firmada = s.medida_estado === "aprobada";
-  // Terminado el partido la cobertura vuelve a cero porque todo venció: se dice eso, no "0 %".
-  const vencido = p.finalizado && s.cobertura_pct === 0 && s.por_proveedor.some((c) => c.estado === "vencida");
-  return (
-    <li className="grid items-stretch gap-x-2" style={{ gridTemplateColumns: p.columnas }}>
-      <div className="relative flex min-w-0 gap-3 py-1.5">
-        {!p.ultimo && <span aria-hidden="true" className="absolute bottom-[-6px] left-[12px] top-[30px] w-[2px] bg-tinta-3" />}
-        <span
-          aria-hidden="true"
-          className={`cifras relative mt-[3px] grid size-[26px] flex-none place-items-center rounded-full text-[0.8125rem] font-bold ${
-            firmada ? "bg-tinta text-mesa" : "border-2 border-tinta-3 text-tinta-2"
-          }`}
-        >
-          {p.orden}
-        </span>
-        <div className="min-w-0 flex-1 leading-tight">
-          <p className="m-0 truncate text-[1.0625rem] font-bold" title={s.host}>
-            {s.host}
-          </p>
-          <p className="m-0 mt-0.5 truncate text-[0.8125rem] text-tinta-2">
-            <span className="huella">{s.ip}</span>
-            <span className="cifras ml-2.5">min {minuto(s.primera_deteccion_min)}</span>
-            <span className="ml-2.5 hidden min-[1440px]:inline">{plural(s.detecciones, "detección", "detecciones")}</span>
-          </p>
-          {s.terceros.length > 0 && (
-            <p className="m-0 mt-0.5 truncate text-[0.8125rem] font-semibold text-firma" title={s.terceros.join(", ")}>
-              {s.tipo_recomendado === "dominio"
-                ? `${plural(s.terceros.length, "sitio ajeno", "sitios ajenos")} a salvo`
-                : `${plural(s.terceros.length, "sitio ajeno", "sitios ajenos")} en la IP`}
-            </p>
-          )}
+      </p>
+      <div className="tb-exp-filas">
+        {filas.map((f) =>
+          f.tipo === "servidor" ? (
+            <FilaServidor key={f.s.id} s={f.s} proveedores={p.proveedores} compacto={d.compacto} anchoHost={11.5 * p.rem} rem={p.rem} />
+          ) : (
+            <FilaSaltos key="saltos" servidores={f.servidores} />
+          ),
+        )}
+        <div className="tb-exp-trazo">
+          <TrazoFiltracion
+            servidores={e.servidores}
+            g={{ ancho: p.ancho, fila: d.fila * p.rem, fin: p.fin, ahora: p.ahora }}
+            sinAnimar={p.sinAnimar}
+            filaDe={filaDe}
+            filas={filas.length}
+          />
         </div>
       </div>
-
-      {p.proveedores.map((prov) => {
-        const c = celdas.get(prov.id);
-        return <Celda key={prov.id} estado={c?.estado ?? "sin_orden"} tipo={c?.tipo ?? null} intento={c?.intento ?? 0} medida={s.medida_estado} />;
-      })}
-
-      <div className="flex flex-col items-end justify-center py-1.5 leading-tight">
-        {firmada ? (
-          <>
-            <span className={`angosta cifras text-[1.5rem] font-extrabold leading-none ${vencido ? "text-tinta-2" : ""}`}>
-              {vencido ? "Venció" : `${numero(s.cobertura_pct, s.cobertura_pct % 1 === 0 ? 0 : 1)} %`}
-            </span>
-            <span className="cifras mt-1 text-[0.8125rem] text-tinta-2">
-              {s.primer_bloqueo_min == null ? "sin bloqueo todavía" : `demora ${numero(s.primer_bloqueo_min, 1)} min`}
-            </span>
-          </>
-        ) : (
-          <span className={`text-[0.9375rem] font-bold ${s.medida_estado === "pendiente" ? "text-firma" : "text-tinta-2"}`}>
-            {s.medida_estado === "pendiente" ? "Espera la firma" : s.medida_estado === "rechazada" ? "Rechazada" : s.medida_estado === "sin_efecto" ? "Sin efecto" : "Sin medida"}
-          </span>
-        )}
-      </div>
-    </li>
-  );
-}
-
-const CELDA: Record<EstadoCelda, string> = {
-  aplicada: "bg-verde-luz text-[#052814]",
-  recibida: "bg-ambar-suave text-ambar ring-2 ring-inset ring-ambar-luz",
-  por_enviar: "text-ambar border-2 border-dashed border-ambar-luz",
-  fallida: "bg-roja-suave text-roja ring-2 ring-inset ring-roja-luz",
-  rechazada: "bg-roja-suave text-roja ring-2 ring-inset ring-roja-luz",
-  no_enviada: "bg-roja-suave text-roja ring-2 ring-inset ring-roja-luz",
-  vencida: "text-tinta-2 ring-1 ring-inset ring-regla",
-  levantada: "text-tinta-2 ring-1 ring-inset ring-regla",
-  sin_cobertura: "rayado-suave text-tinta-2 ring-1 ring-inset ring-regla",
-  sin_orden: "text-tinta-3 border border-dashed border-regla",
-};
-
-const INTENTO = "angosta cifras rounded-full border border-tinta-2 bg-mesa px-1.5 text-[0.75rem] font-bold leading-[1.35] text-tinta";
-
-function Celda(p: { estado: EstadoCelda; tipo: TipoBloqueo | null; intento: number; medida: ServidorDTO["medida_estado"] }) {
-  let rotulo = ESTADO_ORDEN[p.estado].rotulo;
-  if (p.estado === "sin_orden") rotulo = p.medida === "pendiente" ? "Espera firma" : "Sin orden";
-  const tipo = p.tipo ? (p.tipo === "ip" ? "por IP" : "por dominio") : null;
-  return (
-    <div className="relative py-1.5" title={p.intento > 1 ? `Intento ${p.intento}: la orden anterior falló y se reenvió con una nueva` : undefined}>
-      <div className={`flex h-full min-h-[46px] flex-col justify-center rounded-[4px] px-2.5 leading-tight transition-colors duration-300 ${CELDA[p.estado]}`}>
-        <span className="angosta truncate text-[1rem] font-extrabold">{rotulo}</span>
-        {tipo && <span className="angosta truncate text-[0.8125rem] font-semibold opacity-85">{tipo}</span>}
-      </div>
-      {/* El número de intento va montado sobre la esquina, para no quitarle lugar al estado. */}
-      {p.intento > 1 && <span className={`absolute right-[-3px] top-0 ${INTENTO}`}>{p.intento}.º</span>}
     </div>
   );
 }
 
-function Leyenda() {
-  const items: { estado: EstadoCelda; texto: string }[] = [
-    { estado: "por_enviar", texto: "firmada, saliendo" },
-    { estado: "recibida", texto: "el proveedor la tiene" },
-    { estado: "aplicada", texto: "bloqueo activo" },
-    { estado: "fallida", texto: "se reenvía con una orden nueva" },
-    { estado: "vencida", texto: "terminó con el partido" },
-    { estado: "sin_cobertura", texto: "no se envía para no afectar a terceros" },
-  ];
+// --- host recortado por el medio ------------------------------------------------------------------
+
+let lienzo: CanvasRenderingContext2D | null | undefined;
+function anchoTexto(texto: string, fuente: string): number {
+  if (lienzo === undefined) lienzo = typeof document !== "undefined" ? document.createElement("canvas").getContext("2d") : null;
+  if (!lienzo) return texto.length * 9;
+  lienzo.font = fuente;
+  return lienzo.measureText(texto).width;
+}
+
+/**
+ * Un host largo se recorta por el medio: el primer rótulo, "…" y el dominio registrable
+ * ("cdn-edge-04…verpartido.test"), que es lo que lo identifica. El host completo va en el título.
+ */
+function hostAlMedio(host: string, anchoPx: number, fuente: string): string {
+  if (anchoPx <= 0 || anchoTexto(host, fuente) <= anchoPx) return host;
+  const rotulos = host.split(".");
+  if (rotulos.length > 2) {
+    const dominio = rotulos.slice(-2).join(".");
+    const primero = rotulos[0]!;
+    for (let k = primero.length; k >= 3; k -= 1) {
+      const c = `${primero.slice(0, k)}…${dominio}`;
+      if (anchoTexto(c, fuente) <= anchoPx) return c;
+    }
+  }
+  for (let quedan = host.length - 1; quedan > 6; quedan -= 1) {
+    const atras = Math.ceil(quedan * 0.6);
+    const c = `${host.slice(0, quedan - atras)}…${host.slice(-atras)}`;
+    if (anchoTexto(c, fuente) <= anchoPx) return c;
+  }
+  return host;
+}
+
+function FilaServidor({ s, proveedores, compacto, anchoHost, rem }: { s: ServidorDTO; proveedores: Proveedor[]; compacto: boolean; anchoHost: number; rem: number }) {
+  const pendiente = s.medida_estado === "pendiente";
+  const visible = hostAlMedio(s.host, anchoHost, `560 ${rem}px "Archivo Variable", system-ui, sans-serif`);
   return (
-    <ul className="m-0 mt-3 flex list-none flex-wrap gap-x-6 gap-y-2 border-t border-regla p-0 pt-3 text-[0.8125rem] text-tinta-2">
-      {items.map((i) => (
-        <li key={i.estado} className="flex items-center gap-2">
-          <span className={`angosta inline-block rounded-[3px] px-1.5 py-[1px] text-[0.8125rem] font-extrabold ${CELDA[i.estado]}`}>{ESTADO_ORDEN[i.estado].rotulo}</span>
-          {i.texto}
-        </li>
+    <div className="tb-grilla tb-servidor">
+      <p className="tb-host" title={compacto || visible !== s.host ? `${s.host}, ${s.ip}` : undefined}>
+        <span>{visible}</span>
+        {!compacto && <small className="num">{s.ip}</small>}
+      </p>
+      <span />
+      <div className="tb-celdas">
+        {proveedores.map((p) => {
+          const c = s.por_proveedor.find((x) => x.proveedor_id === p.id);
+          const estado: EstadoCelda = !c ? "sin_orden" : pendiente && c.estado === "sin_orden" ? "por_enviar" : c.estado;
+          return <Celda key={p.id} estado={estado} tipo={c?.tipo ?? s.tipo_recomendado} intento={c?.intento ?? 0} proveedor={sinFicticio(p.nombre)} />;
+        })}
+      </div>
+      <p className="tb-demora">
+        {s.primer_bloqueo_min != null ? (
+          <span className="cifra">{reloj(s.primer_bloqueo_min)}</span>
+        ) : pendiente ? (
+          <small>espera</small>
+        ) : s.medida_estado === "rechazada" ? (
+          <small>rechazada</small>
+        ) : (
+          <small>—</small>
+        )}
+      </p>
+    </div>
+  );
+}
+
+/** La fila que resume los saltos del medio de un expediente plegado; el trazo sigue por ella. */
+function FilaSaltos({ servidores }: { servidores: ServidorDTO[] }) {
+  const n = servidores.length;
+  return (
+    <div className="tb-grilla tb-servidor tb-saltos">
+      <p className="tb-host" title={servidores.map((s) => s.host).join(", ")}>
+        <span>+{plural(n, "salto", "saltos")}</span>
+      </p>
+      <span />
+      <span />
+      <span />
+    </div>
+  );
+}
+
+/** Celda sólida por proveedor; al cambiar de estado el color nuevo barre de izquierda a derecha. */
+function Celda({ estado, tipo, intento, proveedor }: { estado: EstadoCelda; tipo: TipoBloqueo | null; intento: number; proveedor: string }) {
+  const clave = `${estado}|${tipo}|${intento}`;
+  const [capas, setCapas] = useState<{ debajo: string | null; arriba: string }>({ debajo: null, arriba: clave });
+  useEffect(() => {
+    setCapas((c) => (c.arriba === clave ? c : { debajo: c.arriba, arriba: clave }));
+  }, [clave]);
+
+  if (estado === "sin_orden") return <span className="celda celda-vacia" />;
+  if (estado === "sin_cobertura") {
+    return (
+      <span className="celda celda-raya" title="Sin cobertura por seguridad">
+        —
+      </span>
+    );
+  }
+  const titulo = `${proveedor}: ${ESTADO_ORDEN[estado].rotulo}${intento > 1 ? `, intento ${intento}` : ""}`;
+  const capa = (k: string, barre: boolean) => {
+    const [e, ti, i] = k.split("|") as [EstadoCelda, string, string];
+    const n = Number(i);
+    if (e === "sin_orden" || e === "sin_cobertura") return <span key={`v${k}`} className="celda-capa" data-estado="vacia" />;
+    return (
+      <span key={k} className="celda-capa" data-estado={e} data-barre={barre ? "" : undefined} onAnimationEnd={barre ? () => setCapas({ debajo: null, arriba: k }) : undefined}>
+        {ti === "ip" || ti === "dominio" ? TIPO_CELDA[ti as TipoBloqueo] : "—"}
+        {n > 1 && <sup className="num">{n}.º</sup>}
+      </span>
+    );
+  };
+  return (
+    <span className="celda" title={titulo} aria-label={titulo} role="img">
+      {capas.debajo && capa(capas.debajo, false)}
+      {capa(capas.arriba, capas.debajo != null)}
+    </span>
+  );
+}
+
+function PieFiltraciones({ t, archivadas, lineas }: { t: TableroDTO; archivadas: { host: string; motivo: string; veces: number }[]; lineas: number }) {
+  if (lineas === 0 || (archivadas.length === 0 && t.reclamos.length === 0)) return null;
+  const grupoArchivadas = archivadas.length > 0 && (
+    <>
+      <b>No llegaron al juez</b>
+      {archivadas.map((a) => (
+        <span key={a.host} className="tb-archivada">
+          <em>{a.host}</em>, {a.motivo}
+          {a.veces > 1 ? `, ${a.veces} veces` : ""}
+        </span>
       ))}
-      <li className="flex items-center gap-2">
-        <span className={`inline-block ${INTENTO}`}>2.º</span>
-        segundo intento, tras una falla
-      </li>
-    </ul>
+    </>
   );
-}
-
-// --- paneles ------------------------------------------------------------------------------------------------
-
-function Archivadas({ t }: { t: TableroDTO }) {
+  const grupoReclamos = t.reclamos.length > 0 && (
+    <>
+      <b>Reclamos</b>
+      {t.reclamos.map((r) => (
+        <span key={r.id} className="tb-archivada">
+          <em>{r.dominio}</em>, a los {minutoEntero(r.minuto)}′, {r.estado === "verificado" ? "verificado" : r.estado === "resuelto" ? "resuelto" : "no corresponde"}
+          {r.medida_id ? `, ${r.medida_id}` : ""}
+        </span>
+      ))}
+    </>
+  );
   return (
-    <section aria-label="Detecciones archivadas">
-      <h2 className="m-0 text-[1.25rem] font-extrabold leading-tight">
-        Archivadas sin llegar al juez <span className="cifras font-normal text-tinta-2">{t.archivadas.length}</span>
-      </h2>
-      {t.archivadas.length === 0 ? (
-        <p className="m-0 mt-2 text-tinta-2">Las detecciones que no son piratas se archivan solas, con su motivo.</p>
+    <footer className="tb-pie-panel">
+      {lineas >= 2 ? (
+        <>
+          <p>{grupoArchivadas}</p>
+          <p>{grupoReclamos}</p>
+        </>
       ) : (
-        <ul className="panel-con-scroll m-0 mt-2 max-h-[320px] list-none p-0">
-          {t.archivadas.map((a) => (
-            <li key={a.deteccion_id} className="grid grid-cols-[3.2rem_minmax(0,1fr)] gap-x-3 border-t border-regla py-2 leading-snug">
-              <span className="cifras text-[0.9375rem] text-tinta-2">{minuto(a.minuto)}′</span>
-              <div className="min-w-0">
-                <p className="m-0 truncate">
-                  <span className="font-bold">{a.host}</span>
-                  <span className="ml-2.5 text-[0.875rem] font-semibold text-firma">{VEREDICTO[a.veredicto] ?? a.veredicto}</span>
-                </p>
-                <p className="m-0 text-[0.875rem] text-tinta-2">{a.motivo}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <p>
+          {grupoArchivadas}
+          {grupoReclamos}
+        </p>
       )}
-    </section>
+    </footer>
   );
 }
 
-const ESTADO_RECLAMO: Record<TableroDTO["reclamos"][number]["estado"], string> = {
-  verificado: "Verificado: va al juez",
-  no_verificado: "No corresponde a un bloqueo nuestro",
-  resuelto: "Resuelto",
-};
+// --- registro encadenado -----------------------------------------------------------------------------------
 
-function Reclamos({ t }: { t: TableroDTO }) {
-  const nombre = (id: string) => nombreBreve(t.proveedores.find((p) => p.id === id)?.nombre ?? id);
-  return (
-    <section aria-label="Reclamos">
-      <h2 className="m-0 text-[1.25rem] font-extrabold leading-tight">
-        Reclamos <span className="cifras font-normal text-tinta-2">{t.reclamos.length}</span>
-      </h2>
-      {t.reclamos.length === 0 ? (
-        <p className="m-0 mt-2 text-tinta-2">Ningún sitio reclamó por un bloqueo. Si llega un reclamo verificado, pasa al juez de turno como medida de levantamiento.</p>
-      ) : (
-        <ul className="panel-con-scroll m-0 mt-2 max-h-[320px] list-none p-0">
-          {t.reclamos.map((r) => (
-            <li key={r.id} className="grid grid-cols-[3.2rem_minmax(0,1fr)] gap-x-3 border-t border-regla py-2 leading-snug">
-              <span className="cifras text-[0.9375rem] text-tinta-2">{minuto(r.minuto)}′</span>
-              <div className="min-w-0">
-                <p className="m-0">
-                  <span className="wrap-anywhere font-bold">{r.dominio}</span>
-                  <span className="ml-2.5 text-[0.875rem] text-tinta-2">ante {nombre(r.proveedor_id)}</span>
-                </p>
-                <p className="m-0 text-[0.875rem] font-semibold">{ESTADO_RECLAMO[r.estado]}</p>
-                {r.mensaje && <p className="m-0 text-[0.875rem] text-tinta-2">{r.mensaje}</p>}
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
-  );
-}
+/** Ingresos y salidas siguen en la cadena, pero no se listan: no son hechos del partido. */
+const NO_SE_LISTAN = new Set(["ingreso", "salida"]);
 
-function Auditoria({ t }: { t: TableroDTO }) {
+function Registro({ t }: { t: TableroDTO }) {
   const a = t.auditoria;
+  const fin = t.estado.fin_min || 105;
+  const listadas = a.ultimas.filter((x) => !NO_SE_LISTAN.has(x.tipo));
+  const primera = useRef(true);
+  const vistas = useRef(new Set<number>());
+  const nuevas = new Set<number>();
+  for (const x of listadas) {
+    if (!vistas.current.has(x.seq)) {
+      if (!primera.current) nuevas.add(x.seq);
+      vistas.current.add(x.seq);
+    }
+  }
+  primera.current = false;
+  const masNueva = listadas[0]?.seq;
   return (
-    <section className="min-w-0" aria-label="Auditoría">
-      <h2 className="m-0 text-[1.25rem] font-extrabold leading-tight">
-        Auditoría encadenada <span className="cifras font-normal text-tinta-2">{plural(a.entradas, "entrada", "entradas")}</span>
-      </h2>
-      <p className="m-0 mt-2 text-[0.8125rem] text-tinta-2">Hash de cabecera: cambia con cada hecho y delata cualquier alteración</p>
-      <p className="m-0 mt-1 break-all rounded-[4px] bg-hundido px-3 py-2 font-mono text-[0.875rem] leading-snug text-firma ring-1 ring-inset ring-regla">{a.cabecera || "sin entradas"}</p>
-      <ol className="panel-con-scroll m-0 mt-3 max-h-[520px] list-none p-0">
-        {a.ultimas.map((x) => (
-          <li key={x.seq} className="grid grid-cols-[3.2rem_minmax(0,1fr)] gap-x-3 border-t border-regla py-2 leading-snug">
-            <span className="cifras text-[0.9375rem] text-tinta-2">{x.minuto == null ? "—" : `${minuto(x.minuto)}′`}</span>
-            <div className="min-w-0">
-              <p className="m-0 break-words text-[0.9375rem]">{x.resumen === x.tipo.replaceAll("_", " ") ? resumenLlano(x.tipo, x.actor) : sinFicticio(x.resumen)}</p>
-              <p className="m-0 text-[0.75rem] text-tinta-3">
-                <span className="cifras">n.º {x.seq}</span> <Huella valor={x.hash} largo={12} className="ml-1.5" />
-              </p>
-            </div>
+    <section className="tb-panel tb-registro" aria-label="Registro encadenado">
+      <header className="tb-panel-cabeza">
+        <h2>
+          Registro encadenado
+          <span className="num">{plural(a.entradas, "entrada", "entradas")}</span>
+        </h2>
+      </header>
+      <div className="tb-cabecera-cadena">
+        <p>
+          <b>Hash de cabecera</b>
+          <span className="num">entrada {numero(a.entradas)}</span>
+        </p>
+        <HashCompleto key={a.cabecera} valor={a.cabecera} className="tb-hash" />
+      </div>
+      <ol className="tb-eventos">
+        {listadas.slice(0, 14).map((x) => (
+          <li key={x.seq} className="tb-evento" data-nuevo={x.seq === masNueva ? "" : undefined} data-entra={nuevas.has(x.seq) ? "" : undefined}>
+            <span className="tb-evento-nodo" aria-hidden="true" />
+            <p className="tb-evento-meta">
+              <span className="num">
+                {x.seq}
+                {x.minuto == null ? "" : x.minuto > fin + 0.5 ? ", después del partido" : `, minuto ${reloj(Math.min(x.minuto, fin))}`}
+              </span>
+              <span className="huella">{x.hash.slice(0, 8)}</span>
+            </p>
+            <p className="tb-evento-texto">{sinFicticio(x.resumen)}</p>
           </li>
         ))}
       </ol>
     </section>
   );
-}
-
-/** Para los pocos tipos de evento que el servidor no resume con una frase. */
-function resumenLlano(tipo: string, actor: string): string {
-  if (tipo === "ingreso") return `Ingreso de ${actor}.`;
-  if (tipo === "arranque") return "Arranque de Offside.";
-  const texto = tipo.replaceAll("_", " ");
-  return `${texto.charAt(0).toUpperCase()}${texto.slice(1)}.`;
 }

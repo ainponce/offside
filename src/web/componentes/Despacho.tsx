@@ -1,142 +1,125 @@
-// Estado de una medida firmada en cada proveedor: por enviar, recibida, aplicada.
-// Es lo que el juez mira después de firmar.
+// El despacho de una medida firmada: una fila por proveedor que cambia sola
+// (por enviar, recibida, aplicada, falló, reintento) y la cobertura en clientes.
 
-import type { MedidaDTO } from "../../compartido/tipos.ts";
+import type { MedidaDTO, OrdenDTO } from "../../compartido/tipos.ts";
 import { type FilaDespacho, coberturaDe, filasDespacho } from "../nucleo/despacho.ts";
-import { ESTADO_ORDEN, TIPO, type TonoEstado, minuto, nombreBreve, numero, sinFicticio } from "../nucleo/formato.ts";
-import { Pasos } from "./comunes.tsx";
+import { ESTADO_ORDEN, TIPO, enGrupos, millones, nombreProveedor, porcentaje, reloj } from "../nucleo/formato.ts";
+import { Luz } from "./comunes.tsx";
 
-const TEXTO_TONO: Record<TonoEstado, string> = {
-  verde: "text-verde",
-  ambar: "text-ambar",
-  roja: "text-roja",
-  neutro: "text-tinta-2",
-  vacio: "text-tinta-2",
-};
-
-const FONDO_TONO: Record<TonoEstado, string> = {
-  verde: "bg-verde-luz",
-  ambar: "bg-ambar-luz",
-  roja: "bg-roja-luz",
-  neutro: "bg-tinta-3",
-  vacio: "rayado-suave",
-};
-
-export function lecturaDe(f: FilaDespacho, saliendo = false): { rotulo: string; tono: TonoEstado; nota: string | null } {
-  if (!f.orden) {
-    if (f.sin_cobertura || !f.tipo) return { rotulo: "Sin cobertura", tono: "vacio", nota: f.sin_cobertura };
-    // Recién firmada: la orden está saliendo aunque todavía no figure.
-    if (saliendo) return { rotulo: "Por enviar", tono: "ambar", nota: null };
-    return { rotulo: "Sin orden", tono: "vacio", nota: null };
-  }
-  const o = f.orden;
-  const base = ESTADO_ORDEN[o.estado];
-  const intento = o.intento > 1 ? `intento ${o.intento}` : null;
-  let nota: string | null = intento;
-  if (o.estado === "aplicada" && o.aplicada_min != null) nota = [`min ${minuto(o.aplicada_min)}`, intento].filter(Boolean).join(", ");
-  if (o.estado === "fallida") nota = o.error ?? "se reenvía con una orden nueva";
-  if (o.estado === "rechazada" || o.estado === "no_enviada") nota = o.error ?? intento;
-  return { rotulo: base.rotulo, tono: base.tono, nota };
+/** Minuto del último cambio de una orden. */
+function minutoDe(o: OrdenDTO | null): number | null {
+  if (!o) return null;
+  return o.finalizada_min ?? o.aplicada_min ?? o.enviada_min ?? null;
 }
 
-/** Con cuántos proveedores quedó aplicada: para medidas que no van a todos (ratificaciones, reclamos). */
 export function aplicadasDe(filas: FilaDespacho[]): { aplicadas: number; total: number } {
-  const conOrden = filas.filter((f) => f.tipo);
-  return { aplicadas: conOrden.filter((f) => f.orden?.estado === "aplicada").length, total: conOrden.length };
+  const conDestino = filas.filter((f) => f.tipo);
+  return {
+    aplicadas: conDestino.filter((f) => f.orden?.estado === "aplicada").length,
+    total: conDestino.length,
+  };
 }
 
-/** Barra de cobertura: cada tramo es un proveedor y su ancho, su cantidad de clientes. */
-export function BarraCobertura({ filas, className = "" }: { filas: FilaDespacho[]; className?: string }) {
-  const total = filas.reduce((a, f) => a + f.clientes, 0);
-  if (total <= 0) return null;
+/** Estado de una fila: palabra, luz y tinta. Sin orden todavía, "Por enviar". */
+function estadoFila(f: FilaDespacho) {
+  if (!f.tipo) return { ...ESTADO_ORDEN.sin_cobertura, clave: "sin_cobertura" as const };
+  const clave = f.orden?.estado ?? "por_enviar";
+  return { ...ESTADO_ORDEN[clave], clave };
+}
+
+export function FilaOrden({ fila: f, indice, entra }: { fila: FilaDespacho; indice: number; entra: boolean }) {
+  const e = estadoFila(f);
+  const min = minutoDe(f.orden);
+  const reintento = f.orden && f.orden.intento > 1 && (f.orden.estado === "por_enviar" || f.orden.estado === "recibida");
+  const objetivo = f.tipo ? `${TIPO[f.tipo]} ${f.objetivo ?? ""}` : (f.sin_cobertura ?? "Sin cobertura por seguridad");
+  const debajo = reintento ? `${f.orden!.intento}.º intento` : f.orden?.estado === "fallida" ? "reintenta" : min != null ? reloj(min) : "";
   return (
-    <div className={`flex h-3 w-full gap-[2px] ${className}`} aria-hidden="true">
-      {filas.map((f) => {
-        const { tono } = lecturaDe(f);
-        const aplicada = f.orden?.estado === "aplicada";
-        return (
-          <span
-            key={f.proveedor_id}
-            title={sinFicticio(f.nombre)}
-            style={{ flexGrow: Math.max(f.clientes, total * 0.02), flexBasis: 0 }}
-            className={`min-w-[5px] rounded-[1px] transition-colors duration-300 ${
-              aplicada ? "bg-verde-luz" : tono === "vacio" || !f.orden ? "rayado-suave ring-1 ring-inset ring-regla" : FONDO_TONO[tono]
-            } ${f.orden && !aplicada && tono === "ambar" ? "opacity-55" : ""}`}
-          />
-        );
-      })}
-    </div>
+    <li className="orden-fila" data-entra={entra ? "" : undefined} style={entra ? { animationDelay: `${90 + indice * 40}ms` } : undefined}>
+      <span className="orden-prov">
+        <span className="orden-nombre" title={nombreProveedor(f.nombre)}>
+          {nombreProveedor(f.nombre)}
+        </span>
+        <span className="orden-obj" title={objetivo}>
+          {objetivo}
+        </span>
+      </span>
+      <span className="orden-estado" data-tinta={e.tinta}>
+        <Luz tono={e.luz} />
+        <span className="orden-estado-texto">
+          <span className="orden-palabra">{e.rotulo}</span>
+          {debajo && <span className="orden-min num">{debajo}</span>}
+        </span>
+      </span>
+    </li>
   );
 }
 
-/** Lista amplia: una fila por proveedor con sus tres tramos, rótulo y nota. */
-export function DespachoAmplio({ medida, conCobertura = true, saliendo = false }: { medida: MedidaDTO; conCobertura?: boolean; saliendo?: boolean }) {
-  const filas = filasDespacho(medida);
-  const total = filas.reduce((a, f) => a + f.clientes, 0);
-  const cobertura = coberturaDe(filas);
+/** La cabeza, la barra de cobertura, las filas y el pie con la huella. */
+export function Despacho({ medida: m, entra = false }: { medida: MedidaDTO; entra?: boolean }) {
+  const filas = filasDespacho(m);
+  const { aplicadas, total } = aplicadasDe(filas);
+  const aTodos = m.clase === "inicial" || m.clase === "ampliacion";
+  const cobertura = coberturaDe(filas.filter((f) => f.tipo));
+  const clientesTotal = filas.filter((f) => f.tipo).reduce((a, f) => a + f.clientes, 0);
+  const cubiertos = filas.reduce((a, f) => a + (f.orden?.estado === "aplicada" ? f.clientes : 0), 0);
+  const completo = total > 0 && aplicadas === total;
+  const vencidas = filas.length > 0 && filas.every((f) => !f.tipo || f.orden?.estado === "vencida" || f.orden?.estado === "levantada");
+  const titulo = vencidas
+    ? "Las órdenes ya vencieron"
+    : completo
+      ? total === 1
+        ? "Bloqueo aplicado en el proveedor"
+        : `Bloqueo aplicado en los ${total} proveedores`
+      : "Órdenes en curso";
+
   return (
-    <div>
-      {conCobertura && total > 0 && (
-        <div className="mb-3">
-          <div className="flex items-baseline justify-between gap-3">
-            <span className="text-[0.9375rem] text-tinta-2">Clientes con el bloqueo aplicado</span>
-            <span className="angosta cifras text-[1.75rem] font-extrabold leading-none" aria-live="polite">
-              {numero(cobertura, cobertura > 0 && cobertura < 100 ? 1 : 0)} %
-            </span>
+    <div className="despacho">
+      <header className="despacho-cabeza">
+        <h2>{titulo}</h2>
+        {!completo && !vencidas && (
+          <span className="num">
+            {aplicadas} de {total} aplicadas
+          </span>
+        )}
+      </header>
+      {aTodos && clientesTotal > 0 && (
+        <div className="cobertura">
+          <div className="cobertura-barra" aria-hidden="true">
+            <i style={{ transform: `scaleX(${cobertura / 100})` }} />
           </div>
-          <BarraCobertura filas={filas} className="mt-2" />
+          <p className="num">
+            <span>{porcentaje(cobertura)} % de los clientes ya con el bloqueo</span>
+            <span>
+              {millones(cubiertos)} de {millones(clientesTotal)} M
+            </span>
+          </p>
         </div>
       )}
-      <ul className="m-0 list-none p-0">
-        {filas.map((f) => {
-          const { rotulo, tono, nota } = lecturaDe(f, saliendo);
-          return (
-            <li key={f.proveedor_id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 border-t border-regla py-2.5">
-              <Pasos paso={f.paso} tono={tono} grande />
-              <div className="min-w-0">
-                <p className="m-0 truncate font-semibold leading-tight" title={sinFicticio(f.nombre)}>
-                  <span className="xs:hidden">{nombreBreve(f.nombre)}</span>
-                  <span className="hidden xs:inline">{sinFicticio(f.nombre)}</span>
-                </p>
-                {f.tipo && (
-                  <p className="m-0 truncate text-[0.8125rem] leading-tight text-tinta-2">
-                    {TIPO[f.tipo]} <span className="huella">{f.objetivo}</span>
-                  </p>
-                )}
-              </div>
-              <div className="max-w-[11.5rem] text-right">
-                <p className={`m-0 font-bold leading-tight ${TEXTO_TONO[tono]}`}>{rotulo}</p>
-                {nota && <p className="m-0 text-[0.8125rem] leading-tight text-tinta-2">{nota}</p>}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+      {filas.length > 0 ? (
+        <ol className="ordenes" aria-live="polite">
+          {filas.map((f, i) => (
+            <FilaOrden key={f.proveedor_id} fila={f} indice={i} entra={entra} />
+          ))}
+        </ol>
+      ) : (
+        <p className="despacho-vacio">El reclamo levanta las órdenes indicadas. Queda registrado en el expediente.</p>
+      )}
+      <p className="despacho-pie">
+        {total === 1 ? "La orden lleva" : `Las ${total} llevan`} la huella <span className="huella">{enGrupos(m.huella, 12)}</span>
+      </p>
     </div>
   );
 }
 
-/** Versión de una línea: tramos y nombre corto de cada proveedor. */
-export function DespachoCompacto({ medida, className = "" }: { medida: MedidaDTO; className?: string }) {
-  const filas = filasDespacho(medida);
-  if (filas.length === 0) return null;
+/** Cuatro luces de 8 px: el estado de cada orden, para las filas compactas. */
+export function LucesOrdenes({ medida }: { medida: MedidaDTO }) {
+  const filas = filasDespacho(medida).filter((f) => f.tipo);
+  const { aplicadas, total } = aplicadasDe(filas);
   return (
-    <ul className={`m-0 flex list-none flex-wrap gap-x-4 gap-y-1.5 p-0 ${className}`}>
-      {filas.map((f) => {
-        const { rotulo, tono } = lecturaDe(f);
-        return (
-          <li key={f.proveedor_id} className="flex items-center gap-1.5 text-[0.8125rem]" title={`${sinFicticio(f.nombre)}: ${rotulo}`}>
-            <Pasos paso={f.paso} tono={tono} />
-            <span className="font-medium">{nombreBreve(f.nombre)}</span>
-            <span className={`sr-only`}>{rotulo}</span>
-            {(tono === "roja" || (f.orden && f.orden.intento > 1)) && (
-              <span className={`${TEXTO_TONO[tono]} font-semibold`}>
-                {tono === "roja" ? rotulo.toLowerCase() : `intento ${f.orden!.intento}`}
-              </span>
-            )}
-          </li>
-        );
-      })}
-    </ul>
+    <span className="luces-breves" role="img" aria-label={`${aplicadas} de ${total} órdenes aplicadas`}>
+      {filas.map((f) => (
+        <Luz key={f.proveedor_id} tono={estadoFila(f).luz} tam="chica" />
+      ))}
+    </span>
   );
 }

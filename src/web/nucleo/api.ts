@@ -13,9 +13,12 @@ export interface Sesion {
 /** `codigo` 0 significa que Offside no respondió (red caída o servidor apagado). */
 export class ErrorApi extends Error {
   readonly codigo: number;
-  constructor(codigo: number, mensaje: string) {
+  /** Causa en clave, si el servidor la manda (por ejemplo "fin_de_turno"). */
+  readonly motivo: string | null;
+  constructor(codigo: number, mensaje: string, motivo: string | null = null) {
     super(mensaje);
     this.codigo = codigo;
+    this.motivo = motivo;
   }
 }
 
@@ -102,8 +105,11 @@ export async function pedirTexto(ruta: string, opciones: Opciones = {}): Promise
   if (respuesta.ok) return texto;
 
   let mensaje = "";
+  let motivo: string | null = null;
   try {
-    mensaje = (JSON.parse(texto) as ErrorDTO).error ?? "";
+    const cuerpo = JSON.parse(texto) as ErrorDTO & { motivo?: unknown };
+    mensaje = cuerpo.error ?? "";
+    motivo = typeof cuerpo.motivo === "string" ? cuerpo.motivo : null;
   } catch {
     // Un proxy o un servidor caído pueden contestar algo que no es JSON.
   }
@@ -113,6 +119,7 @@ export async function pedirTexto(ruta: string, opciones: Opciones = {}): Promise
   throw new ErrorApi(
     sinServidor ? 0 : respuesta.status,
     mensaje || (sinServidor ? "Sin conexión con Offside." : `Offside respondió con un error (${respuesta.status}).`),
+    motivo,
   );
 }
 

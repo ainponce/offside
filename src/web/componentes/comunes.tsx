@@ -1,29 +1,21 @@
 // Piezas chicas que comparten todas las pantallas.
 
-import { type ReactNode, useEffect } from "react";
-import type { EstadoDTO, Luz as TipoLuz } from "../../compartido/tipos.ts";
-import { type TonoEstado, huellaCorta, reloj } from "../nucleo/formato.ts";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import type { EstadoDTO, Luz as LuzVerificacion } from "../../compartido/tipos.ts";
+import { type TonoLuz, enGrupos, reloj } from "../nucleo/formato.ts";
 import { useMinuto } from "../nucleo/reloj.ts";
 
-export type Tema = "papel" | "noche";
+export type Fondo = "aluminio" | "lienzo";
+const COLOR: Record<Fondo, string> = { aluminio: "#ECEEF1", lienzo: "#F1F2F4" };
 
-const COLOR_BARRA: Record<Tema, string> = { papel: "#e8eaef", noche: "#0b1533" };
-
-/** Aplica el tema a toda la página (también al fondo que se ve al rebotar el scroll). */
-export function useTema(tema: Tema): void {
+/** Fondo de toda la página (también el que se ve al rebotar el desplazamiento) y color de la barra del navegador. */
+export function useFondo(fondo: Fondo): void {
   useEffect(() => {
     const raiz = document.documentElement;
-    const previo = raiz.dataset.tema;
-    raiz.dataset.tema = tema;
+    raiz.dataset.fondo = fondo;
     const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    const colorPrevio = meta?.content;
-    if (meta) meta.content = COLOR_BARRA[tema];
-    return () => {
-      if (previo) raiz.dataset.tema = previo;
-      else delete raiz.dataset.tema;
-      if (meta && colorPrevio) meta.content = colorPrevio;
-    };
-  }, [tema]);
+    if (meta) meta.content = COLOR[fondo];
+  }, [fondo]);
 }
 
 export function useTitulo(titulo: string): void {
@@ -32,145 +24,152 @@ export function useTitulo(titulo: string): void {
   }, [titulo]);
 }
 
-/** El nombre con la línea de offside: la misma línea que separa lo que se bloquea de lo que no. */
+/** ¿El sistema pide movimiento reducido? */
+export function movimientoReducido(): boolean {
+  return typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+}
+
+/** La marca: una raya grafito (la línea del offside) y el nombre. */
 export function Marca({ className = "" }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center font-extrabold leading-none tracking-[-0.01em] ${className}`} aria-label="Offside">
-      <span aria-hidden="true">Off</span>
-      <span aria-hidden="true" className="mx-[0.14em] inline-block h-[1.5em] w-[0.11em] min-w-[2px] bg-firma" />
-      <span aria-hidden="true">side</span>
+    <span className={`marca ${className}`}>
+      <span className="marca-raya" aria-hidden="true" />
+      Offside
     </span>
   );
 }
 
-const NOMBRE_LUZ: Record<TipoLuz, string> = { verde: "Verde", ambar: "Ámbar", roja: "Roja" };
+const LUZ_VERIFICACION: Record<LuzVerificacion, TonoLuz> = { verde: "verde", ambar: "ambar", roja: "roja" };
+const NOMBRE_TONO: Record<TonoLuz, string> = {
+  verde: "verde",
+  ambar: "ámbar",
+  roja: "roja",
+  anillo: "sin encender",
+  apagada: "apagada",
+  ninguna: "",
+};
 
-/** Luz de una verificación. Cada color tiene además su forma, para no depender del color. */
-export function Luz({ luz, tam = 22, className = "" }: { luz: TipoLuz; tam?: number; className?: string }) {
+/**
+ * Luz de estado. Es el único ícono de estado: sin tildes ni cruces de colores.
+ * Cuando cambia de tono hace un solo pulso de halo, nunca en bucle.
+ */
+export function Luz({
+  tono,
+  tam = "normal",
+  etiqueta,
+  className = "",
+}: {
+  tono: TonoLuz | LuzVerificacion;
+  tam?: "chica" | "normal" | "grande";
+  /** Nombre accesible; sin él la luz es decorativa (el texto de al lado ya dice el estado). */
+  etiqueta?: string;
+  className?: string;
+}) {
+  const t: TonoLuz = tono in LUZ_VERIFICACION ? LUZ_VERIFICACION[tono as LuzVerificacion] : (tono as TonoLuz);
+  const previo = useRef(t);
+  const [pulsos, setPulsos] = useState(0);
+  useEffect(() => {
+    if (previo.current !== t) {
+      previo.current = t;
+      if (t === "verde" || t === "ambar" || t === "roja") setPulsos((n) => n + 1);
+    }
+  }, [t]);
+  if (t === "ninguna") return <span className={`luz luz-${tam} ${className}`} data-tono="ninguna" aria-hidden="true" />;
   return (
-    <svg
-      role="img"
-      aria-label={`Luz ${NOMBRE_LUZ[luz].toLowerCase()}`}
-      viewBox="0 0 24 24"
-      width={tam}
-      height={tam}
-      className={`flex-none ${className}`}
+    <span
+      className={`luz luz-${tam} ${className}`}
+      data-tono={t}
+      role={etiqueta ? "img" : undefined}
+      aria-label={etiqueta ? `${etiqueta}: luz ${NOMBRE_TONO[t]}` : undefined}
+      aria-hidden={etiqueta ? undefined : true}
     >
-      {luz === "verde" && (
-        <>
-          <circle cx="12" cy="12" r="11" fill="var(--verde-luz)" />
-          <path d="M6.8 12.6l3.4 3.4 7-7.6" fill="none" stroke="var(--papel)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-        </>
-      )}
-      {luz === "ambar" && (
-        <>
-          <path d="M12 1.8 23 21.4H1z" fill="var(--ambar-luz)" stroke="var(--ambar-luz)" strokeWidth="1.6" strokeLinejoin="round" />
-          <path d="M12 8.6v6" stroke="#231700" strokeWidth="2.6" strokeLinecap="round" />
-          <circle cx="12" cy="18" r="1.5" fill="#231700" />
-        </>
-      )}
-      {luz === "roja" && (
-        <>
-          <path d="M7.4 1h9.2L23 7.4v9.2L16.6 23H7.4L1 16.6V7.4z" fill="var(--roja-luz)" />
-          <path d="M8 8l8 8M16 8l-8 8" stroke="var(--papel)" strokeWidth="2.6" strokeLinecap="round" />
-        </>
-      )}
-    </svg>
-  );
-}
-
-/** Tres tramos (por enviar, recibida, aplicada) que se van llenando. */
-export function Pasos({ paso, tono, grande = false }: { paso: 0 | 1 | 2 | 3; tono: TonoEstado; grande?: boolean }) {
-  return (
-    <span className={`pasos ${grande ? "pasos-grande" : ""}`} data-tono={tono} aria-hidden="true">
-      {[1, 2, 3].map((n) => (
-        <i key={n} data-lleno={paso >= n ? "" : undefined} />
-      ))}
+      {pulsos > 0 && <span key={pulsos} className="luz-pulso" />}
     </span>
   );
 }
 
-export function Huella({ valor, largo = 16, className = "" }: { valor: string | null | undefined; largo?: number; className?: string }) {
-  const completa = valor ?? "";
-  const recortada = largo > 0 && completa.length > largo;
+/** Huella o hash en Plex Mono, en grupos de cuatro. `caracteres` 0 = completa. */
+export function Huella({ valor, caracteres = 12, className = "" }: { valor: string | null | undefined; caracteres?: number; className?: string }) {
+  if (!valor) return <span className={`huella ${className}`}>sin huella</span>;
   return (
-    <span className={`huella ${className}`} title={recortada ? completa : undefined}>
-      {largo > 0 ? huellaCorta(completa, largo) : completa || "sin huella"}
-      {recortada ? "…" : ""}
+    <span className={`huella ${className}`} title={caracteres > 0 && valor.length > caracteres ? enGrupos(valor) : undefined}>
+      {enGrupos(valor, caracteres)}
     </span>
   );
 }
 
-const ES_IP = /^(\d{1,3}(\.\d{1,3}){3}|[0-9a-f:]*:[0-9a-f:.]*)$/i;
-
-/** Lo que se bloquea, en monoespaciada. Una IP nunca se parte en dos renglones; un dominio largo, sí. */
-export function Objetivo({ valor, className = "" }: { valor: string | null | undefined; className?: string }) {
-  if (!valor) return null;
-  return <span className={`huella ${ES_IP.test(valor) ? "whitespace-nowrap" : ""} ${className}`}>{valor}</span>;
-}
-
-/** Reloj del partido, interpolado entre un dato del servidor y el siguiente. */
-export function RelojPartido({ estado, className = "" }: { estado: EstadoDTO; className?: string }) {
-  const m = useMinuto(200);
+/** Hash completo en dos renglones de ocho grupos, sin cortar un grupo. */
+export function HashCompleto({ valor, className = "" }: { valor: string; className?: string }) {
+  const grupos = enGrupos(valor).split(" ");
+  const mitad = Math.ceil(grupos.length / 2);
   return (
-    <span className={`cifras ${className}`} role="timer" aria-label={`Minuto ${Math.floor(m)} del partido`}>
-      {reloj(estado.finalizado ? estado.fin_min : m)}
+    <span className={`huella hash-completo ${className}`}>
+      <span>{grupos.slice(0, mitad).join(" ")}</span>
+      <span>{grupos.slice(mitad).join(" ")}</span>
     </span>
   );
 }
 
-/** Avisos de corte: con Offside o con el simulador. En tinta, sin colores de estado. */
+/**
+ * Reloj del partido, interpolado entre un dato del servidor y el siguiente. Las cifras no ruedan.
+ * Con `minuto`, muestra ese valor (el tic que ya tiene la pantalla): dos relojes no se contradicen.
+ */
+export function RelojPartido({ estado, minuto, className = "" }: { estado: EstadoDTO; minuto?: number; className?: string }) {
+  const tic = useMinuto(200);
+  const m = minuto ?? tic;
+  const valor = estado.finalizado ? estado.fin_min : Math.min(m, estado.fin_min || Infinity);
+  return (
+    <span className={`cifra ${className}`} role="timer" aria-label={`Minuto ${Math.floor(valor)} del partido`}>
+      {reloj(valor)}
+    </span>
+  );
+}
+
+/** Píldora "De turno". El punto no late. */
+export function PildoraTurno({ deTurno, texto }: { deTurno: boolean; texto?: string }) {
+  return (
+    <span className="pildora-turno" data-turno={deTurno ? "si" : "no"}>
+      <span className="pildora-punto" aria-hidden="true" />
+      {texto ?? (deTurno ? "De turno" : "Fuera de turno")}
+    </span>
+  );
+}
+
+/** Aviso de corte con Offside o con el simulador: una franja grafito, sin colores de estado. */
 export function Cortes({ estado, sinServidor }: { estado: EstadoDTO | null; sinServidor: boolean }) {
   let titulo: string | null = null;
   let detalle: string | null = null;
-  let tecnico: string | null = null;
   if (sinServidor) {
     titulo = "Sin conexión con Offside";
     detalle = "Lo que ves puede estar desactualizado. Se reintenta solo.";
   } else if (estado && !estado.conectado) {
     titulo = "Sin conexión con el simulador";
     detalle = "No se puede firmar ni enviar órdenes hasta que vuelva. Se reintenta solo.";
-    tecnico = estado.ultimo_error;
   }
   if (!titulo) return null;
   return (
-    <div role="alert" className="flex items-stretch bg-tinta text-papel">
-      <span aria-hidden="true" className="rayado w-3 flex-none bg-papel" />
-      <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-0.5 px-4 py-2.5">
-        <strong className="flex items-center gap-2 font-bold">
-          <span aria-hidden="true" className="inline-block size-2.5 animate-latir rounded-full bg-papel" />
-          {titulo}
-        </strong>
-        <span className="min-w-0 text-[0.9375rem] opacity-85">{detalle}</span>
-        {tecnico && <span className="huella hidden min-w-0 opacity-60 sm:inline">{tecnico}</span>}
-      </div>
+    <div role="alert" className="corte">
+      <span className="corte-circulo" aria-hidden="true" />
+      <p>
+        <strong>{titulo}</strong> <span>{detalle}</span>
+      </p>
     </div>
   );
 }
 
-export function Cargando({ texto = "Cargando…" }: { texto?: string }) {
+export function Cargando({ texto = "Conectando con Offside…" }: { texto?: string }) {
   return (
-    <p className="px-4 py-16 text-center text-tinta-2" role="status">
+    <p className="cargando" role="status">
       {texto}
     </p>
   );
 }
 
-/** Par rótulo y valor para datos de ficha. */
-export function Dato({ rotulo, children, className = "" }: { rotulo: string; children: ReactNode; className?: string }) {
-  return (
-    <div className={`min-w-0 ${className}`}>
-      <dt className="text-[0.8125rem] font-medium text-tinta-2">{rotulo}</dt>
-      <dd className="m-0 min-w-0 break-words">{children}</dd>
-    </div>
-  );
-}
-
 // --- íconos (trazo, 24 px) ---------------------------------------------------------------
 
-function Icono({ children, tam = 22 }: { children: ReactNode; tam?: number }) {
+function Icono({ children, tam = 20 }: { children: ReactNode; tam?: number }) {
   return (
-    <svg viewBox="0 0 24 24" width={tam} height={tam} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-none">
+    <svg viewBox="0 0 24 24" width={tam} height={tam} fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="icono">
       {children}
     </svg>
   );
@@ -178,35 +177,49 @@ function Icono({ children, tam = 22 }: { children: ReactNode; tam?: number }) {
 
 export const IconoSonido = ({ tam }: { tam?: number }) => (
   <Icono tam={tam}>
-    <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" />
-    <path d="M15.5 9a4.2 4.2 0 010 6M18 6.5a7.8 7.8 0 010 11" />
+    <path d="M4.5 9.5v5h3.2l4.3 3.8V5.7L7.7 9.5z" />
+    <path d="M15.6 9.2a4 4 0 0 1 0 5.6M18.2 6.6a7.6 7.6 0 0 1 0 10.8" />
   </Icono>
 );
 export const IconoSilencio = ({ tam }: { tam?: number }) => (
   <Icono tam={tam}>
-    <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" />
-    <path d="M16 9.5l5 5M21 9.5l-5 5" />
-  </Icono>
-);
-export const IconoSalir = ({ tam }: { tam?: number }) => (
-  <Icono tam={tam}>
-    <path d="M10 4H5.5A1.5 1.5 0 004 5.5v13A1.5 1.5 0 005.5 20H10" />
-    <path d="M15 8l4 4-4 4M19 12H9.5" />
-  </Icono>
-);
-export const IconoVolver = ({ tam }: { tam?: number }) => (
-  <Icono tam={tam}>
-    <path d="M19 12H5M10.5 6.5L5 12l5.5 5.5" />
-  </Icono>
-);
-export const IconoImprimir = ({ tam }: { tam?: number }) => (
-  <Icono tam={tam}>
-    <path d="M7 9V4h10v5M7 17H5a1 1 0 01-1-1v-5a2 2 0 012-2h12a2 2 0 012 2v5a1 1 0 01-1 1h-2" />
-    <path d="M7 14h10v6H7z" />
+    <path d="M4.5 9.5v5h3.2l4.3 3.8V5.7L7.7 9.5z" />
+    <path d="M16 9.8l4.4 4.4M20.4 9.8L16 14.2" />
   </Icono>
 );
 export const IconoCerrar = ({ tam }: { tam?: number }) => (
   <Icono tam={tam}>
-    <path d="M6 6l12 12M18 6L6 18" />
+    <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />
   </Icono>
 );
+export const IconoVolver = ({ tam }: { tam?: number }) => (
+  <Icono tam={tam}>
+    <path d="M14.5 6l-6 6 6 6" />
+  </Icono>
+);
+export const IconoChevron = ({ tam }: { tam?: number }) => (
+  <Icono tam={tam}>
+    <path d="M7 10l5 5 5-5" />
+  </Icono>
+);
+export const IconoImprimir = ({ tam }: { tam?: number }) => (
+  <Icono tam={tam}>
+    <path d="M7 9V4.5h10V9M7 16.5H5.5A1.5 1.5 0 0 1 4 15v-4.5A1.5 1.5 0 0 1 5.5 9h13a1.5 1.5 0 0 1 1.5 1.5V15a1.5 1.5 0 0 1-1.5 1.5H17" />
+    <path d="M7 13.5h10v6H7z" />
+  </Icono>
+);
+export const IconoExportar = ({ tam }: { tam?: number }) => (
+  <Icono tam={tam}>
+    <path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14" />
+  </Icono>
+);
+
+/** Tilde en un círculo grafito: decidido y firmado. */
+export function Tilde({ tam = 16 }: { tam?: number }) {
+  return (
+    <svg viewBox="0 0 16 16" width={tam} height={tam} aria-hidden="true" className="tilde">
+      <circle cx="8" cy="8" r="8" fill="currentColor" />
+      <path d="M4.6 8.3l2.2 2.2 4.6-4.8" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}

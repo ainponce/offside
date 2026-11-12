@@ -7,28 +7,78 @@ type ConWebkit = typeof globalThis & { webkitAudioContext?: typeof AudioContext 
 let contexto: AudioContext | null = null;
 let preparado = false;
 let toco = false;
+let desbloqueado = false;
+const oyentesAudio = new Set<() => void>();
 
-function despertar(): void {
+function avisarAudio(): void {
+  for (const o of [...oyentesAudio]) o();
+}
+
+/** iOS solo deja sonar un contexto que reprodujo algo dentro de un toque: una muestra de silencio alcanza. */
+function silencioDeUnaMuestra(ctx: AudioContext): void {
+  try {
+    const buffer = ctx.createBuffer(1, 1, 22_050);
+    const fuente = ctx.createBufferSource();
+    fuente.buffer = buffer;
+    fuente.connect(ctx.destination);
+    fuente.start(0);
+    desbloqueado = true;
+  } catch {
+    // Sin este paso, en algunos navegadores el primer aviso no suena; no rompe nada.
+  }
+}
+
+function despertar(): Promise<void> {
   toco = true;
   try {
     if (!contexto) {
       const Clase = globalThis.AudioContext ?? (globalThis as ConWebkit).webkitAudioContext;
-      if (!Clase) return;
+      if (!Clase) return Promise.resolve();
       contexto = new Clase();
+      contexto.addEventListener("statechange", avisarAudio);
+      avisarAudio();
     }
-    if (contexto.state === "suspended") void contexto.resume();
+    if (!desbloqueado) silencioDeUnaMuestra(contexto);
+    if (contexto.state !== "running") return contexto.resume().then(avisarAudio, avisarAudio);
   } catch {
     contexto = null;
   }
+  return Promise.resolve();
 }
 
 /** Engancha el primer toque o tecla para habilitar el audio. Se puede llamar varias veces. */
 export function prepararSonido(): void {
   if (preparado || typeof window === "undefined") return;
   preparado = true;
-  const alTocar = () => despertar();
+  const alTocar = () => void despertar();
+  // Safari desbloquea el audio en touchend o click, no en pointerdown: se escuchan los cuatro.
   window.addEventListener("pointerdown", alTocar, { passive: true });
+  window.addEventListener("touchend", alTocar, { passive: true });
+  window.addEventListener("click", alTocar, { passive: true });
   window.addEventListener("keydown", alTocar);
+}
+
+/** ¿El navegador ya deja sonar el aviso? Hasta el primer toque, no. */
+export function audioListo(): boolean {
+  return contexto?.state === "running";
+}
+
+/** Avisa cada vez que cambia `audioListo()`. Devuelve la función para dejar de escuchar. */
+export function suscribirAudio(oyente: () => void): () => void {
+  oyentesAudio.add(oyente);
+  return () => oyentesAudio.delete(oyente);
+}
+
+/** Habilita el audio desde un toque explícito y hace sonar el silbato para confirmarlo. */
+export async function activarSonido(): Promise<boolean> {
+  await despertar();
+  if (audioListo()) silbato();
+  return audioListo();
+}
+
+/** ¿El dispositivo puede vibrar? En iPhone, no. */
+export function puedeVibrar(): boolean {
+  return typeof navigator !== "undefined" && typeof navigator.vibrate === "function";
 }
 
 function pitido(ctx: AudioContext, inicio: number, duracion: number): void {

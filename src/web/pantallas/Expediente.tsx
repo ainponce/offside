@@ -1,509 +1,446 @@
-// El expediente completo de una filtración, legible para un juez y pensado para imprimirse.
+// El expediente completo, como foja: carátula, la escala del partido como columna
+// vertebral, cada medida como un acto con su sello, y la cadena de auditoría.
+// Pensado para que lo lea un juez en pantalla y para imprimirse en A4.
 
-import type { ReactNode } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useLayoutEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import type { ExpedienteDTO, MedidaDTO, OrdenDTO } from "../../compartido/tipos.ts";
-import { Cargando, Cortes, IconoImprimir, IconoVolver, Marca, Objetivo, useTema, useTitulo } from "../componentes/comunes.tsx";
-import { BandaSimulacro, DetalleReclamo, MotivoRatificacion, NoSeTocan, PlanProveedores, Promocion, QueCambio, Verificaciones } from "../componentes/Medida.tsx";
+import { Cargando, Cortes, HashCompleto, IconoExportar, IconoImprimir, IconoVolver, Luz, Tilde, useFondo, useTitulo } from "../componentes/comunes.tsx";
+import { MarcasRegla, TrazoFiltracion, fraccion, useAncho } from "../componentes/Escala.tsx";
+import { DominioPartido, HostPartido, Levantamiento, OrdenId, Promocion, QueCambio, Ratificacion, Verificaciones } from "../componentes/Medida.tsx";
 import {
-  CLASE,
+  CLASE_ACTO,
   ESTADO_EXPEDIENTE,
-  ESTADO_MEDIDA,
   ESTADO_ORDEN,
   TIPO,
-  type TonoEstado,
-  fechaHoraLocal,
+  enGrupos,
+  fechaLocal,
   horaLocal,
-  minuto,
-  numero,
-  plural,
+  nombreProveedor,
+  partidoBreve,
+  reloj,
   sinFicticio,
 } from "../nucleo/formato.ts";
 import { inicioDe, useSesion } from "../nucleo/sesion.ts";
+import { sincronizarReloj } from "../nucleo/reloj.ts";
 import { useVivo } from "../nucleo/vivo.ts";
 
-const TEXTO_TONO: Record<TonoEstado, string> = {
-  verde: "text-verde",
-  ambar: "text-ambar",
-  roja: "text-roja",
-  neutro: "text-tinta-2",
-  vacio: "text-tinta-2",
-};
+/** Pie de cada página impresa, con el número del expediente. */
+function usePieImpreso(id: string): void {
+  useLayoutEffect(() => {
+    const estilo = document.createElement("style");
+    const texto = `${id}. Verificable con herramientas/verificar_expediente.py.`.replace(/["\\]/g, "");
+    estilo.textContent = `@page { @bottom-left { content: "${texto}"; font: 9pt "Archivo Variable", sans-serif; color: #5a5f69; } @bottom-right { content: counter(page) " de " counter(pages); font: 9pt "Archivo Variable", sans-serif; color: #5a5f69; } }`;
+    document.head.appendChild(estilo);
+    return () => estilo.remove();
+  }, [id]);
+}
+
+function exportar(e: ExpedienteDTO): void {
+  const blob = new Blob([JSON.stringify(e, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${e.id}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 
 export function Expediente() {
-  useTema("papel");
+  useFondo("aluminio");
   const { id = "" } = useParams();
-  useTitulo(`Offside · ${id}`);
+  useTitulo(`Offside, ${id}`);
+  usePieImpreso(id);
   const sesion = useSesion();
   const navegar = useNavigate();
-  const { datos: e, error, sinServidor } = useVivo<ExpedienteDTO>(id ? `/api/expedientes/${encodeURIComponent(id)}` : null);
+  const { datos: e, error, sinServidor } = useVivo<ExpedienteDTO>(id ? `/api/expedientes/${encodeURIComponent(id)}` : null, {
+    alRecibir: (d) => {
+      if (d.estado_general) sincronizarReloj(d.estado_general);
+    },
+  });
 
   const inicio = sesion ? inicioDe(sesion.usuario.rol) : "/";
   const volver = () => {
-    // Si se llegó desde otra pantalla de Offside se vuelve a ella; si no, al inicio del rol.
     const hayHistorial = (window.history.state as { idx?: number } | null)?.idx;
     if (hayHistorial && hayHistorial > 0) navegar(-1);
-    else navegar(inicio);
+    else navegar(inicio === "/juez" ? "/juez" : "/tablero");
   };
 
   return (
-    <div className="min-h-dvh pb-12">
-      <div className="no-imprimir sticky top-0 z-20 border-b-2 border-tinta bg-papel">
-        <div className="mx-auto flex max-w-[980px] items-center gap-2 px-3 py-2 sm:px-6">
-          <button type="button" className="boton boton-chico boton-plano -ml-2" onClick={volver}>
-            <IconoVolver tam={20} /> Volver
-          </button>
-          <div className="flex-1" />
-          <button type="button" className="boton boton-chico" onClick={() => window.print()} disabled={!e}>
-            <IconoImprimir tam={20} /> Imprimir
-          </button>
-        </div>
+    <div className="expediente">
+      <div className="exp-barra no-imprimir">
+        <button type="button" className="boton boton-porcelana boton-44" onClick={volver}>
+          <IconoVolver tam={18} />
+          <span>{inicio === "/juez" ? "Volver" : "Volver al tablero"}</span>
+        </button>
+        <span className="exp-barra-hueco" />
+        <button type="button" className="boton boton-porcelana boton-44" onClick={() => window.print()} disabled={!e}>
+          <IconoImprimir tam={18} />
+          <span>Imprimir</span>
+        </button>
+        <button type="button" className="boton boton-porcelana boton-44" onClick={() => e && exportar(e)} disabled={!e}>
+          <IconoExportar tam={18} />
+          <span>Exportar</span>
+        </button>
       </div>
       <div className="no-imprimir">
-        <Cortes estado={null} sinServidor={sinServidor} />
+        <Cortes estado={e?.estado_general ?? null} sinServidor={sinServidor} />
       </div>
-
       {!e ? (
-        error && error.codigo === 404 ? (
-          <div className="mx-auto max-w-[980px] px-4 py-16">
-            <h1 className="m-0 font-serif text-[1.75rem] font-semibold">El expediente {id} no existe.</h1>
-            <p className="mt-3">
-              <Link to={inicio} className="enlace font-semibold">
-                Volver al inicio
-              </Link>
-            </p>
-          </div>
-        ) : (
-          <Cargando texto={error && error.codigo !== 0 ? error.message : "Cargando el expediente…"} />
-        )
+        <Cargando texto={error?.codigo === 404 ? `No existe el expediente ${id}.` : error && error.codigo !== 0 ? error.message : "Conectando con Offside…"} />
       ) : (
-        <Hoja e={e} />
+        <Foja e={e} />
       )}
     </div>
   );
 }
 
-function Hoja({ e }: { e: ExpedienteDTO }) {
+/** Nombre legible de cada actor de la cadena, armado con los datos del propio expediente. */
+function nombresDeActores(e: ExpedienteDTO): Map<string, string> {
+  const nombres = new Map<string, string>([
+    ["sistema", "Offside"],
+    ["fiscalia", "Fiscalía"],
+  ]);
+  for (const m of e.medidas) {
+    if (m.decision?.juez_id && m.decision.juez_nombre) nombres.set(m.decision.juez_id, sinFicticio(m.decision.juez_nombre));
+    if (m.ratificacion?.juez_original_id && m.ratificacion.juez_original_nombre) {
+      nombres.set(m.ratificacion.juez_original_id, sinFicticio(m.ratificacion.juez_original_nombre));
+    }
+    for (const o of m.ordenes) nombres.set(o.proveedor_id, nombreProveedor(o.proveedor_nombre));
+    for (const p of m.plan) if (!nombres.has(p.proveedor_id)) nombres.set(p.proveedor_id, nombreProveedor(p.proveedor_nombre));
+  }
+  const general = e.estado_general;
+  for (const j of general?.jueces_de_turno ?? []) if (!nombres.has(j.id)) nombres.set(j.id, sinFicticio(j.nombre));
+  for (const t of general?.turnos ?? []) if (!nombres.has(t.juez_id)) nombres.set(t.juez_id, sinFicticio(t.nombre));
+  return nombres;
+}
+
+function Foja({ e }: { e: ExpedienteDTO }) {
+  const fin = e.estado_general?.fin_min ?? e.medidas[0]?.vence_min ?? 105;
+  const ultima = e.auditoria[e.auditoria.length - 1];
+  const actores = nombresDeActores(e);
   return (
-    <article className="hoja mx-auto mt-4 max-w-[980px] border border-regla bg-papel px-4 py-8 sm:mt-8 sm:px-12 sm:py-12">
-      <header className="border-b-2 border-tinta pb-5">
-        <div className="flex items-baseline justify-between gap-4">
-          <Marca className="text-[1.375rem]" />
-          <p className="m-0 text-[0.9375rem] text-tinta-2">Expediente de medida de bloqueo</p>
-        </div>
-        <h1 className="m-0 mt-5 font-mono text-[1.75rem] font-semibold leading-tight sm:text-[2.25rem]">{e.id}</h1>
-        <dl className="m-0 mt-4 grid gap-x-8 gap-y-2.5 text-[1rem] leading-snug sm:grid-cols-2">
-          <Campo rotulo="Partido">{e.partido?.nombre ?? "Sin datos"}</Campo>
-          <Campo rotulo="Titular de derechos">{e.partido?.titular_derechos ?? "Sin datos"}</Campo>
-          <Campo rotulo="Estado">
-            {ESTADO_EXPEDIENTE[e.estado]}. Abierto en el minuto {minuto(e.abierto_min)}.
-          </Campo>
-          <Campo rotulo="Contenido">
-            {plural(e.servidores.length, "servidor", "servidores")}, {plural(e.medidas.length, "medida", "medidas")}, {plural(e.detecciones.length, "detección", "detecciones")}
-          </Campo>
+    <article className="foja" aria-label={`Expediente ${e.id}`}>
+      <header className="caratula">
+        <p className="caratula-rotulo">Expediente</p>
+        <h1 className="caratula-id num">{e.id}</h1>
+        <dl className="caratula-datos">
+          <div>
+            <dt>Partido</dt>
+            <dd>{partidoBreve(e.partido?.nombre) || "—"}</dd>
+          </div>
+          <div>
+            <dt>Titular de derechos</dt>
+            <dd>{sinFicticio(e.partido?.titular_derechos) || "—"}</dd>
+          </div>
+          <div>
+            <dt>Marca de agua</dt>
+            <dd className="huella">{e.marca}</dd>
+          </div>
+          <div>
+            <dt>Prefijo y origen</dt>
+            <dd>
+              <span className="huella">{e.prefijo}</span>
+              {e.origen_prefijo ? `, ${sinFicticio(e.origen_prefijo)}` : ""}
+            </dd>
+          </div>
+          <div>
+            <dt>Abierto</dt>
+            <dd className="num">a los {reloj(e.abierto_min)} del partido</dd>
+          </div>
+          <div>
+            <dt>Estado</dt>
+            <dd>{ESTADO_EXPEDIENTE[e.estado]}</dd>
+          </div>
         </dl>
       </header>
 
-      <Seccion titulo="La filtración">
-        <p className="m-0 font-mono text-[1.25rem] font-semibold leading-tight sm:text-[1.5rem]">{e.marca}</p>
-        <p className="m-0 mt-2 max-w-[68ch] font-serif text-[1.0625rem] leading-[1.55]">
-          Es la marca de agua extraída de la señal retransmitida. Lleva el prefijo <span className="huella">{e.prefijo}</span>
-          {e.origen_prefijo ? ` (${e.origen_prefijo})` : ""}. Todas las detecciones de este expediente llevan esa misma marca: se tratan como una sola
-          filtración aunque el sitio cambie de servidor, y cada servidor nuevo es una ampliación.
-        </p>
-      </Seccion>
+      <ColumnaVertebral e={e} fin={fin} />
 
-      <Seccion titulo="Servidores" nota="En el orden en que aparecieron. Los tiempos son minutos de partido.">
-        <Tabla
-          columnas={["N.º", "Servidor", "Primera detección", "Medida", "Clientes cubiertos"]}
-          filas={e.servidores.map((s, i) => ({
-            celdas: [
-              <span key="n" className="cifras">
-                {i + 1}
-              </span>,
-              <span key="s">
-                <span className="font-semibold wrap-anywhere">{s.host}</span>
-                <span className="block text-[0.8125rem] text-tinta-2">
-                  <Objetivo valor={s.ip} /> {s.asn != null ? `AS${s.asn} ` : ""}
-                  {sinFicticio(s.organizacion)}
-                </span>
-              </span>,
-              <span key="p" className="cifras whitespace-nowrap">
-                Minuto {minuto(s.primera_deteccion_min)}
-                <span className="block text-[0.8125rem] text-tinta-2">{plural(s.detecciones, "detección", "detecciones")}</span>
-              </span>,
-              s.medida_id ? (
-                <span key="m" className="whitespace-nowrap">
-                  Bloqueo por {s.tipo_recomendado === "ip" ? "IP" : "dominio"}
-                  <span className="block text-[0.8125rem] text-tinta-2">
-                    <a href={`#${s.medida_id}`} className="huella enlace">
-                      {s.medida_id}
-                    </a>{" "}
-                    {s.medida_estado ? ESTADO_MEDIDA[s.medida_estado].toLowerCase() : ""}
-                  </span>
-                </span>
-              ) : (
-                "Sin medida"
-              ),
-              <span key="c" className="cifras whitespace-nowrap">
-                {numero(s.cobertura_pct, s.cobertura_pct % 1 === 0 ? 0 : 1)} %
-                <span className="block text-[0.8125rem] text-tinta-2">
-                  {s.primer_bloqueo_min != null ? `primer bloqueo a los ${numero(s.primer_bloqueo_min, 1)} min` : "sin bloqueo aplicado"}
-                </span>
-              </span>,
-            ],
-            pie:
-              s.terceros.length > 0 ? (
-                <>
-                  <span className="font-semibold text-tinta">
-                    {s.tipo_recomendado === "dominio" ? "Sitios ajenos en la misma IP, que no se tocan: " : "Sitios ajenos en la misma IP: "}
-                  </span>
-                  {s.terceros.join(", ")}
-                </>
-              ) : undefined,
-          }))}
-        />
-      </Seccion>
+      {e.medidas.map((m) => (
+        <Acto key={m.id} m={m} />
+      ))}
 
-      <Seccion titulo="Medidas" nota="Cada medida es una decisión del juez de turno sobre un servidor.">
-        <div className="grid gap-8">
-          {e.medidas.map((m) => (
-            <Medida key={m.id} m={m} />
-          ))}
+      <section className="foja-seccion">
+        <h2 className="foja-titulo">Detecciones</h2>
+        <div className="tabla-envoltura">
+          <table className="tabla">
+            <thead>
+              <tr>
+                <th>Detección</th>
+                <th>Minuto</th>
+                <th>Servidor</th>
+                <th>SHA-256 de la detección</th>
+                <th>SHA-256 de la captura</th>
+              </tr>
+            </thead>
+            <tbody>
+              {e.detecciones.map((d) => (
+                <tr key={d.id}>
+                  <td className="num">{d.id}</td>
+                  <td className="num">{reloj(d.minuto)}</td>
+                  <td>
+                    {d.host}
+                    <small className="num">{d.ip}</small>
+                  </td>
+                  <td className="huella tabla-hash">{enGrupos(d.sha256, 16)}</td>
+                  <td className="huella tabla-hash">{d.captura_sha256 ? enGrupos(d.captura_sha256, 16) : "sin captura"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </Seccion>
+      </section>
 
-      <Seccion titulo="Detecciones" nota="Lo que llegó del feed, con el SHA-256 de cada registro y de su captura.">
-        <Tabla
-          columnas={["Detección", "Minuto", "Servidor", "Recibida"]}
-          filas={e.detecciones.map((d) => ({
-            celdas: [
-              <span key="i" className="huella font-semibold">
-                {d.id}
-              </span>,
-              <span key="m" className="cifras">
-                {minuto(d.minuto)}
-              </span>,
-              <span key="s">
-                <span className="wrap-anywhere">{d.host}</span> <Objetivo valor={d.ip} className="text-tinta-2" />
-              </span>,
-              <span key="r" className="cifras whitespace-nowrap">
-                Minuto {minuto(d.recibida_min)} <span className="text-tinta-2">({horaLocal(d.recibida_iso)})</span>
-              </span>,
-            ],
-            pie: (
-              <span className="grid gap-x-3 sm:grid-cols-[4.2rem_minmax(0,1fr)]">
-                <span>Registro</span>
-                <span className="huella">{d.sha256}</span>
-                <span>Captura</span>
-                <span>
-                  {d.captura_sha256 ? <span className="huella">{d.captura_sha256}</span> : "sin captura"}
-                  {d.captura_sha256 && !d.formato_ok ? <span className="ml-2 font-semibold text-tinta">formato inesperado</span> : null}
-                </span>
-              </span>
-            ),
-          }))}
-        />
-      </Seccion>
+      <section className="foja-seccion">
+        <h2 className="foja-titulo">Aviso al titular</h2>
+        <div className="aviso-titular">
+          {e.aviso_titular
+            .split("\n")
+            .filter((l) => !/^nota:/i.test(l.trim()))
+            .map((l, i) => (
+              <p key={i}>{sinFicticio(l)}</p>
+            ))}
+        </div>
+        <p className="foja-nota">El simulador no modela este aviso: se genera, pero no tiene a quién enviarse.</p>
+      </section>
 
-      <Seccion titulo="Aviso al titular" nota="Para cortar la fuente de la filtración, que es lo único que el operador no esquiva cambiando de servidor.">
-        <div className="no-cortar max-w-[72ch] whitespace-pre-line border-l-[3px] border-tinta bg-hundido px-5 py-4 font-serif text-[1.0625rem] leading-[1.55]">{e.aviso_titular}</div>
-      </Seccion>
-
-      <Seccion titulo="Registro de auditoría" nota="Cada entrada lleva el hash de la anterior: alterar una rompe la cadena desde ahí.">
-        <Tabla
-          columnas={["N.º", "Minuto", "Hora", "Quién", "Qué pasó"]}
-          filas={e.auditoria.map((a) => ({
-            celdas: [
-              <span key="n" className="cifras">
-                {a.seq}
-              </span>,
-              <span key="m" className="cifras">
-                {a.minuto == null ? "—" : minuto(a.minuto)}
-              </span>,
-              <span key="h" className="cifras whitespace-nowrap">
-                {horaLocal(a.hora_iso)}
-              </span>,
-              <span key="a" className="wrap-anywhere">
-                {a.actor}
-              </span>,
-              a.resumen,
-            ],
-            pie: <span className="huella">{a.hash}</span>,
-          }))}
-        />
-      </Seccion>
-
-      <footer className="mt-10 border-t border-regla pt-4 text-[0.8125rem] leading-snug text-tinta-2">
-        Generado por Offside el {fechaHoraLocal(new Date().toISOString())}. Jueces, juzgados, proveedores y dominios son ficticios: los provee el simulador del
-        Desafío Fútbol. Las firmas son las de demostración del simulador.
-      </footer>
+      <section className="foja-seccion">
+        <h2 className="foja-titulo">Cadena de auditoría</h2>
+        <div className="tabla-envoltura">
+          <table className="tabla tabla-auditoria">
+            <thead>
+              <tr>
+                <th>Entrada</th>
+                <th>Minuto</th>
+                <th>Actor</th>
+                <th>Qué pasó</th>
+                <th>Hash</th>
+              </tr>
+            </thead>
+            <tbody>
+              {e.auditoria.map((a) => (
+                <tr key={a.seq}>
+                  <td className="num">{a.seq}</td>
+                  <td className="num">{a.minuto != null ? reloj(a.minuto) : "—"}</td>
+                  <td className="tabla-actor">{actores.get(a.actor) ?? sinFicticio(a.actor)}</td>
+                  <td>{sinFicticio(a.resumen)}</td>
+                  <td className="huella">{a.hash.slice(0, 8)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {ultima && (
+          <div className="bloque-hash">
+            <p>
+              <b>Hash de la última entrada del expediente</b>
+              <span className="num">entrada {ultima.seq}</span>
+            </p>
+            <HashCompleto valor={ultima.hash} />
+          </div>
+        )}
+      </section>
     </article>
   );
 }
 
-function Medida({ m }: { m: MedidaDTO }) {
+/** La escala del partido a todo el ancho, con los servidores del expediente y cada medida colgada de su minuto. */
+function ColumnaVertebral({ e, fin }: { e: ExpedienteDTO; fin: number }) {
+  const [ref, ancho] = useAncho<HTMLDivElement>();
+  const angosta = ancho > 0 && ancho < 420;
+  const fila = 36;
+  const general = e.estado_general;
+  const registrado = Math.max(...e.medidas.map((m) => m.decision?.minuto ?? m.creada_min), ...e.detecciones.map((d) => d.minuto), e.abierto_min);
+  // Si el partido sigue, la fuga llega hasta el minuto actual; si terminó, hasta el vencimiento.
+  const ahora = general ? (general.finalizado ? fin : Math.min(Math.max(general.minuto, registrado), fin)) : registrado;
+  const cerrado = !general && e.estado === "cerrado";
   return (
-    <section id={m.id} className="min-w-0 scroll-mt-20 border border-tinta" aria-label={`Medida ${m.id}`}>
-      {m.simulacro && <BandaSimulacro />}
-      <header className="no-cortar px-4 pt-3.5">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <h3 className="m-0 text-[1.1875rem] font-extrabold leading-tight">
-            {CLASE[m.clase]} <span className="huella ml-1 font-semibold text-tinta-2">{m.id}</span>
-          </h3>
-          <p className="cifras m-0 text-[0.9375rem] text-tinta-2">
-            Presentada en el minuto {minuto(m.creada_min)}. {ESTADO_MEDIDA[m.estado]}.
-          </p>
+    <section className="foja-seccion columna" aria-label="El expediente sobre la escala del partido">
+      <h2 className="foja-titulo">Recorrido de la filtración</h2>
+      <div className="columna-grilla">
+        <span />
+        <div className="columna-regla">
+          <MarcasRegla fin={fin} cada={angosta ? 30 : 15} />
         </div>
-        <p className="m-0 pb-4 pt-2 font-serif text-[1.3125rem] font-semibold leading-[1.25]">{m.pedido}</p>
-      </header>
-
-      {m.clase === "ampliacion" && (
-        <div className="no-cortar border-t border-regla bg-hundido">
-          <QueCambio medida={m} />
+        <div className="columna-hosts">
+          {e.servidores.map((s) => (
+            <p key={s.id} style={{ height: fila }}>
+              <span>
+                <HostPartido texto={s.host} />
+              </span>
+              <small className="num">{s.ip}</small>
+            </p>
+          ))}
         </div>
-      )}
-      {m.clase === "ratificacion" && (
-        <div className="no-cortar border-t border-regla bg-hundido">
-          <MotivoRatificacion medida={m} />
+        <div ref={ref} className="columna-escala" style={{ height: e.servidores.length * fila }}>
+          <TrazoFiltracion servidores={e.servidores} g={{ ancho, fila, fin, ahora: cerrado ? fin : ahora }} sinAnimar />
+          <span className="columna-vence" />
         </div>
-      )}
-      {m.clase === "levantamiento" && (
-        <div className="no-cortar border-t border-regla bg-hundido">
-          <DetalleReclamo medida={m} />
+        <span />
+        <div className="columna-medidas">
+          {e.medidas.map((m) => (
+            <span key={m.id} className="columna-medida num" style={{ left: `${fraccion(m.creada_min, fin) * 100}%` }}>
+              {m.id}
+            </span>
+          ))}
         </div>
-      )}
-
-      <div className="no-cortar">
-        <Verificaciones items={m.verificaciones} compacta />
       </div>
-      <div className="no-cortar">
-        <NoSeTocan medida={m} />
-      </div>
-
-      <div className="grid gap-x-8 border-t border-regla px-4 py-3 sm:grid-cols-2">
-        <div className="no-cortar min-w-0">
-          <h4 className="m-0 mb-1 text-[0.8125rem] font-medium text-tinta-2">
-            {m.clase === "inicial" || m.clase === "ampliacion" ? "Qué bloquea cada proveedor, con su parte de los clientes" : "A qué proveedores se envía"}
-          </h4>
-          <PlanProveedores plan={m.plan} parcial={m.clase !== "inicial" && m.clase !== "ampliacion"} />
-        </div>
-        <dl className="no-cortar m-0 mt-4 grid content-start gap-y-2.5 text-[0.9375rem] leading-snug sm:mt-0">
-          <Campo rotulo="Vence">Al final del partido (minuto {numero(m.vence_min)})</Campo>
-          <Campo rotulo="Dónde se promocionó">
-            <Promocion items={m.promocion} />
-          </Campo>
-        </dl>
-      </div>
-
-      <div className="no-cortar border-t border-regla px-4 py-3">
-        <h4 className="m-0 text-[0.8125rem] font-medium text-tinta-2">Huella: SHA-256 de lo que vio el juez al decidir. Los primeros 16 caracteres viajan en cada orden.</h4>
-        <p className="m-0 mt-1 break-all font-mono text-[0.9375rem] font-semibold leading-snug">{m.huella}</p>
-      </div>
-
-      {m.evidencia.length > 0 && (
-        <div className="border-t border-regla px-4 py-3">
-          <h4 className="m-0 mb-1.5 text-[0.8125rem] font-medium text-tinta-2">Evidencia congelada con la medida</h4>
-          <ul className="m-0 grid list-none gap-3 p-0">
-            {m.evidencia.map((ev) => (
-              <li key={ev.deteccion_id} className="no-cortar grid gap-x-6 gap-y-1 text-[0.9375rem] leading-snug sm:grid-cols-[7rem_minmax(0,1fr)]">
-                <p className="m-0">
-                  <span className="huella font-semibold">{ev.deteccion_id}</span>
-                  <span className="cifras block text-[0.8125rem] text-tinta-2">minuto {minuto(ev.minuto)}</span>
-                </p>
-                <dl className="m-0 grid gap-y-1">
-                  <Renglon rotulo="Registro">
-                    <span className="huella">{ev.deteccion_sha256}</span>
-                  </Renglon>
-                  <Renglon rotulo="Captura">
-                    {ev.captura_sha256 ? (
-                      <>
-                        <span className="huella">{ev.captura_sha256}</span>{" "}
-                        <span className="whitespace-nowrap text-[0.8125rem] text-tinta-2">{ev.formato_ok ? "formato correcto" : "formato inesperado"}</span>
-                      </>
-                    ) : (
-                      "Sin captura válida"
-                    )}
-                  </Renglon>
-                  {ev.pagina && (
-                    <Renglon rotulo="Página">
-                      <span className="huella">{ev.pagina}</span>
-                    </Renglon>
-                  )}
-                  {ev.stream_url && (
-                    <Renglon rotulo="Stream">
-                      <span className="huella">{ev.stream_url}</span>
-                    </Renglon>
-                  )}
-                </dl>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <Decision m={m} />
-
-      {m.ordenes.length > 0 && (
-        <div className="border-t border-regla px-4 py-3">
-          <h4 className="m-0 mb-1 text-[0.8125rem] font-medium text-tinta-2">Órdenes enviadas a los proveedores. Los tiempos son minutos de partido.</h4>
-          <Tabla densa columnas={["Proveedor", "Bloqueo", "Intento", "Estado", "Enviada", "Aplicada", "Cerrada"]} filas={m.ordenes.map((o) => filaOrden(o))} />
-        </div>
-      )}
     </section>
   );
 }
 
-function filaOrden(o: OrdenDTO): Fila {
-  const estado = ESTADO_ORDEN[o.estado];
-  return {
-    celdas: [
-      <span key="p" className="font-semibold">
-        {sinFicticio(o.proveedor_nombre)}
-      </span>,
-      <span key="b">
-        {TIPO[o.tipo]} <Objetivo valor={o.objetivo} />
-      </span>,
-      <span key="i" className="cifras">
-        {o.intento}
-      </span>,
-      <span key="e">
-        <span className={`font-bold ${TEXTO_TONO[estado.tono]}`}>{estado.rotulo}</span>
-        {o.error && <span className="block text-[0.8125rem] text-tinta-2">{o.error}</span>}
-      </span>,
-      <span key="en" className="cifras">
-        {minuto(o.enviada_min)}
-      </span>,
-      <span key="ap" className="cifras">
-        {minuto(o.aplicada_min)}
-      </span>,
-      <span key="fi" className="cifras">
-        {minuto(o.finalizada_min)}
-      </span>,
-    ],
-    pie: (
-      <>
-        Orden <span className="huella">{o.orden_id}</span>
-      </>
-    ),
-  };
-}
-
-function Decision({ m }: { m: MedidaDTO }) {
+function Sello({ m, vencen = null }: { m: MedidaDTO; vencen?: number | null }) {
   const d = m.decision;
   if (!d) {
     return (
-      <div className="no-cortar border-t border-regla px-4 py-3">
-        <h4 className="m-0 text-[0.8125rem] font-medium text-tinta-2">Decisión</h4>
-        <p className="m-0 mt-1 font-semibold">Pendiente: espera al juez de turno.</p>
-      </div>
+      <p className="sello sello-pendiente">
+        <span>Espera la firma del juez de turno.</span>
+      </p>
     );
   }
-  const aprobada = d.resultado === "aprobada";
+  const verbo = d.resultado === "aprobada" ? "Aprobada" : d.resultado === "rechazada" ? "Rechazada" : "Sin efecto";
   return (
-    <div className="no-cortar border-t border-regla px-4 pb-4 pt-3">
-      <h4 className="m-0 text-[0.8125rem] font-medium text-tinta-2">Decisión</h4>
-      <div className="mt-2.5 flex flex-wrap items-center gap-x-8 gap-y-3">
-        <div className={`sello ${aprobada ? "" : "sello-rechazo"}`}>
-          <span className="text-[0.8125rem] font-bold">{aprobada ? "Firmado y ordenado" : d.resultado === "rechazada" ? "Rechazado" : "Sin efecto"}</span>
-          <span className="font-serif text-[1.1875rem] font-semibold italic">{d.juez_nombre ?? "Sin intervención de un juez"}</span>
-          <span className="huella">
-            {d.minuto != null ? `min ${minuto(d.minuto)} ` : ""}
-            {m.huella.slice(0, 16)}
-          </span>
+    <div className="sello">
+      <Tilde tam={18} />
+      <p>
+        {verbo}
+        {d.juez_nombre ? ` por ${d.juez_nombre}` : ""}
+        {d.minuto != null ? ` a los ${reloj(d.minuto)} del partido` : ""}
+        {d.hora_iso ? ` (${horaLocal(d.hora_iso)}, hora local, ${fechaLocal(d.hora_iso)})` : ""}.
+        {d.motivo && <small>Motivo: {sinFicticio(d.motivo)}</small>}
+        {vencen != null && <small className="num">Las órdenes vencen a los {reloj(vencen)}.</small>}
+      </p>
+    </div>
+  );
+}
+
+function EstadoOrden({ o }: { o: OrdenDTO }) {
+  const e = ESTADO_ORDEN[o.estado];
+  return (
+    <span className="estado-orden" data-tinta={e.tinta}>
+      <Luz tono={e.luz} />
+      <span>
+        {e.rotulo}
+        {o.intento > 1 ? <small className="num">, intento {o.intento}</small> : null}
+      </span>
+    </span>
+  );
+}
+
+function Acto({ m }: { m: MedidaDTO }) {
+  const s = m.servidor;
+  // Si todas las órdenes vencen en el mismo minuto, se dice una vez en el sello y no en cada fila.
+  const vences = new Set(m.ordenes.map((o) => o.vence_min));
+  const venceComun = m.ordenes.length > 0 && vences.size === 1 ? m.ordenes[0]!.vence_min : null;
+  return (
+    <section className="foja-seccion acto" aria-label={`${m.id}, ${CLASE_ACTO[m.clase]}`}>
+      <header className="acto-cabeza">
+        <h2>
+          {m.id}, {CLASE_ACTO[m.clase]}
+          {m.simulacro ? ", simulacro" : ""}
+        </h2>
+        <span className="num">minuto {reloj(m.creada_min)}</span>
+      </header>
+      <p className="acto-pedido">{sinFicticio(m.pedido)}</p>
+      {s && (
+        <p className="acto-servidor">
+          {s.host}, <span className="num">{s.ip}</span>
+          {s.asn != null ? `, AS${s.asn}` : ""}
+          {s.organizacion ? ` ${sinFicticio(s.organizacion)}` : ""}
+        </p>
+      )}
+
+      {m.clase === "ampliacion" && (
+        <div className="grupo-hundido acto-grupo">
+          <QueCambio medida={m} />
         </div>
-        <dl className="m-0 grid gap-y-1 text-[0.9375rem] leading-snug">
-          {d.juez_id && (
-            <Renglon rotulo="Juez">
-              <span className="huella">{d.juez_id}</span>
-            </Renglon>
-          )}
-          <Renglon rotulo="Cuándo">
-            {d.minuto != null ? `Minuto ${minuto(d.minuto)} del partido` : "Sin minuto"}
-            {d.hora_iso ? `, ${fechaHoraLocal(d.hora_iso)}` : ""}
-          </Renglon>
-          {d.motivo && <Renglon rotulo="Motivo">{d.motivo}</Renglon>}
-        </dl>
+      )}
+      {m.clase === "ratificacion" && <Ratificacion medida={m} />}
+      {m.clase === "levantamiento" && <Levantamiento medida={m} />}
+
+      <Verificaciones items={m.verificaciones} />
+
+      {m.evidencia.length > 0 && (
+        <div className="tabla-envoltura">
+          <table className="tabla tabla-evidencia">
+            <thead>
+              <tr>
+                <th>Evidencia</th>
+                <th>Minuto</th>
+                <th>SHA-256 de la detección</th>
+                <th>SHA-256 de la captura</th>
+              </tr>
+            </thead>
+            <tbody>
+              {m.evidencia.map((ev) => (
+                <tr key={ev.deteccion_id}>
+                  <td className="num">{ev.deteccion_id}</td>
+                  <td className="num">{reloj(ev.minuto)}</td>
+                  <td className="huella tabla-hash">{enGrupos(ev.deteccion_sha256)}</td>
+                  <td className="huella tabla-hash">{ev.captura_sha256 ? enGrupos(ev.captura_sha256) : "sin captura"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <Promocion items={m.promocion} />
+
+      <div className="acto-firma">
+        <div className="bloque-hash bloque-huella">
+          <p>
+            <b>Huella de lo que vio el juez</b>
+            <span>viaja en cada orden</span>
+          </p>
+          <HashCompleto valor={m.huella} />
+        </div>
+
+        <Sello m={m} vencen={venceComun} />
+
+        {m.ordenes.length > 0 && (
+          <div className="tabla-envoltura">
+            <table className="tabla tabla-ordenes">
+              <thead>
+                <tr>
+                  <th>Proveedor</th>
+                  <th>Objetivo</th>
+                  <th>Orden</th>
+                  <th>Estado</th>
+                  <th>Enviada</th>
+                  <th>Aplicada</th>
+                  {venceComun == null && <th>Vence</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {m.ordenes.map((o) => (
+                  <tr key={o.orden_id}>
+                    <td className="tabla-proveedor">{nombreProveedor(o.proveedor_nombre)}</td>
+                    <td className="tabla-objetivo">
+                      {TIPO[o.tipo]}{" "}
+                      <span className="num">
+                        <DominioPartido texto={o.objetivo} />
+                      </span>
+                    </td>
+                    <td className="huella tabla-id">
+                      <OrdenId id={o.orden_id} />
+                    </td>
+                    <td>
+                      <EstadoOrden o={o} />
+                    </td>
+                    <td className="num">{o.enviada_min != null ? reloj(o.enviada_min) : "—"}</td>
+                    <td className="num">{o.aplicada_min != null ? reloj(o.aplicada_min) : "—"}</td>
+                    {venceComun == null && <td className="num">{reloj(o.vence_min)}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {m.ordenes.length === 0 && m.estado === "aprobada" && <p className="foja-nota">Todavía no salió ninguna orden.</p>}
       </div>
-    </div>
-  );
-}
-
-// --- piezas del documento --------------------------------------------------------------------------
-
-function Seccion({ titulo, nota, children }: { titulo: string; nota?: string; children: ReactNode }) {
-  return (
-    <section className="mt-9">
-      <h2 className="m-0 text-[1.375rem] font-extrabold leading-tight">{titulo}</h2>
-      {nota && <p className="m-0 mt-0.5 text-[0.9375rem] leading-snug text-tinta-2">{nota}</p>}
-      <div className="mt-3">{children}</div>
     </section>
-  );
-}
-
-function Campo({ rotulo, children }: { rotulo: string; children: ReactNode }) {
-  return (
-    <div className="min-w-0">
-      <dt className="text-[0.8125rem] font-medium text-tinta-2">{rotulo}</dt>
-      <dd className="m-0 break-words">{children}</dd>
-    </div>
-  );
-}
-
-function Renglon({ rotulo, children }: { rotulo: string; children: ReactNode }) {
-  return (
-    <div className="grid grid-cols-[4.2rem_minmax(0,1fr)] gap-x-2">
-      <dt className="text-[0.8125rem] text-tinta-2">{rotulo}</dt>
-      <dd className="m-0 min-w-0 break-words">{children}</dd>
-    </div>
-  );
-}
-
-interface Fila {
-  celdas: ReactNode[];
-  /** Renglón de ancho completo debajo de la fila: hashes e identificadores largos. */
-  pie?: ReactNode;
-}
-
-function Tabla({ columnas, filas, densa = false }: { columnas: string[]; filas: Fila[]; densa?: boolean }) {
-  if (filas.length === 0) return <p className="m-0 text-tinta-2">Sin registros.</p>;
-  // En el celular cada fila se apila como una ficha (rótulo a la izquierda, valor a la derecha);
-  // desde 640 px y al imprimir es una tabla común.
-  return (
-    <table className={`w-full border-collapse text-left leading-snug max-sm:block max-sm:border-t-2 max-sm:border-tinta ${densa ? "text-[0.875rem]" : "text-[0.9375rem]"}`}>
-      <thead className="max-sm:hidden">
-        <tr>
-          {columnas.map((c) => (
-            <th key={c} scope="col" className="border-b-2 border-tinta px-2 py-1.5 align-bottom text-[0.8125rem] font-semibold first:pl-0 last:pr-0">
-              {c}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      {filas.map((fila, i) => (
-        <tbody key={i} className="no-cortar border-b border-regla max-sm:block max-sm:py-2">
-          <tr className="max-sm:block">
-            {fila.celdas.map((celda, j) => (
-              <td
-                key={j}
-                data-rotulo={columnas[j]}
-                className={`px-2 pt-2 align-top first:pl-0 last:pr-0 max-sm:flex max-sm:justify-between max-sm:gap-4 max-sm:px-0 max-sm:py-0.5 max-sm:text-right max-sm:before:flex-none max-sm:before:text-left max-sm:before:text-[0.8125rem] max-sm:before:text-tinta-2 max-sm:before:content-[attr(data-rotulo)] ${
-                  fila.pie ? "pb-0.5" : "pb-2"
-                }`}
-              >
-                <span className="min-w-0">{celda}</span>
-              </td>
-            ))}
-          </tr>
-          {fila.pie && (
-            <tr className="max-sm:block">
-              <td colSpan={columnas.length} className="px-0 pb-2 text-[0.8125rem] leading-snug text-tinta-2 max-sm:block max-sm:pb-0 max-sm:pt-1">
-                {fila.pie}
-              </td>
-            </tr>
-          )}
-        </tbody>
-      ))}
-    </table>
   );
 }
