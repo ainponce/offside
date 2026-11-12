@@ -87,7 +87,7 @@ Paso a paso para el viernes 13. Pensada para una sola persona que hace de los do
    ```
 
    Tiene que terminar en "VERIFICACIÓN CORRECTA". Sin el registro del simulador, eso prueba que la carpeta es coherente consigo misma, no más (el verificador lo dice). Si la organización comparte el `registro.jsonl` del simulador, copialo a `entrega/final/registro-simulador.jsonl` y verificá también con `--registro entrega/final/registro-simulador.jsonl`: ahí la auditoría queda anclada al registro de los proveedores. No toques los archivos de `entrega/final` después de exportar: cualquier cambio, hasta en un `.md`, hace fallar la verificación.
-3. Subí la entrega antes del cierre:
+3. Subí la entrega antes del cierre, el viernes 13 a las 13:00 (lo que no esté en el repo a esa hora no cuenta):
 
    ```bash
    git add entrega/final

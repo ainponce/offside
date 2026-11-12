@@ -45,6 +45,6 @@ Textos listos para pegar en [Hacki](https://hacki.crecimiento.build/h/competenci
 
 ## Dudas para confirmar con la organización
 
-- **Hora de cierre.** Hacki marca el cierre el viernes 13 a las 10:00, pero el partido final es ese mismo viernes. Si el partido termina después del cierre, queda la exportación de práctica en `entrega/practica`.
+- **Hora de cierre: resuelta.** El README del desafío (actualizado el jueves 12 a las 18:35) fija el cierre de entregas el viernes 13 a las 13:00, después del partido final; después vienen el pitch y la premiación. El mail de la organización que dice "10 hs" es del otro desafío del track (narrativas y coordinación). Si igual el partido terminara después de las 13:00, queda la exportación de práctica en `entrega/practica`.
 - **Velocidad del partido final** ("posiblemente acelerado") y dirección del simulador de tu equipo.
 - **Licencia.** El desafío de Big Data propone MIT o Apache 2.0; este repositorio usa MIT.
