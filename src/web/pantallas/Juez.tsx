@@ -16,6 +16,7 @@ import { CLASE, enGrupos, haceReal, juzgadoBreve, lista, minutoEntero, plural, r
 import { aceleracion, minutoAhora, sincronizarReloj, useCondicionMinuto, useMinuto } from "../nucleo/reloj.ts";
 import { salir, useSesion } from "../nucleo/sesion.ts";
 import {
+  ACTIVA_SONIDO,
   activarSonido,
   audioListo,
   detenerTitulo,
@@ -271,8 +272,11 @@ export function Juez() {
 
     const hayNovedad = !primera && cola.yo.de_turno && ((nuevas.length > 0 && !entro) || (entro && ids.length > 0));
     if (hayNovedad) {
-      if (!silencioRef.current) silbato();
-      vibrar([90, 60, 180]);
+      // Silenciado, no suena ni vibra: queda la tarjeta y el título que titila.
+      if (!silencioRef.current) {
+        silbato();
+        vibrar([90, 60, 180]);
+      }
       const cuantas = entro ? ids.length : nuevas.length;
       titilarTitulo(`● ${plural(cuantas, "medida nueva", "medidas nuevas")}`, document.hidden ? 60_000 : 5000);
     }
@@ -337,7 +341,7 @@ export function Juez() {
         setPlegada(false);
         setAMano(false);
         setElegida(null);
-        vibrar(40);
+        if (!silencioRef.current) vibrar(40);
       } catch (causa) {
         if (causa instanceof ErrorApi && yaNoPendiente(causa)) ocultar(m.id);
         mostrarError("No se firmó", causa, () => void firmar(m, opciones));
@@ -602,6 +606,18 @@ function CabezaJuez(p: {
   const e = p.estado;
   const apagado = p.silencio || !p.sonidoListo;
   const pedirToque = !p.silencio && !p.sonidoListo && !e?.finalizado;
+  // Silenciar apaga también la vibración; donde no hay vibración (iPhone), no se nombra.
+  const aviso = puedeVibrar() ? "el aviso (sonido y vibración)" : "el aviso sonoro";
+  const rotulo = !p.sonidoListo ? "Activar el aviso sonoro" : p.silencio ? `Activar ${aviso}` : `Silenciar ${aviso}`;
+  const ayuda = !p.sonidoListo
+    ? "El aviso sonoro todavía no está activo"
+    : p.silencio
+      ? puedeVibrar()
+        ? "Aviso apagado: sin sonido ni vibración"
+        : "Aviso sonoro apagado"
+      : puedeVibrar()
+        ? "Aviso encendido: sonido y vibración"
+        : "Aviso sonoro encendido";
   return (
     <header className="cabeza-juez">
       <div className="cabeza-juez-interior">
@@ -620,9 +636,10 @@ function CabezaJuez(p: {
               className="boton-icono"
               onClick={p.alSilenciar}
               aria-pressed={p.silencio}
-              aria-label={!p.sonidoListo ? "Activar el aviso sonoro" : p.silencio ? "Activar el aviso sonoro" : "Silenciar el aviso sonoro"}
-              title={!p.sonidoListo ? "El aviso sonoro todavía no está activo" : p.silencio ? "Aviso sonoro apagado" : "Aviso sonoro encendido"}
+              aria-label={rotulo}
+              title={ayuda}
               data-apagado={apagado ? "" : undefined}
+              {...{ [ACTIVA_SONIDO]: "" }}
             >
               {apagado ? <IconoSilencio /> : <IconoSonido />}
             </button>
@@ -641,7 +658,7 @@ function CabezaJuez(p: {
                 <span />
               )}
               {pedirToque && (
-                <button type="button" className="cabeza-activar" onClick={p.alActivarSonido}>
+                <button type="button" className="cabeza-activar" onClick={p.alActivarSonido} {...{ [ACTIVA_SONIDO]: "" }}>
                   Tocá para activar el aviso
                 </button>
               )}
@@ -720,7 +737,7 @@ function ColaVacia({ estado, deTurno, silencio, sonidoListo }: { estado: EstadoD
     : !deTurno
       ? ["No hay medidas en la cola", "Cuando entres de turno, las medidas pendientes aparecen acá."]
       : silencio
-        ? ["No hay medidas en la cola", `El aviso sonoro está apagado: la próxima aparece acá${puedeVibrar() ? ", con vibración" : ""}.`]
+        ? ["No hay medidas en la cola", `El aviso está apagado: la próxima aparece acá, sin sonido${puedeVibrar() ? " ni vibración" : ""}.`]
         : !sonidoListo
           ? ["No hay medidas en la cola", "Tocá el parlante de arriba para que suene un aviso con la próxima."]
           : ["No hay medidas en la cola", "Suena un aviso cuando llegue la próxima."];
@@ -859,6 +876,9 @@ function BarraAccion(p: {
       </div>
     );
   }
+  // Sin conexión, la segunda línea es una frase: va en la letra del texto, no en la de la huella
+  // (en Plex Mono no entraba en el botón de un teléfono de 390 y se cortaba por los dos lados).
+  const sinFirma = p.sinServidor || !p.conectado;
   const segunda = p.sinServidor
     ? "sin conexión, no se puede firmar"
     : !p.conectado
@@ -909,7 +929,7 @@ function BarraAccion(p: {
               Firmando…
             </span>
           </span>
-          <span className="firma-huella huella">{segunda}</span>
+          <span className={sinFirma ? "firma-huella" : "firma-huella huella"}>{segunda}</span>
         </button>
       </div>
     </div>

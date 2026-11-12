@@ -1,6 +1,7 @@
 // Aviso de medida nueva: un silbato corto sintetizado (sin archivos de audio),
 // vibración si el dispositivo la tiene y el título de la pestaña titilando.
-// El navegador solo deja sonar después de que la persona tocó algo.
+// El navegador solo deja sonar después de que la persona tocó algo. Silenciar
+// (en Juez.tsx) apaga el silbato y la vibración; el título sigue titilando.
 
 type ConWebkit = typeof globalThis & { webkitAudioContext?: typeof AudioContext };
 
@@ -46,11 +47,22 @@ function despertar(): Promise<void> {
   return Promise.resolve();
 }
 
+/**
+ * Marca de los controles que activan el aviso ellos mismos, en su `click`. El toque
+ * sobre ellos no lo habilita antes: si se habilitara al apoyar el dedo, el control
+ * cambiaría (o desaparecería) antes de soltarlo y su `click` no llegaría, y entonces
+ * no sonaría el silbato que confirma la activación.
+ */
+export const ACTIVA_SONIDO = "data-activa-sonido";
+
 /** Engancha el primer toque o tecla para habilitar el audio. Se puede llamar varias veces. */
 export function prepararSonido(): void {
   if (preparado || typeof window === "undefined") return;
   preparado = true;
-  const alTocar = () => void despertar();
+  const alTocar = (e: Event) => {
+    if (e.target instanceof Element && e.target.closest(`[${ACTIVA_SONIDO}]`)) return;
+    void despertar();
+  };
   // Safari desbloquea el audio en touchend o click, no en pointerdown: se escuchan los cuatro.
   window.addEventListener("pointerdown", alTocar, { passive: true });
   window.addEventListener("touchend", alTocar, { passive: true });
