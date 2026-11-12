@@ -19,6 +19,7 @@
     "exportar": "tsx --disable-warning=ExperimentalWarning scripts/exportar.ts",
     "demo": "tsx --disable-warning=ExperimentalWarning scripts/demo.ts",
     "video": "tsx --disable-warning=ExperimentalWarning scripts/video.ts",
+    "video:voz": "tsx --disable-warning=ExperimentalWarning scripts/narrar.ts",
     "jueces-locales": "tsx --disable-warning=ExperimentalWarning scripts/jueces-locales.ts"
   },
   "dependencies": {

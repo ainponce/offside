@@ -36,7 +36,7 @@ Opciones: `-- --voz <nombre>` agrega `offside-demo-narrado.mp4` con la voz de `s
 
 ## El guion
 
-Tiempos de `salida/video/offside-demo.mp4` (2:36). Ese archivo se grabó con `pnpm video -- --acelerar 12`: la Mac, a batería, se durmió en el medio de las grabaciones a x6 y el reloj del simulador se frenó. Por eso el encabezado del video dice "tiempo ×12". Una grabación a x6 dura unos segundos más; cada proveedor tarda lo que tarda.
+Tiempos de `salida/video/offside-demo.mp4` (2:47). Ese archivo se grabó con `pnpm video -- --acelerar 12`: la Mac, a batería, se durmió en el medio de las grabaciones a x6 y el reloj del simulador se frenó. Por eso el encabezado del video dice "tiempo ×6". Una grabación a x6 dura unos segundos más; cada proveedor tarda lo que tarda.
 
 | Tiempo | En pantalla | Subtítulo |
 |---|---|---|
@@ -76,6 +76,16 @@ Para tener una versión con voz:
 
 - Bajá una voz natural en Ajustes del Sistema > Accesibilidad > Contenido leído > Voz del sistema > Administrar voces (por ejemplo, una "Mejorada" o "Premium" en castellano) y corré `pnpm video -- --voz "<nombre exacto>"`. Cada subtítulo espera lo que dura su frase.
 - O grabá tu voz leyendo la columna de subtítulos sobre `offside-demo.mp4`. Los tiempos de arriba alcanzan para leer cada frase sin apuro.
+
+### Voz en off con ElevenLabs
+
+`offside-demo-voz.mp4` es el mismo video (sin regrabar, video copiado tal cual) con voz en off de ElevenLabs (voz Brian, `eleven_multilingual_v2`):
+
+```bash
+ELEVENLABS_API_KEY=... pnpm video:voz
+```
+
+`scripts/narrar.ts` lee del video cuándo está cada subtítulo en pantalla, genera una frase hablada por subtítulo (las frases están en el script), la acelera hasta ×1,12 si hace falta y falla diciendo cuál acortar si ni así entra. Mezcla a -16 LUFS y comprueba con `silencedetect` que ninguna frase se pisa ni sale de su subtítulo. Los clips quedan en `salida/video/voz/` con un nombre que depende del texto y la voz: al repetir, solo se piden las frases que cambiaron. `-- --voz <voice_id>` cambia la voz. La clave se pasa por el entorno; nunca va al repositorio. Si se regraba el video con otros números (sitios ajenos, fases), hay que ajustar las frases.
 
 ## Si te pasás de los 3 minutos
 
