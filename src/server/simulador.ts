@@ -94,9 +94,34 @@ export interface ReclamoSim {
 
 export type RespuestaEnvio = { ok: true } | { ok: false; estado: number; error: string };
 
+/** Juzgados, jueces y horario de turnos (GET /juzgados; sin claves). */
+export interface JuzgadosSim {
+  juzgados: { id: string; nombre: string; jurisdiccion?: string; jueces: { id: string; nombre: string }[] }[];
+  turnos: { juez_id: string; desde_min: number; hasta_min: number }[];
+}
+
+/**
+ * Falla de comunicación con el simulador: no respondió, se agotó el tiempo o
+ * contestó con un error al leer. El motor la trata como un corte y reintenta;
+ * cualquier otra excepción es un error de Offside o un dato mal formado.
+ */
+export class ErrorDeRed extends Error {
+  constructor(mensaje: string) {
+    super(mensaje);
+    this.name = "ErrorDeRed";
+  }
+}
+
+export function esErrorDeRed(e: unknown): boolean {
+  if (e instanceof ErrorDeRed) return true;
+  if (!(e instanceof Error)) return false;
+  return e.name === "AbortError" || e.name === "TimeoutError" || /fetch failed|ECONNREFUSED|ECONNRESET|socket hang up/i.test(e.message);
+}
+
 export interface Simulador {
   estado(): Promise<EstadoSim>;
   partido(): Promise<Partido>;
+  juzgados(): Promise<JuzgadosSim>;
   detecciones(desde: number): Promise<{ minuto_actual: number; detecciones: Deteccion[] }>;
   dnsIp(ip: string): Promise<DnsIp | null>;
   dnsDominio(dominio: string): Promise<DnsDominio | null>;
@@ -128,13 +153,20 @@ export class SimuladorHttp implements Simulador {
   }
 
   private async pedir(ruta: string, cuerpo?: unknown): Promise<{ estado: number; datos: any }> {
-    const respuesta = await fetch(this.base + ruta, {
-      method: cuerpo === undefined ? "GET" : "POST",
-      headers: cuerpo === undefined ? undefined : { "Content-Type": "application/json" },
-      body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
-      signal: AbortSignal.timeout(this.tiempoMs),
-    });
-    const texto = await respuesta.text();
+    let respuesta: Response;
+    let texto: string;
+    try {
+      respuesta = await fetch(this.base + ruta, {
+        method: cuerpo === undefined ? "GET" : "POST",
+        headers: cuerpo === undefined ? undefined : { "Content-Type": "application/json" },
+        body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
+        signal: AbortSignal.timeout(this.tiempoMs),
+      });
+      texto = await respuesta.text();
+    } catch (e) {
+      const causa = e instanceof Error ? `${e.message}${(e as any).cause?.code ? ` (${(e as any).cause.code})` : ""}` : String(e);
+      throw new ErrorDeRed(`Sin respuesta del simulador en ${ruta}: ${causa}`);
+    }
     let datos: any = null;
     try {
       datos = texto ? JSON.parse(texto) : null;
@@ -146,14 +178,14 @@ export class SimuladorHttp implements Simulador {
 
   private async leer<T>(ruta: string): Promise<T> {
     const { estado, datos } = await this.pedir(ruta);
-    if (estado < 200 || estado >= 300) throw new Error(`El simulador respondió ${estado} en ${ruta}: ${datos?.error ?? ""}`);
+    if (estado < 200 || estado >= 300) throw new ErrorDeRed(`El simulador respondió ${estado} en ${ruta}: ${datos?.error ?? ""}`);
     return datos as T;
   }
 
   private async leerOpcional<T>(ruta: string): Promise<T | null> {
     const { estado, datos } = await this.pedir(ruta);
     if (estado === 404) return null;
-    if (estado < 200 || estado >= 300) throw new Error(`El simulador respondió ${estado} en ${ruta}: ${datos?.error ?? ""}`);
+    if (estado < 200 || estado >= 300) throw new ErrorDeRed(`El simulador respondió ${estado} en ${ruta}: ${datos?.error ?? ""}`);
     return datos as T;
   }
 
@@ -169,6 +201,23 @@ export class SimuladorHttp implements Simulador {
 
   partido(): Promise<Partido> {
     return this.leer<Partido>("/partido");
+  }
+
+  async juzgados(): Promise<JuzgadosSim> {
+    const d = await this.leer<any>("/juzgados");
+    const juzgados = Array.isArray(d?.juzgados) ? d.juzgados : [];
+    const turnos = Array.isArray(d?.turnos) ? d.turnos : [];
+    return {
+      juzgados: juzgados.map((j: any) => ({
+        id: String(j?.id ?? ""),
+        nombre: String(j?.nombre ?? j?.id ?? ""),
+        jurisdiccion: typeof j?.jurisdiccion === "string" ? j.jurisdiccion : undefined,
+        jueces: (Array.isArray(j?.jueces) ? j.jueces : []).map((x: any) => ({ id: String(x?.id ?? ""), nombre: String(x?.nombre ?? x?.id ?? "") })),
+      })),
+      turnos: turnos
+        .filter((t: any) => typeof t?.juez_id === "string" && Number.isFinite(t?.desde_min) && Number.isFinite(t?.hasta_min))
+        .map((t: any) => ({ juez_id: t.juez_id, desde_min: Number(t.desde_min), hasta_min: Number(t.hasta_min) })),
+    };
   }
 
   detecciones(desde: number): Promise<{ minuto_actual: number; detecciones: Deteccion[] }> {

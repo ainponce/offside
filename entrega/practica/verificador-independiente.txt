@@ -1,10 +1,19 @@
-  ✔ Auditoría: 151 entradas encadenadas; cabecera 920d4719407dab2d…
-  ✔ EXP-2026-000001: 12 detecciones, 3 medidas y 14 órdenes coinciden.
-  ✔ EXP-2026-000002: 10 detecciones, 1 medidas y 4 órdenes coinciden.
-  ✔ EXP-2026-000003: 10 detecciones, 1 medidas y 4 órdenes coinciden.
-  ✔ EXP-2026-000004: 6 detecciones, 2 medidas y 8 órdenes coinciden.
-  ✔ Archivadas: 5 detecciones sin medida coinciden.
-  ✔ Manifiesto: 10 archivos sin cambios.
-  ✔ Registro del simulador: las 30 órdenes recibidas por los proveedores figuran en los expedientes, todas firmadas por un juez de turno.
+Qué se comprobó
+  ✔ Auditoría: 189 entradas encadenadas; cabecera c11335f63f4c2458…
+  ✔ Archivos: los 10 archivos exportados están en el manifiesto y en el cierre de la auditoría, sin cambios.
+  ✔ EXP-2026-000001: 12 detecciones, 3 medidas y 14 órdenes coinciden con la auditoría.
+  ✔ EXP-2026-000002: 10 detecciones, 1 medidas y 4 órdenes coinciden con la auditoría.
+  ✔ EXP-2026-000003: 10 detecciones, 1 medidas y 4 órdenes coinciden con la auditoría.
+  ✔ EXP-2026-000004: 6 detecciones, 2 medidas y 10 órdenes coinciden con la auditoría.
+  ✔ Archivadas: 5 detecciones sin medida coinciden con la auditoría.
+  ✔ Anclas: las 7 medidas guardan una cabecera de la auditoría que coincide con la cadena.
+  ✔ Registro del simulador: las 32 órdenes que recibieron los proveedores figuran en los expedientes, todas firmadas por un juez de turno.
 
-VERIFICACIÓN CORRECTA: nada fue alterado.
+Qué ancla la auditoría
+  · El registro del simulador ancla la auditoría: las órdenes de 7 medidas llevan su huella, y la más reciente (M-0007) la deja anclada hasta la secuencia 136 de 189.
+  · Las entradas 137 a 189 (incluido el cierre de la exportación) dependen solo de esta carpeta.
+  · registro-simulador.jsonl no es parte de la exportación: no se verificó.
+  · verificador-independiente.txt no es parte de la exportación: no se verificó.
+  · verificador-oficial.txt no es parte de la exportación: no se verificó.
+
+VERIFICACIÓN CORRECTA: la carpeta es coherente y coincide con el registro del simulador hasta donde lo ancla.

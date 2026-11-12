@@ -2,8 +2,9 @@
 //
 //   pnpm start                 usa la base existente (retoma un partido en curso)
 //   pnpm start -- --nuevo      archiva la base anterior y empieza un partido nuevo
+//   pnpm start -- --simulacro  fuerza un bloqueo equivocado para mostrar los reclamos (solo demo)
 
-import { existsSync, renameSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { networkInterfaces } from "node:os";
 import { serve } from "@hono/node-server";
 import { crearApi } from "./api.ts";
@@ -13,6 +14,7 @@ import { crearContexto, restaurarEstado } from "./contexto.ts";
 import { abrirDb, leerKv } from "./db.ts";
 import { Motor } from "./motor.ts";
 import { instalarReclamos } from "./reclamos.ts";
+import { archivarBase as archivar } from "./reinicio.ts";
 import { Sesiones } from "./sesiones.ts";
 import { SimuladorHttp } from "./simulador.ts";
 
@@ -21,11 +23,8 @@ const { jueces, operadores } = cargarJueces(config.juecesRuta);
 
 const nuevo = process.argv.includes("--nuevo") || process.env.OFFSIDE_NUEVO === "1";
 function archivarBase(motivo: string): void {
-  const sello = new Date().toISOString().replace(/[:.]/g, "-");
-  for (const sufijo of ["", "-wal", "-shm"]) {
-    if (existsSync(config.dbRuta + sufijo)) renameSync(config.dbRuta + sufijo, `${config.dbRuta}.${sello}${sufijo}`);
-  }
-  console.log(`${motivo} Base anterior archivada como ${config.dbRuta}.${sello}`);
+  const destino = archivar(config.dbRuta, "anterior");
+  if (destino) console.log(`${motivo} Base anterior archivada como ${destino}`);
 }
 
 const sim = new SimuladorHttp(config.simuladorUrl);
@@ -61,7 +60,8 @@ const ctx = crearContexto({
   config,
 });
 restaurarEstado(ctx);
-const sesiones = new Sesiones(db, jueces, operadores);
+// Las sesiones siguen a ctx.db: si el simulador se reinicia, la base nueva no tiene sesiones.
+const sesiones = new Sesiones(ctx, jueces, operadores);
 const { app } = crearApi(ctx, sesiones, { raizWeb: "dist" });
 const motor = new Motor(ctx);
 instalarReclamos(motor);
@@ -73,12 +73,17 @@ ctx.auditoria.registrar({
   datos: { simulador: config.simuladorUrl, simulacro: config.simulacro, base_nueva: nuevo },
 });
 
-const servidor = serve({ fetch: app.fetch, port: config.puerto, hostname: "0.0.0.0" }, () => {
-  console.log(`Offside en http://localhost:${config.puerto}`);
-  for (const lista of Object.values(networkInterfaces())) {
-    for (const red of lista ?? []) {
-      if (red.family === "IPv4" && !red.internal) console.log(`  En la red local: http://${red.address}:${config.puerto}`);
+const servidor = serve({ fetch: app.fetch, port: config.puerto, hostname: config.host }, () => {
+  console.log(`Offside en http://localhost:${config.puerto} (escucha en ${config.host})`);
+  if (config.host === "0.0.0.0" || config.host === "::") {
+    for (const lista of Object.values(networkInterfaces())) {
+      for (const red of lista ?? []) {
+        if (red.family === "IPv4" && !red.internal) console.log(`  En la red local: http://${red.address}:${config.puerto}`);
+      }
     }
+  }
+  if (config.juecesRuta.endsWith("jueces.demo.json")) {
+    console.log("  Usuarios de demostración (contraseñas públicas). Para el partido final: pnpm jueces-locales.");
   }
   console.log(`Simulador: ${config.simuladorUrl}`);
   if (config.simulacro) console.log("SIMULACRO ACTIVO: se va a forzar un bloqueo equivocado para mostrar los reclamos.");
@@ -96,7 +101,7 @@ setInterval(() => {
 function apagar(): void {
   motor.detener();
   servidor.close();
-  db.close();
+  ctx.db.close();
   process.exit(0);
 }
 process.on("SIGINT", apagar);

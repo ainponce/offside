@@ -2,12 +2,17 @@
 //
 //   SIMULADOR_URL         Dirección del simulador (por defecto http://localhost:8080).
 //                         En el partido final, la que asigne la organización.
-//   PUERTO                Puerto de Offside (3000). Escucha en todas las interfaces.
+//   PUERTO                Puerto de Offside (3000).
+//   OFFSIDE_HOST          Interfaz donde escucha (0.0.0.0: toda la red local, para abrir
+//                         la vista del juez desde un teléfono). En el partido final, 127.0.0.1.
 //   OFFSIDE_DB            Ruta de la base local (datos/offside.db). Se crea sola.
-//   OFFSIDE_JUECES        Jueces, claves y usuarios de demostración (config/jueces.demo.json).
+//   OFFSIDE_JUECES        Jueces, claves y usuarios (config/jueces.demo.json, públicos).
+//                         En el partido final, config/jueces.local.json (pnpm jueces-locales).
 //   OFFSIDE_INTERVALO_MS  Cada cuánto se consulta al simulador, en ms reales (300).
-//   OFFSIDE_SIMULACRO=1   Solo para el video: fuerza un bloqueo equivocado para
-//                         mostrar el circuito de reclamos.
+//
+// El simulacro (un bloqueo equivocado a propósito, para mostrar los reclamos) solo
+// se activa con la bandera --simulacro en la línea de comandos, nunca por entorno:
+// así no puede quedar prendido por una variable olvidada en el partido final.
 
 import { readFileSync } from "node:fs";
 import { CONFIG_BASE, type Config, type Juez, type Operador } from "./contexto.ts";
@@ -19,15 +24,16 @@ function entero(valor: string | undefined, porDefecto: number): number {
   return Number.isFinite(n) && n > 0 ? n : porDefecto;
 }
 
-export function cargarConfig(env: Entorno = process.env): Config {
+export function cargarConfig(env: Entorno = process.env, argv: string[] = process.argv): Config {
   return {
     ...CONFIG_BASE,
     simuladorUrl: (env.SIMULADOR_URL ?? CONFIG_BASE.simuladorUrl).replace(/\/+$/, ""),
     puerto: entero(env.PUERTO, CONFIG_BASE.puerto),
+    host: env.OFFSIDE_HOST?.trim() || CONFIG_BASE.host,
     dbRuta: env.OFFSIDE_DB ?? CONFIG_BASE.dbRuta,
     juecesRuta: env.OFFSIDE_JUECES ?? CONFIG_BASE.juecesRuta,
     intervaloMs: entero(env.OFFSIDE_INTERVALO_MS, CONFIG_BASE.intervaloMs),
-    simulacro: env.OFFSIDE_SIMULACRO === "1" || env.OFFSIDE_SIMULACRO === "true",
+    simulacro: argv.includes("--simulacro"),
   };
 }
 

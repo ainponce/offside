@@ -202,7 +202,7 @@ async function levantar(nombre: string, opciones: { acelerar: number; inicioMin:
     { cwd: carpeta, stdio: ["ignore", "ignore", "inherit"] },
   );
   await esperarHasta(`levantar el simulador de ${nombre}`, async () => (await json(`${simulador}/estado`)).estado === 200);
-  const app = spawn(join(RAIZ, "node_modules", ".bin", "tsx"), ["--disable-warning=ExperimentalWarning", join(RAIZ, "src", "server", "index.ts"), "--nuevo"], {
+  const app = spawn(join(RAIZ, "node_modules", ".bin", "tsx"), ["--disable-warning=ExperimentalWarning", join(RAIZ, "src", "server", "index.ts"), "--nuevo", ...(opciones.simulacro ? ["--simulacro"] : [])], {
     cwd: RAIZ,
     stdio: ["ignore", "ignore", "inherit"],
     env: {
@@ -211,7 +211,6 @@ async function levantar(nombre: string, opciones: { acelerar: number; inicioMin:
       PUERTO: String(puerto),
       OFFSIDE_DB: join(carpeta, "offside.db"),
       OFFSIDE_INTERVALO_MS: "150",
-      ...(opciones.simulacro ? { OFFSIDE_SIMULACRO: "1" } : { OFFSIDE_SIMULACRO: "" }),
     },
   });
   hijos.push(sim, app);

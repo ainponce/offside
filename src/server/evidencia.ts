@@ -9,12 +9,13 @@ export function sha256Hex(data: string | Uint8Array): string {
 const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
 
 /** Hash de los bytes de la captura y control informativo de formato (MPEG-TS empieza con 0x47). */
-export function analizarCaptura(b64: string | null | undefined): {
+export function analizarCaptura(b64: unknown): {
   sha256: string | null;
   bytes: number;
   formato_ok: boolean;
 } {
-  const limpio = (b64 ?? "").replace(/\s+/g, "");
+  // Una captura que no es texto (un número, un objeto) cuenta como ausente.
+  const limpio = (typeof b64 === "string" ? b64 : "").replace(/\s+/g, "");
   if (!limpio || limpio.length % 4 !== 0 || !BASE64.test(limpio)) {
     return { sha256: null, bytes: 0, formato_ok: false };
   }

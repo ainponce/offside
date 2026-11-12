@@ -26,7 +26,14 @@ Paso a paso para el viernes 13. Pensada para una sola persona que hace de los do
    pnpm ensayo
    ```
 
-3. Cargá la batería de la laptop y llevá el cargador. Anotá en papel los usuarios de `config/jueces.demo.json`.
+3. Generá contraseñas propias para el final. Las de `config/jueces.demo.json` están publicadas en el repositorio:
+
+   ```bash
+   pnpm jueces-locales
+   ```
+
+   Escribe `config/jueces.local.json` (no se sube al repositorio) con los mismos jueces, juzgados y claves de firma, y una contraseña nueva por usuario. Las muestra **una sola vez**: anotalas en papel. Si la organización publica otro archivo de jueces para la final, partí de ese: `pnpm jueces-locales -- --desde RUTA --forzar`.
+4. Cargá la batería de la laptop y llevá el cargador.
 
 ## Antes del partido (10 minutos)
 
@@ -38,17 +45,17 @@ Paso a paso para el viernes 13. Pensada para una sola persona que hace de los do
    ```
 
    Tiene que responder con `minuto_actual`. Si no responde, avisá antes de que empiece.
-3. Compilá la interfaz y arrancá Offside con una base nueva, apuntando a esa dirección:
+3. Compilá la interfaz y arrancá Offside con una base nueva, apuntando a esa dirección, escuchando solo en la laptop y con las contraseñas propias:
 
    ```bash
    pnpm build
    ```
 
    ```bash
-   SIMULADOR_URL=http://DIRECCION:PUERTO pnpm start -- --nuevo
+   OFFSIDE_HOST=127.0.0.1 OFFSIDE_JUECES=config/jueces.local.json SIMULADOR_URL=http://DIRECCION:PUERTO pnpm start -- --nuevo
    ```
 
-   La consola tiene que decir `[motor] conectado`.
+   La consola tiene que decir `escucha en 127.0.0.1` y `[motor] conectado`, y **no** tiene que decir "Usuarios de demostración" ni "SIMULACRO". Con `127.0.0.1` nadie de la red puede entrar: el celular no se usa en el final.
 4. Abrí tres pestañas en `http://localhost:3000`:
    - **Pestaña 1:** ingresá como la jueza del primer turno. Va a decir "De turno".
    - **Pestaña 2:** ingresá como el juez del segundo turno. Va a decir "Fuera de turno" hasta el minuto 50.
@@ -62,7 +69,9 @@ Paso a paso para el viernes 13. Pensada para una sola persona que hace de los do
 - **No rechaces por las dudas.** Si rechazaste por error, en "Recientes" está "Reconsiderar".
 - **Minuto 50, cambio de turno:** la pestaña 1 queda en solo lectura y la pestaña 2 pasa a "De turno". Seguí firmando en la pestaña 2. Si aparece una tarjeta "Ratificación", es un reenvío a un proveedor que falló: firmala.
 - **Tarjeta "Reclamo":** no debería aparecer. Si aparece, firmala enseguida: levanta el bloqueo que afectó a un sitio legítimo y lo reemplaza por uno más preciso.
-- **"Sin conexión con el simulador":** no reinicies. Offside reintenta solo y retoma donde estaba. Si cerraste el proceso sin querer, volvé a arrancarlo **sin** `--nuevo`: conserva expedientes, órdenes y sesiones.
+- **"Sin conexión con el simulador":** no reinicies. Offside reintenta solo y retoma donde estaba. Si cerraste el proceso sin querer, volvé a arrancarlo **sin** `--nuevo` (con las mismas variables): conserva expedientes, órdenes y sesiones.
+- **"SIMULADOR REINICIADO" en la consola y una alerta en el tablero:** la organización reinició el simulador. Offside ya archivó la base vieja y empezó una limpia, sin cerrar el proceso. Volvé a ingresar en las tres pestañas y seguí firmando.
+- **Tarjeta que llega cerca del minuto 50:** si a la jueza saliente le queda menos de medio minuto de turno, firmar responde "esta medida la firma el juez entrante". Es a propósito: una orden que sale sobre el cambio de turno llega con la firma de un juez que ya no está. Esperá al minuto 50 y firmala en la pestaña 2. Si un reintento o un envío cortado cae en ese margen, le llega al entrante como "Ratificación".
 
 ## Cuando termina (minuto 105 más 5 de gracia)
 
@@ -74,10 +83,10 @@ Paso a paso para el viernes 13. Pensada para una sola persona que hace de los do
    ```
 
    ```bash
-   python3 herramientas/verificar_expediente.py entrega/final --juzgados config/jueces.demo.json
+   python3 herramientas/verificar_expediente.py entrega/final --juzgados config/jueces.local.json
    ```
 
-   Tiene que terminar en "VERIFICACIÓN CORRECTA".
+   Tiene que terminar en "VERIFICACIÓN CORRECTA". Sin el registro del simulador, eso prueba que la carpeta es coherente consigo misma, no más (el verificador lo dice). Si la organización comparte el `registro.jsonl` del simulador, copialo a `entrega/final/registro-simulador.jsonl` y verificá también con `--registro entrega/final/registro-simulador.jsonl`: ahí la auditoría queda anclada al registro de los proveedores. No toques los archivos de `entrega/final` después de exportar: cualquier cambio, hasta en un `.md`, hace fallar la verificación.
 3. Subí la entrega antes del cierre:
 
    ```bash

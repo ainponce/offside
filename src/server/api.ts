@@ -94,7 +94,7 @@ export function crearApi(
       minuto: ctx.estado.minuto,
       actor: sesion.usuario.juez_id ?? sesion.usuario.usuario,
       tipo: "ingreso",
-      datos: { usuario: sesion.usuario.usuario, rol: sesion.usuario.rol },
+      datos: { usuario: sesion.usuario.usuario, nombre: sesion.usuario.nombre, rol: sesion.usuario.rol },
     });
     return c.json({ token: sesion.token, usuario: usuarioDTO(ctx, sesion.usuario) });
   });
@@ -112,7 +112,7 @@ export function crearApi(
   // --- públicas -----------------------------------------------------------------------
 
   app.get("/api/estado", (c) => c.json(estadoDTO(ctx, avisos.seq)));
-  app.get("/api/transparencia", (c) => c.json(transparenciaDTO(ctx)));
+  app.get("/api/transparencia", (c) => c.json(transparenciaDTO(ctx, avisos.seq)));
 
   app.get("/api/eventos", (c) =>
     streamSSE(c, async (flujo) => {
@@ -142,7 +142,9 @@ export function crearApi(
   app.post("/api/juez/medidas/:id/aprobar", async (c) => {
     const u = exigir(c, ["juez"]);
     if (u instanceof Response) return u;
-    return responder(c, await aprobarMedida(ctx, c.req.param("id"), u.juez_id!));
+    const cuerpo = (await c.req.json().catch(() => ({}))) as { huella?: unknown } | null;
+    const huella = typeof cuerpo?.huella === "string" ? cuerpo.huella : undefined;
+    return responder(c, await aprobarMedida(ctx, c.req.param("id"), u.juez_id!, huella));
   });
 
   app.post("/api/juez/medidas/:id/rechazar", async (c) => {
@@ -169,7 +171,7 @@ export function crearApi(
   app.get("/api/expedientes/:id", (c) => {
     const u = exigir(c, ["juez", "fiscalia"]);
     if (u instanceof Response) return u;
-    const expediente = expedienteDTO(ctx, c.req.param("id"));
+    const expediente = expedienteDTO(ctx, c.req.param("id"), avisos.seq);
     return expediente ? c.json(expediente) : c.json({ error: "El expediente no existe." }, 404);
   });
 

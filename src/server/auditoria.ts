@@ -44,6 +44,12 @@ export class Auditoria {
     return fila ? { seq: Number(fila.seq), hash: fila.hash } : { seq: 0, hash: HASH_GENESIS };
   }
 
+  /** La cabecera tal como queda dentro de una instantánea (ver instantanea.ts, Ancla). */
+  ancla(): { seq: number; cabecera: string } {
+    const c = this.cabecera();
+    return { seq: c.seq, cabecera: c.hash };
+  }
+
   registrar(e: EntradaAuditoria): { seq: number; hash: string } {
     const anterior = this.cabecera();
     const seq = anterior.seq + 1;
@@ -61,10 +67,10 @@ export class Auditoria {
     return { seq, hash };
   }
 
-  private filas(): Fila[] {
-    return (this.db.prepare("SELECT seq, contenido, hash_anterior, hash FROM auditoria ORDER BY seq").all() as unknown as Fila[]).map(
-      (f) => ({ ...f, seq: Number(f.seq) }),
-    );
+  private filas(hasta = Number.MAX_SAFE_INTEGER): Fila[] {
+    return (
+      this.db.prepare("SELECT seq, contenido, hash_anterior, hash FROM auditoria WHERE seq <= ? ORDER BY seq").all(hasta) as unknown as Fila[]
+    ).map((f) => ({ ...f, seq: Number(f.seq) }));
   }
 
   /** Recorre la cadena completa. Devuelve la primera secuencia que no coincide. */
@@ -89,9 +95,9 @@ export class Auditoria {
     return filas.map((f) => ({ seq: Number(f.seq), hash: f.hash, ...JSON.parse(f.contenido) }));
   }
 
-  /** Una línea JSON por entrada: { seq, hash_anterior, hash, contenido }. */
-  exportarJsonl(): string {
-    return this.filas()
+  /** Una línea JSON por entrada: { seq, hash_anterior, hash, contenido }, hasta la secuencia `hasta` incluida. */
+  exportarJsonl(hasta?: number): string {
+    return this.filas(hasta)
       .map((f) => JSON.stringify({ seq: f.seq, hash_anterior: f.hash_anterior, hash: f.hash, contenido: f.contenido }))
       .join("\n")
       .concat("\n");

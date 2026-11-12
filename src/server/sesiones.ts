@@ -27,11 +27,16 @@ function derivar(contrasena: string, sal: Buffer): Buffer {
 }
 
 export class Sesiones {
-  private readonly db: Db;
+  private readonly fuente: Db | { db: Db };
   private readonly usuarios = new Map<string, Registro>();
 
-  constructor(db: Db, jueces: Juez[], operadores: Operador[]) {
-    this.db = db;
+  /**
+   * `fuente` puede ser la base o el contexto: con el contexto, las sesiones usan
+   * siempre la base vigente (si el simulador se reinicia, la base nueva no tiene
+   * sesiones y los jueces vuelven a ingresar).
+   */
+  constructor(fuente: Db | { db: Db }, jueces: Juez[], operadores: Operador[]) {
+    this.fuente = fuente;
     for (const j of jueces) {
       this.registrar(
         { usuario: j.usuario, nombre: j.nombre, rol: "juez", juez_id: j.id, juzgado_nombre: j.juzgado_nombre },
@@ -41,6 +46,10 @@ export class Sesiones {
     for (const o of operadores) {
       this.registrar({ usuario: o.usuario, nombre: o.nombre, rol: o.rol, juez_id: null, juzgado_nombre: null }, o.contrasena);
     }
+  }
+
+  private get db(): Db {
+    return "prepare" in this.fuente ? this.fuente : this.fuente.db;
   }
 
   private registrar(base: UsuarioBase, contrasena: string): void {

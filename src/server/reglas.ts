@@ -28,7 +28,8 @@ export type ItemPlan =
   | { proveedor_id: string; sin_cobertura: string };
 
 function marcaDe(det: Deteccion): string {
-  return (det.marca_de_agua_extraida ?? "").trim();
+  const marca: unknown = det.marca_de_agua_extraida;
+  return typeof marca === "string" ? marca.trim() : "";
 }
 
 function prefijoMasLargo(marca: string, partido: Partido): { prefijo: string; origen: string } | null {

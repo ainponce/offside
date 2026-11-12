@@ -15,7 +15,7 @@ Tres consecuencias:
 
 - **El juez firma cada medida y no frena.** Con medio minuto de partido para decidir, el primer proveedor confirma el bloqueo alrededor de un minuto después de la detección (ver [Resultados medidos](#resultados-medidos)).
 - **Ningún sitio ajeno cae.** Solo se bloquea una IP cuando es exclusiva del operador; si es compartida, se bloquea el dominio. El tablero muestra con nombre los sitios legítimos que habrían caído con un bloqueo automático por IP.
-- **La firma cubre la prueba.** La huella de lo que vio el juez viaja dentro del identificador de la orden, que es parte de lo que se firma. Cambiar un byte de la evidencia después rompe la verificación.
+- **La firma cubre la prueba.** La huella de lo que vio el juez viaja dentro del identificador de la orden, que es parte de lo que se firma y queda en el registro del simulador. Cambiar un byte de la evidencia después rompe la verificación; reescribir la historia entera de forma coherente se descubre cruzando con ese registro, que Offside no controla.
 
 Además, cada expediente genera un aviso al titular para cortar la fuente que identifica la marca: la única medida que el operador no esquiva cambiando de servidor. El simulador no modela ese paso, así que el aviso se genera pero no se envía.
 
@@ -66,13 +66,17 @@ SIMULADOR_URL=http://DIRECCION:PUERTO pnpm start -- --nuevo
 | Variable | Para qué | Por defecto |
 |---|---|---|
 | `SIMULADOR_URL` | Dirección del simulador | `http://localhost:8080` |
-| `PUERTO` | Puerto de Offside (escucha en todas las interfaces) | `3000` |
+| `PUERTO` | Puerto de Offside | `3000` |
+| `OFFSIDE_HOST` | Interfaz donde escucha. `0.0.0.0` deja entrar a un celular de la red local (demos); en el partido final, `127.0.0.1` | `0.0.0.0` |
 | `OFFSIDE_DB` | Base local | `datos/offside.db` |
-| `OFFSIDE_JUECES` | Jueces, claves de firma y usuarios de demostración | `config/jueces.demo.json` |
+| `OFFSIDE_JUECES` | Jueces, claves de firma y usuarios. Las contraseñas de demostración son públicas; para el final, `pnpm jueces-locales` escribe `config/jueces.local.json` (fuera del repositorio) con contraseñas nuevas | `config/jueces.demo.json` |
 | `OFFSIDE_INTERVALO_MS` | Cada cuánto se consulta al simulador | `300` |
-| `OFFSIDE_SIMULACRO=1` | Fuerza un bloqueo equivocado para mostrar los reclamos | apagado |
+
+El simulacro (un bloqueo equivocado a propósito, para mostrar los reclamos) solo se activa con la bandera `--simulacro` en la línea de comandos (`pnpm start -- --simulacro`, `pnpm demo -- --simulacro`, `pnpm ensayo -- --simulacro`), nunca por una variable de entorno.
 
 Opciones de `pnpm demo`: `-- --acelerar 2`, `-- --inicio-min 40` (el turno cambia en el minuto 50) y `-- --simulacro`.
+
+Si el simulador se reinicia con Offside en marcha (el reloj vuelve atrás, cambia el partido o un proveedor deja de conocer órdenes que había recibido), Offside archiva la base, empieza una limpia en el mismo proceso, lo anuncia en la consola y en el tablero, y los jueces vuelven a ingresar.
 
 ## Pantallas
 
@@ -97,7 +101,8 @@ Son funciones puras y deterministas ([src/server/reglas.ts](src/server/reglas.ts
 | IP con algún sitio ajeno, organización tipo CDN o compartida, o datos que no coinciden con el DNS pasivo | Propone bloqueo por dominio |
 | Proveedor que solo admite dominio y se propone IP | Le envía el dominio |
 | Proveedor que solo admite IP y se propone dominio | No le envía nada: queda sin cobertura, por seguridad |
-| Justo antes de cada envío | Vuelve a comprobar que el juez está de turno y que el objetivo no alcanza a terceros |
+| Justo antes de cada envío | Vuelve a leer el estado del simulador y comprueba que el juez está de turno y que el objetivo no alcanza a terceros |
+| Al juez de turno le queda menos de medio minuto de turno (o dos segundos reales, lo que sea más) según `GET /juzgados` | No lo deja firmar: la medida la firma el juez entrante. Una orden ya firmada que todavía no salió (un reintento, un envío cortado) pasa a ratificación del entrante |
 
 En el partido de práctica estas reglas dan el mismo tipo de bloqueo que la respuesta oficial en las siete fases piratas y clasifican bien las 43 detecciones.
 
@@ -105,10 +110,12 @@ En el partido de práctica estas reglas dan el mismo tipo de bloqueo que la resp
 
 - De cada detección se guarda el texto recibido con su SHA-256 y el SHA-256 de los bytes de la captura.
 - `orden_id = OFS-<expediente>-<medida>-<proveedor>-<intento>-<16 caracteres de la huella>`. El simulador firma `orden_id|tipo|objetivo|vence_min|juez_id`, así que la firma del juez queda atada a la instantánea. El identificador queda también en el registro del simulador, que Offside no controla.
-- El registro de auditoría es de solo agregado; cada entrada lleva el hash de la anterior.
+- El registro de auditoría es de solo agregado; cada entrada lleva el hash de la anterior. Registra cada detección con sus hashes, cada apertura de expediente con su marca, cada presentación y decisión de medida con su huella, y cada orden desde su firma hasta su fin.
+- Cada instantánea guarda la cabecera de la auditoría en el momento de crear la medida. Como la huella cubre la instantánea y viaja en el `orden_id`, el registro del simulador fija la auditoría hasta la última medida cuyas órdenes recibió.
+- La exportación termina con una entrada de auditoría que lista el hash de cada archivo exportado.
 - En los levantamientos el simulador firma solo `LEVANTAR|orden_id|juez_id`; ahí la huella viaja en el motivo, que el simulador guarda sin firmar.
 
-[herramientas/verificar_expediente.py](herramientas/verificar_expediente.py) es un verificador independiente: un archivo en Python sin dependencias que no comparte código con la plataforma. Recalcula la cadena de auditoría, los hashes, las huellas y las firmas, y puede cruzar las órdenes con el registro del simulador.
+[herramientas/verificar_expediente.py](herramientas/verificar_expediente.py) es un verificador independiente: un archivo en Python sin dependencias que no comparte código con la plataforma.
 
 ```bash
 pnpm exportar -- --carpeta entrega/final
@@ -118,7 +125,23 @@ pnpm exportar -- --carpeta entrega/final
 python3 herramientas/verificar_expediente.py entrega/final --juzgados config/jueces.demo.json --registro salida/registro.jsonl
 ```
 
-Si se cambia un carácter de un expediente o de la auditoría, el verificador termina con error y dice dónde.
+Qué prueba, y qué no:
+
+| Comprueba | Cómo |
+|---|---|
+| La auditoría no tiene huecos ni entradas cambiadas | Recalcula la cadena de hashes |
+| Ningún archivo exportado cambió, sobra o falta | Cada archivo tiene que estar en el manifiesto y en el cierre de la exportación de la auditoría, con el mismo hash |
+| Las detecciones, la marca de cada expediente, las decisiones (juez, minuto, motivo) y el estado y los minutos de cada orden son los que se registraron en el momento | Los cruza con la auditoría, en los dos sentidos |
+| Lo que vio el juez y lo que firmó | Recalcula huellas y, con `--juzgados`, las firmas de las órdenes |
+| Con `--registro`: lo enviado es lo que recibieron los proveedores, firmado por un juez de turno, y la auditoría está anclada afuera | Cruza las órdenes con el registro del simulador y dice hasta qué secuencia de la auditoría queda anclada |
+
+| No prueba | Por qué |
+|---|---|
+| Que lo detectado sea cierto | Solo que no cambió después de recibirlo |
+| Sin `--registro`, que nadie rehízo la carpeta entera | Las claves de firma de demostración son públicas: una reescritura coherente de todo es posible; el verificador lo dice |
+| Las entradas posteriores a la última ancla (vencimientos, cierre de la exportación, los `.md`) | Ninguna orden posterior las lleva al registro del simulador |
+
+Un cambio de un carácter en un expediente, una detección, una orden, una decisión, un `.md` o la auditoría hace que termine con error y diga dónde. Las pruebas en `pruebas/exportar.test.ts` hacen cada una de esas alteraciones, también de forma coherente (recalculando hashes y el manifiesto).
 
 ## Pruebas y ensayos
 
@@ -150,19 +173,21 @@ Medidos el 11 de noviembre de 2026 con `pnpm ensayo`, que usa el simulador y el 
 
 | Partido | Demora del juez | Fases piratas bloqueadas | Primer bloqueo tras la detección | Visibilidad residual promedio | Daño colateral | Falsos positivos | Órdenes fuera de turno | Bloqueos por IP tras el partido |
 |---|---|---|---|---|---|---|---|---|
-| Práctica oficial, x60 | 0,5 min | 7 de 7 | 1,1 a 1,4 min | 4,8 % | 0 | 0 | 0 | 0 |
+| Práctica oficial, x60 | 0,5 min | 7 de 7 | 1,2 a 1,3 min | 4,8 % | 0 | 0 | 0 | 0 |
 | Práctica oficial, x6 | 1 min | 7 de 7 | 1,4 a 1,6 min | 5,6 % | 0 | 0 | 0 | 0 |
 | Propio, semilla 7 | 0,5 min | 9 de 9 | 1,1 a 1,4 min | 4,3 % | 0 | 0 | 0 | 0 |
 | Propio, semilla 21 | 0,5 min | 10 de 10 | 1,1 a 1,4 min | 5,4 % | 0 | 0 | 0 | 0 |
 | Propio, semilla 33 | 0,5 min | 10 de 10 | 1,1 a 1,4 min | 6,3 % | 0 | 0 | 0 | 0 |
+| Propio, semilla 44 | 0,5 min | 9 de 9 | 1,1 a 3,2 min | 5,3 % | 0 | 0 | 0 | 0 |
 
 Cómo leerlo:
 
 - **El tiempo al primer bloqueo es la demora del juez más medio minuto.** El proveedor más grande del simulador aplica en alrededor de medio minuto de partido; el resto de la visibilidad residual son los proveedores más lentos (uno tarda unos seis minutos) y el que falla y hay que reintentar.
 - **Los escenarios propios tienen tres turnos de jueces**, un proveedor que solo bloquea por IP y los casos que la práctica no trae. En la semilla 33 hubo fallas de proveedor después de un cambio de turno: se resolvieron con ratificaciones del juez entrante y ninguna orden quedó fuera de turno.
+- **En la semilla 44 una ampliación llegó 2,4 minutos antes del cambio de turno.** A x60 el margen del turno es de 2 minutos de partido (dos segundos reales), así que la firmó el juez entrante y ese salto tardó 3,2 minutos en bloquearse. A la velocidad del final el margen es de medio minuto.
 - **En el partido de práctica Offside dejó sin tocar 15 sitios legítimos** que comparten IP con dos de los piratas, y archivó sin medida al licenciatario y a un resumen de otro partido.
 
-Con el error forzado (`OFFSIDE_SIMULACRO=1 pnpm ensayo -- --permitir-colateral`), que bloquea por IP una IP compartida a propósito: el primer sitio afectado reclamó a los 3 minutos, el juez de ensayo levantó la orden 0,7 minutos después en todos los proveedores y la reemplazó por el dominio. Los demás sitios no llegaron a reclamar y el pirata siguió bloqueado.
+Con el error forzado (`pnpm ensayo -- --simulacro --permitir-colateral`), que bloquea por IP una IP compartida a propósito: el primer sitio afectado reclamó a los 3 minutos, el juez de ensayo levantó la orden 0,7 minutos después en todos los proveedores y la reemplazó por el dominio. Los demás sitios no llegaron a reclamar y el pirata siguió bloqueado.
 
 ## Estructura
 

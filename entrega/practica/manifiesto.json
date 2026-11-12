@@ -1,9 +1,12 @@
 {
-  "formato": "offside-exportacion-v1",
-  "generado_iso": "2026-11-11T23:29:34.931Z",
+  "formato": "offside-exportacion-v2",
+  "generado_iso": "2026-11-12T01:55:19.983Z",
   "nota": "Partido de práctica oficial, corrido el 2026-11-11 a x6 con el juez de ensayo automático (demora de 1 minuto de partido). No es el partido final.",
-  "partido": null,
-  "minuto_de_partido": 110.606,
+  "partido": {
+    "id": "practica-01",
+    "nombre": "Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo"
+  },
+  "minuto_de_partido": 110.602,
   "expedientes": [
     "EXP-2026-000001",
     "EXP-2026-000002",
@@ -11,41 +14,41 @@
     "EXP-2026-000004"
   ],
   "auditoria": {
-    "entradas": 151,
-    "cabecera": "920d4719407dab2d5bbcacf9a9c24e74dcacb6dff1e9f3bee4e09378e5fbdd20"
+    "entradas": 189,
+    "cabecera": "c11335f63f4c2458dcfc3551641a4daef4b685590f61eb17ee79eb9261963142"
   },
   "archivos": [
     {
       "nombre": "expediente-EXP-2026-000001.json",
-      "sha256": "9535c0e60ec37e9fc4ea79547e533febf4ec92666fa20550cce435efab61b5ba"
+      "sha256": "836bc402104fb2bfb44725c611713e36c4a02e051a62fc0b64f0bd63ec9c97bf"
     },
     {
       "nombre": "expediente-EXP-2026-000001.md",
-      "sha256": "69831ec74ad86a9ab5e46c961feffc3162b0e66b9e9eb0cd89f603c10acdc6ed"
+      "sha256": "a8420b64ca4be5e881b7f6e07c2b54f22b11667b033e4f7a80cc91021f61f157"
     },
     {
       "nombre": "expediente-EXP-2026-000002.json",
-      "sha256": "998a6b8eaeed5e970cf83990e37bdcca4e39aa3289e7da98825c792ec3a0cfa9"
+      "sha256": "c2388a8e61023580ae7f2d3d0719930a11cd026d9390c01294bed9c65757290b"
     },
     {
       "nombre": "expediente-EXP-2026-000002.md",
-      "sha256": "4aa45674a85c20382d41f48079fcaca5d8c4fca7b709c6f5f1ca0e1c9b6855a8"
+      "sha256": "b7d094127eda4350a8ed990b8c0a92fa956bcf0fb1a23f34d115d62e1ff23669"
     },
     {
       "nombre": "expediente-EXP-2026-000003.json",
-      "sha256": "15c83cb91f32c5344b3e83e4ea98a4886ddc1d02a86fff0765d2000cc9c1f855"
+      "sha256": "d3195dbf535d0dd33363cd27b31ca4bd5bc2da60d036ebe44b739ade026849a2"
     },
     {
       "nombre": "expediente-EXP-2026-000003.md",
-      "sha256": "b3b000d0554baaa825f0cfcef61484f903cf562aeed51842cec2d630bce446cd"
+      "sha256": "72b6ab266adac7d3707046255bc064414589baedc46dea7b3c5110fe9411cda9"
     },
     {
       "nombre": "expediente-EXP-2026-000004.json",
-      "sha256": "75b6d1555e7930e3bf382404a160ee58c825fbc842fc0870e6fec1156e71203f"
+      "sha256": "5947db527e25c18b1dd729845eb96c75039409829453875fccd771d99691f53f"
     },
     {
       "nombre": "expediente-EXP-2026-000004.md",
-      "sha256": "b0d2ff5ecc11a8d1ca4abbfc148658ff7ba82fa3524c9b4a4381e3f624f90143"
+      "sha256": "2869bc20c15008107a85389b1ef7a36a3222e8495f5cc97405ad29f4196b6084"
     },
     {
       "nombre": "detecciones-archivadas.json",
@@ -53,7 +56,7 @@
     },
     {
       "nombre": "auditoria.jsonl",
-      "sha256": "c8399e442f5faa78fec256fb198ce0d90f35eaf3d3c97e030a6c89d5b9169094"
+      "sha256": "0d83453e6c1816a155ec85660ca575a5cb5c5af1c83a5e1a4e43011ff22e2df6"
     }
   ],
   "como_verificar": "python3 herramientas/verificar_expediente.py <esta carpeta> --juzgados config/jueces.demo.json"

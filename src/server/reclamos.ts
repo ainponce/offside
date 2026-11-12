@@ -5,7 +5,7 @@
 // sale mal: se verifica el reclamo, y el juez de turno levanta la orden en todos
 // los proveedores donde aplica y la reemplaza por un bloqueo más preciso.
 
-import { type Contexto, alertar, juezPorId } from "./contexto.ts";
+import { type Contexto, alertar, juezPorId, nombreProveedor } from "./contexto.ts";
 import { registrarEjecutor } from "./decisiones.ts";
 import { type CacheDns, crearOrden, enviarOrden } from "./despacho.ts";
 import { dominioRegistrable } from "./dominio.ts";
@@ -27,7 +27,7 @@ import {
   una,
 } from "./repositorio.ts";
 import type { ItemPlan } from "./reglas.ts";
-import type { EstadoSim, ReclamoSim } from "./simulador.ts";
+import { type EstadoSim, type ReclamoSim, esErrorDeRed } from "./simulador.ts";
 
 const dormir = (ms: number) => new Promise((ok) => setTimeout(ok, ms));
 
@@ -152,7 +152,9 @@ async function procesarReclamo(ctx: Contexto, r: ReclamoSim, estado: EstadoSim, 
     verificacion,
     vence_min: activa.vence_min,
     sellos: sellos(ctx.estado.partido, estado.minuto_actual),
+    auditoria: ctx.auditoria.ancla(),
   });
+  const h = huella(instantanea);
   ejecutar(
     ctx.db,
     `INSERT INTO medidas (id, n, expediente_id, servidor_id, clase, estado, creada_min, creada_iso, instantanea, huella,
@@ -165,11 +167,25 @@ async function procesarReclamo(ctx: Contexto, r: ReclamoSim, estado: EstadoSim, 
     estado.minuto_actual,
     new Date().toISOString(),
     instantanea,
-    huella(instantanea),
+    h,
     JSON.stringify(reemplazo),
     activa.vence_min,
     r.id,
   );
+  ctx.auditoria.registrar({
+    minuto: estado.minuto_actual,
+    actor: "sistema",
+    tipo: "medida_presentada",
+    datos: {
+      medida_id: id,
+      clase: "levantamiento",
+      expediente_id: expediente.id,
+      servidor: { host: servidor.host, ip: servidor.ip },
+      reclamo_id: r.id,
+      ordenes_a_levantar: aLevantar.map((o) => o.orden_id),
+      huella: h,
+    },
+  });
   guardarReclamo(ctx, r, "verificado", id, verificacion);
 }
 
@@ -178,14 +194,45 @@ async function ingerirReclamos(ctx: Contexto, estado: EstadoSim): Promise<void> 
   // por minuto: el simulador fecha cada reclamo con su minuto programado y lo publica
   // un instante después, así que puede aparecer "en el pasado" de la última consulta.
   const lote = await ctx.sim.reclamos(-1_000_000_000);
+  const crudos: unknown[] = Array.isArray(lote?.reclamos) ? lote.reclamos : [];
   const cache: CacheDns = new Map();
   let huboCambios = false;
-  for (const r of [...lote.reclamos].sort((a, b) => a.minuto - b.minuto)) {
-    if (una(ctx.db, "SELECT id FROM reclamos WHERE id = ?", r.id)) continue;
-    await procesarReclamo(ctx, r, estado, cache);
-    huboCambios = true;
+  const validos: ReclamoSim[] = [];
+  try {
+    for (const crudo of crudos) {
+      // Sin id no hay cómo registrarlo ni de no repetirlo: se ignora.
+      if (crudo === null || typeof crudo !== "object") continue;
+      const o = crudo as Record<string, unknown>;
+      if (typeof o.id !== "string" || !o.id.trim()) continue;
+      if (una(ctx.db, "SELECT id FROM reclamos WHERE id = ?", o.id)) continue;
+      const r: ReclamoSim = {
+        id: o.id,
+        minuto: typeof o.minuto === "number" && Number.isFinite(o.minuto) ? o.minuto : estado.minuto_actual,
+        dominio: typeof o.dominio === "string" ? o.dominio : String(o.dominio ?? ""),
+        proveedor: typeof o.proveedor === "string" ? o.proveedor : String(o.proveedor ?? ""),
+        mensaje: typeof o.mensaje === "string" ? o.mensaje : "",
+      };
+      if (typeof o.dominio !== "string" || !o.dominio.trim() || typeof o.proveedor !== "string" || typeof o.minuto !== "number") {
+        guardarReclamo(ctx, r, "no_verificado", null, "El reclamo no trae dominio, proveedor o minuto válidos.");
+        huboCambios = true;
+        continue;
+      }
+      validos.push(r);
+    }
+    for (const r of validos.sort((a, b) => a.minuto - b.minuto)) {
+      huboCambios = true;
+      try {
+        await procesarReclamo(ctx, r, estado, cache);
+      } catch (e) {
+        if (esErrorDeRed(e)) throw e;
+        if (!una(ctx.db, "SELECT id FROM reclamos WHERE id = ?", r.id)) {
+          guardarReclamo(ctx, r, "no_verificado", null, `No se pudo procesar el reclamo: ${e instanceof Error ? e.message : String(e)}`);
+        }
+      }
+    }
+  } finally {
+    if (huboCambios) ctx.alCambiar();
   }
-  if (huboCambios) ctx.alCambiar();
 }
 
 /** Lo que pasa cuando el juez de turno aprueba un levantamiento. */
@@ -231,6 +278,7 @@ async function ejecutarLevantamiento(ctx: Contexto, medidaId: string, juezId: st
           reclamo_id: inst.reclamo.id,
           medida_id: medida.id,
           huella: medida.huella,
+          finalizada_min: fresco.minuto_actual,
         },
       });
       levantadas.push(local.orden_id);
@@ -242,7 +290,7 @@ async function ejecutarLevantamiento(ctx: Contexto, medidaId: string, juezId: st
         tipo: "levantamiento_fallido",
         datos: { orden_id: local.orden_id, proveedor: local.proveedor_id, error },
       });
-      alertar(ctx, `No se pudo levantar ${local.orden_id} en ${local.proveedor_id}: ${error}`);
+      alertar(ctx, `No se pudo levantar la orden ${local.orden_id} en ${nombreProveedor(ctx, local.proveedor_id)}: ${error}`);
     }
   }
 
@@ -280,6 +328,6 @@ async function ejecutarLevantamiento(ctx: Contexto, medidaId: string, juezId: st
 
 /** Enchufa los reclamos al motor y registra qué hace aprobar un levantamiento. */
 export function instalarReclamos(motor: Motor): void {
-  motor.agregarPaso(ingerirReclamos);
+  motor.agregarPaso(ingerirReclamos, "los reclamos");
   registrarEjecutor("levantamiento", ejecutarLevantamiento);
 }

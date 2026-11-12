@@ -2,7 +2,7 @@
 // cada envío (sección 7.7 del diseño), envío, y pedido de ratificación cuando el
 // juez que firmó ya no está de turno.
 
-import { type Contexto, type Juez, alertar } from "./contexto.ts";
+import { type Contexto, type Juez, alertar, nombreProveedor } from "./contexto.ts";
 import { esMismoOSubdominio } from "./dominio.ts";
 import { firmarOrden, huella, ordenId } from "./evidencia.ts";
 import { instantaneaRatificacion, sellos } from "./instantanea.ts";
@@ -22,6 +22,7 @@ import {
 } from "./repositorio.ts";
 import { type ItemPlan, evaluarRiesgo } from "./reglas.ts";
 import type { DnsIp, EstadoSim, TipoBloqueo } from "./simulador.ts";
+import { num } from "./texto.ts";
 
 export type CacheDns = Map<string, Promise<DnsIp | null>>;
 
@@ -29,13 +30,24 @@ function mensajeDe(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
 }
 
-/** Próximo número de intento para ese servidor en ese proveedor. */
-export function siguienteIntento(ctx: Contexto, servidorId: number | null, proveedorId: string): number {
+/**
+ * Próximo número de intento para ese servidor, proveedor, tipo y objetivo: el
+ * bloqueo por dominio que reemplaza a uno por IP levantado es el intento 1.
+ */
+export function siguienteIntento(
+  ctx: Contexto,
+  servidorId: number | null,
+  proveedorId: string,
+  tipo: TipoBloqueo,
+  objetivo: string,
+): number {
   const fila = una<{ n: number | null }>(
     ctx.db,
-    "SELECT MAX(intento) AS n FROM ordenes WHERE servidor_id IS ? AND proveedor_id = ?",
+    "SELECT MAX(intento) AS n FROM ordenes WHERE servidor_id IS ? AND proveedor_id = ? AND tipo = ? AND objetivo = ?",
     servidorId,
     proveedorId,
+    tipo,
+    objetivo,
   );
   return Number(fila?.n ?? 0) + 1;
 }
@@ -53,8 +65,13 @@ export function crearOrden(
   },
 ): string {
   const expediente = expedientePorId(ctx.db, p.medida.expediente_id)!;
-  const intento = siguienteIntento(ctx, p.medida.servidor_id, p.proveedor_id);
-  const id = ordenId(expediente.n, p.medida.n, p.proveedor_id, intento, p.medida.huella);
+  let intento = siguienteIntento(ctx, p.medida.servidor_id, p.proveedor_id, p.tipo, p.objetivo);
+  let id = ordenId(expediente.n, p.medida.n, p.proveedor_id, intento, p.medida.huella);
+  // Una misma medida nunca repite identificador, aunque lleve dos objetivos para el mismo proveedor.
+  while (ordenPorId(ctx.db, id)) {
+    intento += 1;
+    id = ordenId(expediente.n, p.medida.n, p.proveedor_id, intento, p.medida.huella);
+  }
   const firma = firmarOrden(p.juez.clave_firma_demo, {
     orden_id: id,
     tipo: p.tipo,
@@ -81,6 +98,23 @@ export function crearOrden(
     intento,
     p.minuto,
   );
+  ctx.auditoria.registrar({
+    minuto: p.minuto,
+    actor: p.juez.id,
+    tipo: "orden_firmada",
+    datos: {
+      orden_id: id,
+      medida_id: p.medida.id,
+      expediente_id: p.medida.expediente_id,
+      proveedor: p.proveedor_id,
+      tipo: p.tipo,
+      objetivo: p.objetivo,
+      vence_min: p.medida.vence_min,
+      juez_id: p.juez.id,
+      juzgado_id: p.juez.juzgado_id,
+      intento,
+    },
+  });
   return id;
 }
 
@@ -160,14 +194,66 @@ function marcarRecibida(ctx: Contexto, orden: FilaOrden, minuto: number, yaRecib
       juez_id: orden.juez_id,
       intento: orden.intento,
       ya_recibida: yaRecibida,
+      enviada_min: minuto,
     },
   });
+}
+
+/** Margen, en minutos de partido, antes del fin del turno del juez que firmó. */
+export function margenTurno(ctx: Contexto, estado: Pick<EstadoSim, "acelerar">): number {
+  const acelerar = Number.isFinite(estado.acelerar) && estado.acelerar > 0 ? estado.acelerar : 1;
+  return Math.max(ctx.config.margenTurnoMin, (acelerar * ctx.config.margenTurnoSeg) / 60);
+}
+
+/** Hasta qué minuto sigue de turno el juez sin interrupción, según GET /juzgados; null si no se sabe. */
+export function finDeTurno(ctx: Contexto, juezId: string, minuto: number): number | null {
+  const propios = ctx.estado.turnos.filter((t) => t.juez_id === juezId);
+  let fin: number | null = null;
+  let punto = minuto;
+  for (;;) {
+    const t = propios.find((x) => x.desde_min <= punto && punto < x.hasta_min);
+    if (!t) return fin;
+    fin = t.hasta_min;
+    punto = t.hasta_min;
+  }
+}
+
+export type Impedimento = { motivo: string; ratificar: string | null };
+
+/**
+ * ¿Puede salir ahora una orden firmada por `juez_id`? Devuelve por qué no, y si
+ * corresponde pedir ratificación al juez entrante.
+ */
+export function impedimentoDeEnvio(
+  ctx: Contexto,
+  orden: Pick<FilaOrden, "juez_id" | "vence_min">,
+  estado: EstadoSim,
+): Impedimento | null {
+  const minuto = estado.minuto_actual;
+  if (estado.finalizado || orden.vence_min <= minuto) return { motivo: "El partido terminó antes del envío.", ratificar: null };
+  if (!estado.jueces_de_turno.includes(orden.juez_id)) {
+    return { motivo: "El juez que firmó ya no está de turno.", ratificar: "El envío quedó pendiente al cambiar el turno." };
+  }
+  const fin = finDeTurno(ctx, orden.juez_id, minuto);
+  const margen = margenTurno(ctx, estado);
+  if (fin != null && fin - minuto <= margen) {
+    return {
+      motivo: `Al turno del juez que firmó le quedaban ${num(fin - minuto, 2)} minutos (margen de ${num(margen, 2)}): no se envía sobre el cambio de turno.`,
+      ratificar: "La orden se firmó sobre el cambio de turno: la envía el juez entrante.",
+    };
+  }
+  return null;
 }
 
 /**
  * Envía una orden que está `por_enviar`. Un corte de red la deja `por_enviar`
  * para que el motor la reintente con el mismo `orden_id`; un 409 significa que el
  * proveedor ya la tenía.
+ *
+ * Orden de los controles: (1) si un intento anterior se cortó, se le pregunta al
+ * proveedor si la orden llegó, antes que nada; (2) partido y turno con margen;
+ * (3) guardia final del objetivo; (4) estado recién leído y de nuevo partido y
+ * turno, justo antes del envío.
  */
 export async function enviarOrden(
   ctx: Contexto,
@@ -181,6 +267,23 @@ export async function enviarOrden(
     const orden = ordenPorId(ctx.db, id);
     if (!orden || orden.estado !== "por_enviar") return;
 
+    // (1) Si un intento anterior terminó en un corte, puede que la orden haya llegado igual.
+    // Un duplicado quedaría como rechazo en el registro del proveedor, y una orden que el
+    // proveedor ya tiene no se da por no enviada aunque el turno haya cambiado.
+    if (orden.error != null) {
+      let remota: Awaited<ReturnType<typeof ctx.sim.ordenes>>[number] | undefined;
+      try {
+        remota = (await ctx.sim.ordenes(orden.proveedor_id)).find((o) => o.orden_id === orden.orden_id);
+      } catch (e) {
+        anotarCorte(ctx, orden, ctx.estado.minuto, mensajeDe(e));
+        return;
+      }
+      if (remota) {
+        marcarRecibida(ctx, orden, remota.recibida_min ?? fresco?.minuto_actual ?? ctx.estado.minuto, true);
+        return;
+      }
+    }
+
     let estado = fresco;
     if (!estado) {
       try {
@@ -190,46 +293,41 @@ export async function enviarOrden(
         return;
       }
     }
-    const minuto = estado.minuto_actual;
 
-    if (estado.finalizado || orden.vence_min <= minuto) {
-      noEnviar(ctx, orden, minuto, "El partido terminó antes del envío.");
-      return;
-    }
-    if (!estado.jueces_de_turno.includes(orden.juez_id)) {
-      noEnviar(ctx, orden, minuto, "El juez que firmó ya no está de turno.");
-      pedirRatificacion(ctx, orden, minuto, "El envío quedó pendiente al cambiar el turno.");
+    // (2) Partido y turno.
+    const antes = impedimentoDeEnvio(ctx, orden, estado);
+    if (antes) {
+      noSale(ctx, orden, estado.minuto_actual, antes);
       return;
     }
 
+    // (3) Guardia final del objetivo.
     let motivo: string | null;
     try {
       motivo = await guardiaObjetivo(ctx, orden, cache);
     } catch (e) {
-      anotarCorte(ctx, orden, minuto, mensajeDe(e));
+      anotarCorte(ctx, orden, estado.minuto_actual, mensajeDe(e));
       return;
     }
     if (motivo) {
-      noEnviar(ctx, orden, minuto, `Guardia final: ${motivo}`);
-      alertar(ctx, `No se envió ${orden.orden_id}: ${motivo}`);
+      noEnviar(ctx, orden, estado.minuto_actual, `Guardia final: ${motivo}`);
+      alertar(ctx, `No se envió la orden a ${nombreProveedor(ctx, orden.proveedor_id)} (${orden.orden_id}): ${motivo}`);
       return;
     }
 
-    // Si un intento anterior terminó en un corte, puede que la orden haya llegado igual.
-    // Se le pregunta al proveedor antes de reenviar: un duplicado quedaría como rechazo en su registro.
-    if (orden.error != null) {
-      let yaLlego = false;
-      try {
-        yaLlego = (await ctx.sim.ordenes(orden.proveedor_id)).some((o) => o.orden_id === orden.orden_id);
-      } catch (e) {
-        anotarCorte(ctx, orden, minuto, mensajeDe(e));
-        return;
-      }
-      if (yaLlego) {
-        marcarRecibida(ctx, orden, minuto, true);
-        return;
-      }
+    // (4) El reloj pudo cruzar el cambio de turno durante la guardia: estado recién leído.
+    try {
+      estado = await ctx.sim.estado();
+    } catch (e) {
+      anotarCorte(ctx, orden, estado.minuto_actual, mensajeDe(e));
+      return;
     }
+    const ahora = impedimentoDeEnvio(ctx, orden, estado);
+    if (ahora) {
+      noSale(ctx, orden, estado.minuto_actual, ahora);
+      return;
+    }
+    const minuto = estado.minuto_actual;
 
     let respuesta;
     try {
@@ -263,14 +361,20 @@ export async function enviarOrden(
         minuto,
         actor: orden.proveedor_id,
         tipo: "orden_rechazada",
-        datos: { orden_id: orden.orden_id, estado: respuesta.estado, error: respuesta.error },
+        datos: { orden_id: orden.orden_id, proveedor: orden.proveedor_id, estado: respuesta.estado, error: respuesta.error },
       });
-      alertar(ctx, `El proveedor ${orden.proveedor_id} rechazó ${orden.orden_id}: ${respuesta.error}`);
+      alertar(ctx, `${nombreProveedor(ctx, orden.proveedor_id)} rechazó la orden ${orden.orden_id}: ${respuesta.error}`);
     }
   } finally {
     ctx.enVuelo.delete(id);
     ctx.alCambiar();
   }
+}
+
+/** La orden no sale; si el problema es el turno, se pide ratificación al entrante. */
+function noSale(ctx: Contexto, orden: FilaOrden, minuto: number, impedimento: Impedimento): void {
+  noEnviar(ctx, orden, minuto, impedimento.motivo);
+  if (impedimento.ratificar) pedirRatificacion(ctx, orden, minuto, impedimento.ratificar);
 }
 
 /** Medida original que ejecuta una orden (salta las ratificaciones intermedias). */
@@ -315,6 +419,7 @@ export function pedirRatificacion(ctx: Contexto, orden: FilaOrden, minuto: numbe
     motivo,
     vence_min: orden.vence_min,
     sellos: sellos(ctx.estado.partido, minuto),
+    auditoria: ctx.auditoria.ancla(),
   });
   const h = huella(instantanea);
 

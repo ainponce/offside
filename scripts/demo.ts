@@ -59,17 +59,25 @@ hijos.push(
 
 setTimeout(() => {
   hijos.push(
-    spawn(join(RAIZ, "node_modules", ".bin", "tsx"), ["--disable-warning=ExperimentalWarning", join(RAIZ, "src", "server", "index.ts"), "--nuevo"], {
-      cwd: RAIZ,
-      stdio: "inherit",
-      env: {
-        ...process.env,
-        SIMULADOR_URL: `http://localhost:${puertoSim}`,
-        PUERTO: puertoApp,
-        OFFSIDE_JUECES: jueces,
-        ...(process.argv.includes("--simulacro") ? { OFFSIDE_SIMULACRO: "1" } : {}),
+    spawn(
+      join(RAIZ, "node_modules", ".bin", "tsx"),
+      [
+        "--disable-warning=ExperimentalWarning",
+        join(RAIZ, "src", "server", "index.ts"),
+        "--nuevo",
+        ...(process.argv.includes("--simulacro") ? ["--simulacro"] : []),
+      ],
+      {
+        cwd: RAIZ,
+        stdio: "inherit",
+        env: {
+          ...process.env,
+          SIMULADOR_URL: `http://localhost:${puertoSim}`,
+          PUERTO: puertoApp,
+          OFFSIDE_JUECES: jueces,
+        },
       },
-    }),
+    ),
   );
 }, 700);
 

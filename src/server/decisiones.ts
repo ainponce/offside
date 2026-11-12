@@ -4,9 +4,10 @@
 // ese momento. Aprobar consulta el estado al simulador antes de firmar.
 
 import { type Contexto, juezPorId } from "./contexto.ts";
-import { type CacheDns, crearOrden, enviarOrden } from "./despacho.ts";
+import { type CacheDns, crearOrden, enviarOrden, finDeTurno, margenTurno } from "./despacho.ts";
 import { ejecutar, medidaPorId, planDe } from "./repositorio.ts";
 import type { EstadoSim } from "./simulador.ts";
+import { num } from "./texto.ts";
 
 export type Resultado = { ok: true } | { ok: false; codigo: 403 | 404 | 409 | 503; error: string };
 
@@ -22,11 +23,16 @@ function falla(codigo: 403 | 404 | 409 | 503, error: string): Resultado {
   return { ok: false, codigo, error };
 }
 
-export async function aprobarMedida(ctx: Contexto, medidaId: string, juezId: string): Promise<Resultado> {
+/**
+ * Aprueba una medida. Con `huellaVista` (la huella de la tarjeta que tenía el
+ * juez en pantalla), si la medida cambió desde entonces no se firma: 409.
+ */
+export async function aprobarMedida(ctx: Contexto, medidaId: string, juezId: string, huellaVista?: string): Promise<Resultado> {
   const medida = medidaPorId(ctx.db, medidaId);
   if (!medida) return falla(404, "La medida no existe.");
   const juez = juezPorId(ctx, juezId);
   if (!juez) return falla(403, "Solo un juez del registro puede firmar.");
+  if (huellaVista !== undefined && huellaVista !== medida.huella) return falla(409, "La medida cambió: revisala de nuevo");
 
   // Se reserva la medida antes del primer `await`: un segundo toque encuentra otro estado.
   const reservada = ejecutar(
@@ -51,6 +57,12 @@ export async function aprobarMedida(ctx: Contexto, medidaId: string, juezId: str
   if (!fresco.jueces_de_turno.includes(juezId)) {
     liberar();
     return falla(403, "Solo firma el juez de turno.");
+  }
+  // Sobre el cambio de turno, las órdenes no saldrían con esta firma: firma el entrante.
+  const fin = finDeTurno(ctx, juezId, fresco.minuto_actual);
+  if (fin != null && fin - fresco.minuto_actual <= margenTurno(ctx, fresco)) {
+    liberar();
+    return falla(409, `Faltan ${num(fin - fresco.minuto_actual, 1)} minutos para el fin de tu turno: esta medida la firma el juez entrante.`);
   }
 
   const minuto = fresco.minuto_actual;

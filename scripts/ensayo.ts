@@ -4,6 +4,7 @@
 //   pnpm ensayo                                  partido de práctica, acelerado x60
 //   pnpm ensayo -- --acelerar 6 --demora-juez 1  más parecido al partido final
 //   pnpm ensayo -- --carpeta salida/escenario-7  escenario propio (ver herramientas/generar_escenario.py)
+//   pnpm ensayo -- --simulacro --permitir-colateral  con el bloqueo equivocado a propósito: todo reclamo tiene que terminar en levantamiento
 //
 // El "juez de ensayo" entra por el mismo ingreso que un juez real y aprueba lo
 // que le toca tras una demora. Existe solo para ensayar: en el partido final
@@ -32,6 +33,7 @@ const escenario = resolve(argumento("escenario", carpeta ? join(carpeta, "escena
 const verdad = resolve(argumento("verdad", carpeta ? join(carpeta, "verdad.json") : join(OFICIAL, "evaluacion", "verdad_practica.json")));
 const jueces = resolve(argumento("jueces", carpeta ? join(carpeta, "jueces.demo.json") : join(RAIZ, "config", "jueces.demo.json")));
 const permitirColateral = bandera("permitir-colateral");
+const simulacro = bandera("simulacro");
 const exportar = bandera("exportar");
 const umbralVisibilidad = Number(argumento("visibilidad-max", "100"));
 const salida = resolve(argumento("salida", join(RAIZ, "salida", `ensayo-${new Date().toISOString().replace(/[:.]/g, "-")}`)));
@@ -96,7 +98,7 @@ async function principal(): Promise<number> {
   const sim = `http://127.0.0.1:${puertoSim}`;
   const app = `http://127.0.0.1:${puertoApp}`;
 
-  console.log(`Ensayo x${acelerar} · demora del juez ${demoraJuez} min de partido · salida ${salida}`);
+  console.log(`Ensayo x${acelerar} · demora del juez ${String(demoraJuez).replace(".", ",")} min de partido${simulacro ? " · con simulacro" : ""} · salida ${salida}`);
 
   hijos.push(
     spawn(
@@ -108,7 +110,7 @@ async function principal(): Promise<number> {
   await esperar("levantar el simulador", async () => (await json(`${sim}/estado`)).estado === 200);
 
   hijos.push(
-    spawn(join(RAIZ, "node_modules", ".bin", "tsx"), ["--disable-warning=ExperimentalWarning", join(RAIZ, "src", "server", "index.ts")], {
+    spawn(join(RAIZ, "node_modules", ".bin", "tsx"), ["--disable-warning=ExperimentalWarning", join(RAIZ, "src", "server", "index.ts"), ...(simulacro ? ["--simulacro"] : [])], {
       cwd: RAIZ,
       stdio: ["ignore", "ignore", "inherit"],
       env: {
@@ -139,7 +141,7 @@ async function principal(): Promise<number> {
     const estado = (await json<{ minuto_actual: number; fin_min: number }>(`${sim}/estado`)).datos;
     finMin = estado.fin_min;
     if (Math.floor(estado.minuto_actual / 15) !== Math.floor(ultimoMinuto / 15)) {
-      console.log(`  minuto ${estado.minuto_actual.toFixed(1)} · ${aprobadas} medidas firmadas`);
+      console.log(`  minuto ${estado.minuto_actual.toFixed(1).replace(".", ",")} · ${aprobadas} medidas firmadas`);
     }
     ultimoMinuto = estado.minuto_actual;
     // El verificador evalúa los bloqueos posteriores al partido recién después de los 5 minutos de gracia.

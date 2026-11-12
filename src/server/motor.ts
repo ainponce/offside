@@ -2,9 +2,10 @@
 // medidas y órdenes (sección 6 del diseño). Nunca firma ni decide: eso lo hace
 // el juez desde decisiones.ts.
 
-import { type Contexto, alertar } from "./contexto.ts";
+import { type Contexto, alertar, nombreProveedor } from "./contexto.ts";
+import { reiniciarBase } from "./reinicio.ts";
 import { guardarKv, leerKv } from "./db.ts";
-import { crearOrden, enviarOrden, pedirRatificacion } from "./despacho.ts";
+import { crearOrden, enviarOrden, impedimentoDeEnvio, pedirRatificacion } from "./despacho.ts";
 import { analizarCaptura, huella, sha256Hex } from "./evidencia.ts";
 import { type EvidenciaItem, instantaneaBloqueo, sellos } from "./instantanea.ts";
 import {
@@ -22,7 +23,8 @@ import {
   una,
 } from "./repositorio.ts";
 import { claveExpediente, evaluarRiesgo, planPorProveedor, veredicto } from "./reglas.ts";
-import type { Deteccion, EstadoSim } from "./simulador.ts";
+import { type Deteccion, type EstadoSim, esErrorDeRed } from "./simulador.ts";
+import { minuto, objetivoTexto } from "./texto.ts";
 
 /** Paso adicional del ciclo (los reclamos se enchufan acá). */
 export type PasoExtra = (ctx: Contexto, estado: EstadoSim) => Promise<void>;
@@ -35,14 +37,28 @@ function esTexto(v: unknown): v is string {
   return typeof v === "string" && v.trim().length > 0;
 }
 
+const esNumero = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+const textoONulo = (v: unknown): string | null => (typeof v === "string" ? v : null);
+const numeroONulo = (v: unknown): number | null => (esNumero(v) ? v : null);
+
+type Reinicio = { motivo: string; datos: Record<string, unknown> };
+
 export class Motor {
   private readonly ctx: Contexto;
   private enCurso = false;
   /** Falso hasta leer partido y proveedores del simulador en este arranque. */
   private datosFrescos = false;
-  private reinicioAvisado = false;
+  /** Cuándo se leyó (o se intentó leer) por última vez el horario de turnos, en ms reales. */
+  private turnosLeidosMs = 0;
+  private turnosOk = false;
+  /** Ciclos seguidos en que un proveedor no conoce órdenes nuestras que había recibido. */
+  private ciclosConOrdenesDesconocidas = 0;
+  /** Reinicio del simulador detectado durante el ciclo; se aplica al terminar el paso. */
+  private reinicio: Reinicio | null = null;
+  /** Errores internos ya informados (para no repetir la alerta en cada ciclo). */
+  private readonly erroresInformados = new Set<string>();
   private temporizador: ReturnType<typeof setInterval> | null = null;
-  private readonly pasosExtra: PasoExtra[] = [];
+  private readonly pasosExtra: { nombre: string; paso: PasoExtra }[] = [];
 
   constructor(ctx: Contexto) {
     this.ctx = ctx;
@@ -54,8 +70,8 @@ export class Motor {
     }
   }
 
-  agregarPaso(paso: PasoExtra): void {
-    this.pasosExtra.push(paso);
+  agregarPaso(paso: PasoExtra, nombre = "un paso adicional"): void {
+    this.pasosExtra.push({ nombre, paso });
   }
 
   iniciar(intervaloMs: number): void {
@@ -69,42 +85,149 @@ export class Motor {
     this.temporizador = null;
   }
 
-  /** Un ciclo completo. Nunca lanza: si el simulador no responde, queda `conectado: false`. */
+  /**
+   * Un ciclo completo. Nunca lanza. Si el simulador no responde, queda
+   * `conectado: false`; cada paso corre aislado, así un dato mal formado o un
+   * error interno en uno no frena a los demás (ni el seguimiento de órdenes).
+   */
   async tick(): Promise<void> {
     if (this.enCurso) return;
     this.enCurso = true;
     const { ctx } = this;
     const estabaConectado = ctx.estado.conectado;
     try {
-      const estado = await ctx.sim.estado();
-      if (!ctx.estado.partido || !this.datosFrescos) {
-        ctx.estado.partido = await ctx.sim.partido();
-        ctx.estado.proveedores = await ctx.sim.proveedores();
-        guardarKv(ctx.db, "partido", JSON.stringify(ctx.estado.partido));
-        guardarKv(ctx.db, "proveedores", JSON.stringify(ctx.estado.proveedores));
-        this.datosFrescos = true;
+      let estado: EstadoSim;
+      try {
+        estado = await ctx.sim.estado();
+        const reinicio = this.reinicioPorEstado(estado);
+        if (reinicio) {
+          this.reiniciar(reinicio);
+          ctx.estado.conectado = true;
+          ctx.estado.ultimo_error = null;
+          return;
+        }
+        if (!ctx.estado.partido || !this.datosFrescos) {
+          ctx.estado.partido = await ctx.sim.partido();
+          ctx.estado.proveedores = await ctx.sim.proveedores();
+          guardarKv(ctx.db, "partido", JSON.stringify(ctx.estado.partido));
+          guardarKv(ctx.db, "proveedores", JSON.stringify(ctx.estado.proveedores));
+          this.datosFrescos = true;
+        }
+      } catch (e) {
+        ctx.estado.conectado = false;
+        ctx.estado.ultimo_error = mensajeDe(e);
+        if (!esErrorDeRed(e)) this.errorInterno("la lectura del estado", e);
+        return;
       }
-      this.actualizarEstado(estado);
+      await this.leerTurnos();
 
-      await this.ingerirDetecciones(estado);
-      await this.reenviarPendientes(estado);
-      await this.seguirOrdenes(estado);
-      await this.atenderFallidas(estado);
-      for (const paso of this.pasosExtra) await paso(ctx, estado);
-      this.controlarFinal(estado);
-
-      ctx.estado.conectado = true;
-      ctx.estado.ultimo_error = null;
-    } catch (e) {
-      ctx.estado.conectado = false;
-      ctx.estado.ultimo_error = mensajeDe(e);
+      const pasos: { nombre: string; correr: () => unknown }[] = [
+        { nombre: "la actualización del estado", correr: () => this.actualizarEstado(estado) },
+        { nombre: "la ingesta de detecciones", correr: () => this.ingerirDetecciones(estado) },
+        { nombre: "el reenvío de órdenes cortadas", correr: () => this.reenviarPendientes(estado) },
+        { nombre: "el seguimiento de órdenes", correr: () => this.seguirOrdenes(estado) },
+        { nombre: "el reenvío de órdenes fallidas", correr: () => this.atenderFallidas(estado) },
+        ...this.pasosExtra.map((p) => ({ nombre: p.nombre, correr: () => p.paso(ctx, estado) })),
+        { nombre: "el cierre del partido", correr: () => this.controlarFinal(estado) },
+      ];
+      let corte: unknown = null;
+      for (const paso of pasos) {
+        try {
+          await paso.correr();
+        } catch (e) {
+          if (esErrorDeRed(e)) corte ??= e;
+          else this.errorInterno(paso.nombre, e);
+        }
+        if (this.reinicio) break;
+      }
+      if (this.reinicio) {
+        this.reiniciar(this.reinicio);
+        corte = null;
+      }
+      ctx.estado.conectado = corte == null;
+      ctx.estado.ultimo_error = corte == null ? null : mensajeDe(corte);
     } finally {
       this.enCurso = false;
       if (estabaConectado !== ctx.estado.conectado) ctx.alCambiar();
     }
   }
 
+  /** Un error que no es de red: se informa una vez por paso y mensaje, y el ciclo sigue. */
+  private errorInterno(paso: string, e: unknown): void {
+    const { ctx } = this;
+    const mensaje = mensajeDe(e);
+    const clave = `${paso}|${mensaje}`;
+    if (this.erroresInformados.has(clave)) return;
+    this.erroresInformados.add(clave);
+    ctx.consola(`[motor] Error interno en ${paso}: ${e instanceof Error && e.stack ? e.stack : mensaje}`);
+    alertar(ctx, `Error interno en ${paso}: ${mensaje}`);
+    try {
+      ctx.auditoria.registrar({ minuto: ctx.estado.minuto, actor: "sistema", tipo: "error_interno", datos: { paso, error: mensaje } });
+    } catch {
+      // Si ni la auditoría se puede escribir, alcanza con la alerta y la consola.
+    }
+    ctx.alCambiar();
+  }
+
+  // --- reinicio del simulador ----------------------------------------------------------
+
+  /** El reloj volvió atrás o cambió el partido: la base es de otro partido. */
+  private reinicioPorEstado(estado: EstadoSim): Reinicio | null {
+    const { ctx } = this;
+    const guardado = leerKv(ctx.db, "partido");
+    const idGuardado = guardado ? ((JSON.parse(guardado) as { id?: string }).id ?? null) : null;
+    if (idGuardado && esTexto(estado.partido) && estado.partido !== idGuardado) {
+      return {
+        motivo: `cambió el partido (${idGuardado} pasó a ${estado.partido})`,
+        datos: { partido_anterior: idGuardado, partido_nuevo: estado.partido },
+      };
+    }
+    const ultimo = Number(leerKv(ctx.db, "ultimo_minuto") ?? "-1000000000");
+    if (ultimo - estado.minuto_actual > 1) {
+      return {
+        motivo: `el reloj volvió del ${minuto(ultimo)} al ${minuto(estado.minuto_actual)}`,
+        datos: { minuto_anterior: ultimo, minuto_actual: estado.minuto_actual },
+      };
+    }
+    return null;
+  }
+
+  private reiniciar(r: Reinicio): void {
+    reiniciarBase(this.ctx, r.motivo, r.datos);
+    this.reinicio = null;
+    this.datosFrescos = false;
+    this.turnosLeidosMs = 0;
+    this.turnosOk = false;
+    this.ciclosConOrdenesDesconocidas = 0;
+    this.erroresInformados.clear();
+  }
+
   // --- estado y turnos ---------------------------------------------------------------
+
+  /**
+   * Horario de turnos (GET /juzgados). Se relee cada 30 s; si el simulador no lo
+   * publica, el motor sigue con lo último que tenga y vuelve a probar en 5 s.
+   */
+  private async leerTurnos(): Promise<void> {
+    const { ctx } = this;
+    const ahora = Date.now();
+    if (ahora - this.turnosLeidosMs < (this.turnosOk ? 30_000 : 5_000)) return;
+    this.turnosLeidosMs = ahora;
+    try {
+      const j = await ctx.sim.juzgados();
+      const nombres = new Map(j.juzgados.flatMap((z) => z.jueces.map((x) => [x.id, x.nombre] as const)));
+      ctx.estado.turnos = j.turnos.map((t) => ({
+        juez_id: t.juez_id,
+        nombre: nombres.get(t.juez_id) || ctx.jueces.find((x) => x.id === t.juez_id)?.nombre || t.juez_id,
+        desde_min: t.desde_min,
+        hasta_min: t.hasta_min,
+      }));
+      guardarKv(ctx.db, "turnos_horario", JSON.stringify(ctx.estado.turnos));
+      this.turnosOk = true;
+    } catch {
+      this.turnosOk = false;
+    }
+  }
 
   private actualizarEstado(estado: EstadoSim): void {
     const { ctx } = this;
@@ -126,19 +249,8 @@ export class Motor {
     }
     if (previo !== actual) guardarKv(ctx.db, "turno", actual);
 
-    // Si el reloj vuelve atrás, el simulador se reinició: esta base es de otro partido.
+    // El reloj que vuelve atrás se controla al principio del ciclo (reinicioPorEstado).
     const ultimo = Number(leerKv(ctx.db, "ultimo_minuto") ?? "-1000000000");
-    if (ultimo - estado.minuto_actual > 1 && !this.reinicioAvisado) {
-      this.reinicioAvisado = true;
-      ctx.auditoria.registrar({
-        minuto: estado.minuto_actual,
-        actor: "sistema",
-        tipo: "simulador_reiniciado",
-        datos: { minuto_anterior: ultimo, minuto_actual: estado.minuto_actual },
-      });
-      alertar(ctx, "El simulador se reinició (el reloj volvió atrás). Esta base es de otro partido: reiniciá Offside con --nuevo.");
-      ctx.alCambiar();
-    }
     if (estado.minuto_actual >= ultimo) guardarKv(ctx.db, "ultimo_minuto", String(estado.minuto_actual));
 
     const cambioFinal = ctx.estado.finalizado !== estado.finalizado;
@@ -156,17 +268,48 @@ export class Motor {
     const { ctx } = this;
     const desde = Number(leerKv(ctx.db, "cursor_detecciones") ?? "-1000000000");
     const lote = await ctx.sim.detecciones(desde);
-    const nuevas = [...lote.detecciones].sort((a, b) => (a.minuto ?? 0) - (b.minuto ?? 0));
+    const crudas: unknown[] = Array.isArray(lote?.detecciones) ? lote.detecciones : [];
+    const minutoDe = (d: unknown) => {
+      const m = d !== null && typeof d === "object" ? (d as { minuto?: unknown }).minuto : undefined;
+      return esNumero(m) ? m : estado.minuto_actual;
+    };
+    const nuevas = [...crudas].sort((a, b) => minutoDe(a) - minutoDe(b));
     let huboCambios = false;
-    for (const det of nuevas) {
-      const id = esTexto(det?.id) ? det.id : `SIN-ID-${sha256Hex(JSON.stringify(det)).slice(0, 12)}`;
-      if (una(ctx.db, "SELECT id FROM detecciones WHERE id = ?", id)) continue;
-      // Un error de red acá corta el ciclo sin mover el cursor: se reintenta en el próximo.
-      await this.procesarDeteccion({ ...det, id }, estado);
-      huboCambios = true;
+    try {
+      for (const det of nuevas) {
+        const objeto = det !== null && typeof det === "object" && !Array.isArray(det) ? (det as Deteccion) : null;
+        const id = esTexto(objeto?.id) ? objeto.id : `SIN-ID-${sha256Hex(JSON.stringify(det) ?? String(det)).slice(0, 12)}`;
+        if (una(ctx.db, "SELECT id FROM detecciones WHERE id = ?", id)) continue;
+        huboCambios = true;
+        if (!objeto) {
+          this.archivarInvalida(det, id, "La detección no es un objeto.", estado.minuto_actual);
+          continue;
+        }
+        try {
+          await this.procesarDeteccion({ ...objeto, id }, estado);
+        } catch (e) {
+          // Un error de red corta la ingesta sin mover el cursor: se reintenta en el próximo ciclo.
+          if (esErrorDeRed(e)) throw e;
+          // Cualquier otro es un dato que Offside no sabe tratar: se archiva y se sigue.
+          this.archivarInvalida({ ...objeto, id }, id, `No se pudo procesar: ${mensajeDe(e)}`, estado.minuto_actual);
+        }
+      }
+      if (esNumero(lote?.minuto_actual)) guardarKv(ctx.db, "cursor_detecciones", String(lote.minuto_actual));
+    } finally {
+      if (huboCambios) ctx.alCambiar();
     }
-    guardarKv(ctx.db, "cursor_detecciones", String(lote.minuto_actual));
-    if (huboCambios) ctx.alCambiar();
+  }
+
+  /** Archiva como inválida una detección que no se pudo tratar. Nunca lanza. */
+  private archivarInvalida(det: unknown, id: string, motivo: string, minuto: number): void {
+    try {
+      if (una(this.ctx.db, "SELECT id FROM detecciones WHERE id = ?", id)) return;
+      const objeto = det !== null && typeof det === "object" && !Array.isArray(det) ? (det as Deteccion) : null;
+      const crudo = JSON.stringify(det) ?? String(det);
+      this.archivar(objeto ? { ...objeto, id } : ({ id } as Deteccion), crudo, "invalida", motivo, minuto);
+    } catch (e) {
+      this.errorInterno("el archivo de una detección inválida", e);
+    }
   }
 
   private guardarDeteccion(
@@ -187,7 +330,7 @@ export class Motor {
          host, ip, marca, expediente_id, servidor_id, recibida_min, recibida_iso)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       det.id,
-      typeof det.minuto === "number" ? det.minuto : p.minuto,
+      esNumero(det.minuto) ? det.minuto : p.minuto,
       p.crudo,
       sha256Hex(p.crudo),
       p.captura.sha256,
@@ -197,7 +340,7 @@ export class Motor {
       p.motivo,
       esTexto(det.host_stream) ? det.host_stream : "",
       esTexto(det.ip_servidor) ? det.ip_servidor : "",
-      det.marca_de_agua_extraida ?? null,
+      textoONulo(det.marca_de_agua_extraida),
       p.expediente_id,
       p.servidor_id,
       p.minuto,
@@ -206,7 +349,7 @@ export class Motor {
   }
 
   private archivar(det: Deteccion, crudo: string, clase: string, motivo: string, minuto: number): void {
-    const captura = analizarCaptura(det.captura?.contenido_b64);
+    const captura = analizarCaptura((det.captura as { contenido_b64?: unknown } | null | undefined)?.contenido_b64);
     this.guardarDeteccion(det, { crudo, captura, veredicto: clase, motivo, expediente_id: null, servidor_id: null, minuto });
     this.ctx.auditoria.registrar({
       minuto,
@@ -214,9 +357,9 @@ export class Motor {
       tipo: "deteccion_archivada",
       datos: {
         deteccion_id: det.id,
-        host: det.host_stream ?? null,
-        ip: det.ip_servidor ?? null,
-        marca: det.marca_de_agua_extraida ?? null,
+        host: textoONulo(det.host_stream),
+        ip: textoONulo(det.ip_servidor),
+        marca: textoONulo(det.marca_de_agua_extraida),
         veredicto: clase,
         motivo,
         deteccion_sha256: sha256Hex(crudo),
@@ -233,6 +376,14 @@ export class Motor {
 
     if (!esTexto(det.host_stream) || !esTexto(det.ip_servidor)) {
       this.archivar(det, crudo, "invalida", "La detección no trae host o IP del servidor.", minuto);
+      return;
+    }
+    if (!esNumero(det.minuto)) {
+      this.archivar(det, crudo, "invalida", "La detección no trae el minuto en que se vio.", minuto);
+      return;
+    }
+    if (det.marca_de_agua_extraida != null && typeof det.marca_de_agua_extraida !== "string") {
+      this.archivar(det, crudo, "invalida", "La marca de agua de la detección no es texto.", minuto);
       return;
     }
 
@@ -260,19 +411,22 @@ export class Motor {
       ? [null, null]
       : await Promise.all([ctx.sim.dnsIp(det.ip_servidor), ctx.sim.dnsDominio(det.host_stream)]);
 
-    const captura = analizarCaptura(det.captura?.contenido_b64);
+    const datosCaptura = (det.captura !== null && typeof det.captura === "object" ? det.captura : {}) as Record<string, unknown>;
+    const captura = analizarCaptura(datosCaptura.contenido_b64);
     const evidencia: EvidenciaItem = {
       deteccion_id: det.id,
       minuto: det.minuto,
-      capturada_min: det.captura?.capturada_min ?? null,
+      capturada_min: numeroONulo(datosCaptura.capturada_min),
       deteccion_sha256: sha256Hex(crudo),
       captura_sha256: captura.sha256,
       captura_bytes: captura.bytes,
-      formato: det.captura?.formato ?? null,
+      formato: textoONulo(datosCaptura.formato),
       formato_ok: captura.formato_ok,
-      pagina: det.pagina ?? null,
-      stream_url: det.stream_url ?? null,
-      promocion: det.promocion ?? [],
+      pagina: textoONulo(det.pagina),
+      stream_url: textoONulo(det.stream_url),
+      promocion: (Array.isArray(det.promocion) ? det.promocion : []).filter(
+        (p): p is { red: string; url: string; minuto: number } => p !== null && typeof p === "object",
+      ),
     };
 
     enTransaccion(ctx.db, () => {
@@ -386,6 +540,7 @@ export class Motor {
         vence_min: venceMin,
         servidores_previos: previos,
         sellos: sellos(partido, minuto),
+        auditoria: ctx.auditoria.ancla(),
       });
       const h = huella(instantanea);
       ejecutar(
@@ -426,7 +581,7 @@ export class Motor {
   }
 
   /**
-   * Solo con OFFSIDE_SIMULACRO: la primera IP compartida se propone por IP, a
+   * Solo con la bandera --simulacro: la primera IP compartida se propone por IP, a
    * sabiendas, para poder mostrar el circuito de reclamos. Queda rotulado.
    */
   private aplicarSimulacro<T extends { tipo_recomendado: string; terceros: string[]; motivo: string }>(
@@ -463,6 +618,19 @@ export class Motor {
       for (const o of lista) remotas.set(`${proveedores[i]}|${o.orden_id}`, o);
     });
 
+    // Una orden que el proveedor recibió y ya no conoce: el simulador se reinició.
+    // Dos ciclos seguidos, para no confundirlo con una respuesta incompleta.
+    const desconocidas = activas.filter((o) => !remotas.has(`${o.proveedor_id}|${o.orden_id}`));
+    this.ciclosConOrdenesDesconocidas = desconocidas.length > 0 ? this.ciclosConOrdenesDesconocidas + 1 : 0;
+    if (this.ciclosConOrdenesDesconocidas >= 2) {
+      const proveedores = [...new Set(desconocidas.map((o) => nombreProveedor(ctx, o.proveedor_id)))];
+      this.reinicio = {
+        motivo: `${proveedores.join(", ")} dejó de conocer ${desconocidas.length === 1 ? "una orden" : `${desconocidas.length} órdenes`} que había recibido`,
+        datos: { ordenes_desconocidas: desconocidas.map((o) => ({ proveedor: o.proveedor_id, orden_id: o.orden_id })) },
+      };
+      return;
+    }
+
     let huboCambios = false;
     for (const local of activas) {
       const remota = remotas.get(`${local.proveedor_id}|${local.orden_id}`);
@@ -470,17 +638,13 @@ export class Motor {
       huboCambios = true;
       const base = { orden_id: local.orden_id, proveedor: local.proveedor_id, tipo: local.tipo, objetivo: local.objetivo };
       if (remota.estado === "aplicada") {
-        ejecutar(
-          ctx.db,
-          "UPDATE ordenes SET estado = 'aplicada', aplicada_min = ? WHERE orden_id = ?",
-          remota.aplicada_min ?? estado.minuto_actual,
-          local.orden_id,
-        );
+        const aplicada = remota.aplicada_min ?? estado.minuto_actual;
+        ejecutar(ctx.db, "UPDATE ordenes SET estado = 'aplicada', aplicada_min = ? WHERE orden_id = ?", aplicada, local.orden_id);
         ctx.auditoria.registrar({
-          minuto: remota.aplicada_min ?? estado.minuto_actual,
+          minuto: aplicada,
           actor: local.proveedor_id,
           tipo: "orden_aplicada",
-          datos: base,
+          datos: { ...base, aplicada_min: aplicada },
         });
       } else if (remota.estado === "fallida") {
         ejecutar(
@@ -496,19 +660,21 @@ export class Motor {
           datos: { ...base, motivo: remota.motivo ?? null },
         });
       } else if (remota.estado === "vencida" || remota.estado === "levantada") {
+        const aplicada = local.aplicada_min ?? remota.aplicada_min ?? null;
+        const finalizada = remota.finalizada_min ?? estado.minuto_actual;
         ejecutar(
           ctx.db,
-          "UPDATE ordenes SET estado = ?, aplicada_min = COALESCE(aplicada_min, ?), finalizada_min = ? WHERE orden_id = ?",
+          "UPDATE ordenes SET estado = ?, aplicada_min = ?, finalizada_min = ? WHERE orden_id = ?",
           remota.estado,
-          remota.aplicada_min ?? null,
-          remota.finalizada_min ?? estado.minuto_actual,
+          aplicada,
+          finalizada,
           local.orden_id,
         );
         ctx.auditoria.registrar({
-          minuto: remota.finalizada_min ?? estado.minuto_actual,
+          minuto: finalizada,
           actor: local.proveedor_id,
           tipo: remota.estado === "vencida" ? "orden_vencida" : "orden_levantada_confirmada",
-          datos: base,
+          datos: { ...base, aplicada_min: aplicada, finalizada_min: finalizada },
         });
       }
     }
@@ -529,12 +695,13 @@ export class Motor {
           tipo: "reintentos_agotados",
           datos: { orden_id: orden.orden_id, proveedor: orden.proveedor_id, intentos: orden.intento },
         });
-        alertar(ctx, `${orden.proveedor_id} falló ${orden.intento} veces para ${orden.objetivo}.`);
+        alertar(ctx, `${nombreProveedor(ctx, orden.proveedor_id)} falló ${orden.intento} veces para ${objetivoTexto(orden.tipo, orden.objetivo)}.`);
         continue;
       }
       const juez = ctx.jueces.find((j) => j.id === orden.juez_id);
       const medida = medidaPorId(ctx.db, orden.medida_id);
-      if (juez && medida && estado.jueces_de_turno.includes(juez.id)) {
+      const impedimento = impedimentoDeEnvio(ctx, orden, estado);
+      if (juez && medida && !impedimento) {
         const nueva = crearOrden(ctx, {
           medida,
           proveedor_id: orden.proveedor_id,
@@ -551,7 +718,10 @@ export class Motor {
         });
         await enviarOrden(ctx, nueva, estado);
       } else {
-        pedirRatificacion(ctx, orden, estado.minuto_actual, "El proveedor falló y el juez que firmó ya no está de turno.");
+        const motivo = impedimento?.ratificar
+          ? `El proveedor falló y el juez que firmó no puede reenviarla: ${impedimento.motivo}`
+          : "El proveedor falló y el juez que firmó ya no está de turno.";
+        pedirRatificacion(ctx, orden, estado.minuto_actual, motivo);
         ctx.alCambiar();
       }
     }
@@ -582,7 +752,7 @@ export class Motor {
     // Los bloqueos por IP tienen que haber vencido con el partido.
     if (estado.minuto_actual >= estado.fin_min + 1) {
       const vivas = todas<FilaOrden>(ctx.db, "SELECT * FROM ordenes WHERE estado = 'aplicada' AND tipo = 'ip'");
-      for (const o of vivas) alertar(ctx, `El bloqueo por IP ${o.objetivo} sigue activo en ${o.proveedor_id} después del partido.`);
+      for (const o of vivas) alertar(ctx, `El bloqueo por IP ${o.objetivo} sigue activo en ${nombreProveedor(ctx, o.proveedor_id)} después del partido.`);
     }
 
     if (!leerKv(ctx.db, "partido_cerrado")) {

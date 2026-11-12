@@ -70,13 +70,13 @@ python3 herramientas/verificar_expediente.py salida/video --juzgados config/juec
 | 1:55 | Tablero: minuto 105, las órdenes pasan a "vencida" | "Pitazo final. Todos los bloqueos vencen solos." |
 | 2:03 | Terminal: salida del verificador oficial | "El verificador oficial: fases piratas bloqueadas, daño colateral cero, falsos positivos cero, órdenes fuera de turno cero." |
 | 2:18 | Expediente en pantalla; se resalta la huella y el identificador de una orden | "La huella de lo que vio el juez viaja dentro de cada orden, y la orden está firmada. La firma cubre la prueba." |
-| 2:30 | Terminal: verificador independiente, "VERIFICACIÓN CORRECTA" | "Un verificador independiente recalcula todo, y lo cruza con el registro de los proveedores." |
+| 2:30 | Terminal: verificador independiente, "VERIFICACIÓN CORRECTA" y la línea "anclada hasta la secuencia" | "Un verificador independiente recalcula todo y lo cruza con el registro de los proveedores, que no controlamos: ese registro ancla la auditoría." |
 | 2:38 | Se edita un carácter del expediente y se vuelve a correr: "VERIFICACIÓN FALLIDA" | "Cambiamos un carácter de la evidencia. Salta." |
 | 2:48 | Página de transparencia y cierre con el nombre | "Qué se bloqueó, por orden de quién y hasta cuándo, a la vista de todos. Offside: rápido como Italia, con juez como Francia, y sin daño colateral." |
 
 ## Para la alteración de la toma 3
 
-Abrí `salida/video/expediente-EXP-2026-000001.json`, buscá `contenido_b64` y cambiá una letra del medio de ese texto por otra. Guardá y volvé a correr el verificador independiente.
+Abrí `salida/video/expediente-EXP-2026-000001.json`, buscá `contenido_b64` y cambiá una letra del medio de ese texto por otra. Guardá y volvé a correr el verificador independiente. Va a decir qué detección cambió y que el archivo ya no es el que registró el cierre de la exportación.
 
 ## Si te pasás de los 3 minutos
 

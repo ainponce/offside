@@ -3,6 +3,7 @@ dist
 .simulador
 .superpowers
 datos/*.db*
+config/jueces.local.json
 salida
 .env
 .DS_Store

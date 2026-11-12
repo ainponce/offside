@@ -1,9 +1,12 @@
 // Armado común de las pruebas del motor: base en memoria, simulador falso y dos jueces.
 
+import type { RespuestaIngreso } from "../src/compartido/tipos.ts";
+import { crearApi } from "../src/server/api.ts";
 import { Auditoria } from "../src/server/auditoria.ts";
-import { type Config, type Contexto, type Juez, crearContexto } from "../src/server/contexto.ts";
+import { type Config, type Contexto, type Juez, type Operador, crearContexto } from "../src/server/contexto.ts";
 import { type Db, abrirDb } from "../src/server/db.ts";
 import { Motor } from "../src/server/motor.ts";
+import { Sesiones } from "../src/server/sesiones.ts";
 import type { Deteccion } from "../src/server/simulador.ts";
 import { SimuladorFalso } from "./simulador-falso.ts";
 
@@ -29,28 +32,35 @@ export const JUECES: Juez[] = [
 ];
 
 export interface Armado {
+  /** La base con la que se armó; si el motor la reemplaza tras un reinicio, la vigente es ctx.db. */
   db: Db;
   sim: SimuladorFalso;
   ctx: Contexto;
   motor: Motor;
   cambios: { n: number };
+  /** Lo que el servidor escribió en la consola. */
+  consola: string[];
 }
 
 export function armar(config: Partial<Config> = {}): Armado {
-  const db = abrirDb(":memory:");
+  const db = abrirDb(config.dbRuta ?? ":memory:");
   const sim = new SimuladorFalso();
   const cambios = { n: 0 };
+  const consola: string[] = [];
   const ctx = crearContexto({
     db,
     sim,
     auditoria: new Auditoria(db),
     jueces: JUECES,
-    config,
+    config: { dbRuta: ":memory:", ...config },
     alCambiar: () => {
       cambios.n += 1;
     },
+    consola: (texto) => {
+      consola.push(texto);
+    },
   });
-  return { db, sim, ctx, motor: new Motor(ctx), cambios };
+  return { db, sim, ctx, motor: new Motor(ctx), cambios, consola };
 }
 
 export function filas<T = Record<string, unknown>>(db: Db, sql: string, ...parametros: (string | number | null)[]): T[] {
@@ -84,4 +94,28 @@ export async function publicarYProcesar(a: Armado, det: Deteccion): Promise<void
   a.sim.publicar(det);
   if (a.sim.minuto < det.minuto) a.sim.avanzar(det.minuto);
   await a.motor.tick();
+}
+
+export const OPERADORES: Operador[] = [{ usuario: "fiscal", contrasena: "clave-fiscal", nombre: "Fiscalía", rol: "fiscalia" }];
+
+/** Armado con la API montada encima, para pedir rutas como lo haría el navegador. */
+export function montarApi(config: Partial<Config> = {}) {
+  const a = armar(config);
+  const sesiones = new Sesiones(a.ctx, JUECES, OPERADORES);
+  const { app } = crearApi(a.ctx, sesiones);
+  const pedir = async (ruta: string, opciones: { token?: string; cuerpo?: unknown; metodo?: string } = {}) => {
+    const r = await app.request(ruta, {
+      method: opciones.metodo ?? (opciones.cuerpo === undefined ? "GET" : "POST"),
+      headers: {
+        ...(opciones.token ? { Authorization: `Bearer ${opciones.token}` } : {}),
+        ...(opciones.cuerpo === undefined ? {} : { "Content-Type": "application/json" }),
+      },
+      body: opciones.cuerpo === undefined ? undefined : JSON.stringify(opciones.cuerpo),
+    });
+    const texto = await r.text();
+    return { estado: r.status, texto, datos: texto ? JSON.parse(texto) : null };
+  };
+  const ingresar = async (usuario: string, contrasena: string) =>
+    ((await pedir("/api/ingreso", { cuerpo: { usuario, contrasena } })).datos as RespuestaIngreso).token;
+  return { ...a, sesiones, pedir, ingresar };
 }

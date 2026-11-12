@@ -18,7 +18,7 @@ import type {
   UsuarioDTO,
   VerificacionDTO,
 } from "../compartido/tipos.ts";
-import type { Contexto } from "./contexto.ts";
+import { type Contexto, nombreProveedor } from "./contexto.ts";
 import {
   type FilaDeteccion,
   type FilaExpediente,
@@ -34,22 +34,26 @@ import {
 } from "./repositorio.ts";
 import type { ItemPlan } from "./reglas.ts";
 import type { UsuarioBase } from "./sesiones.ts";
+import { deObjetivo, lista, minuto, objetivoTexto, plural, tipoTexto } from "./texto.ts";
 
 const redondear = (n: number, decimales = 2) => {
   const f = 10 ** decimales;
   return Math.round(n * f) / f;
 };
-const plural = (n: number, uno: string, muchos: string) => `${n} ${n === 1 ? uno : muchos}`;
 const corta = (huella: string | null | undefined) => (huella ? huella.slice(0, 12) : "sin huella");
+const CLASE_TEXTO: Record<string, string> = {
+  inicial: "medida inicial",
+  ampliacion: "ampliación",
+  ratificacion: "ratificación",
+  levantamiento: "levantamiento por reclamo",
+};
 
 function nombreJuez(ctx: Contexto, id: string | null | undefined): string | null {
   if (!id) return null;
   return ctx.jueces.find((j) => j.id === id)?.nombre ?? id;
 }
 
-function nombreProveedor(ctx: Contexto, id: string): string {
-  return ctx.estado.proveedores.find((p) => p.id === id)?.nombre ?? id;
-}
+
 
 // --- estado y usuario --------------------------------------------------------------------
 
@@ -69,6 +73,7 @@ export function estadoDTO(ctx: Contexto, seq: number): EstadoDTO {
       const j = ctx.jueces.find((x) => x.id === id);
       return { id, nombre: j?.nombre ?? id, juzgado_nombre: j?.juzgado_nombre ?? "" };
     }),
+    turnos: e.turnos.map((t) => ({ juez_id: t.juez_id, nombre: t.nombre, desde_min: t.desde_min, hasta_min: t.hasta_min })),
     alertas: e.alertas,
     simulacro: ctx.config.simulacro,
     seq,
@@ -100,9 +105,16 @@ function ordenDTO(ctx: Contexto, o: FilaOrden): OrdenDTO {
 }
 
 function planDTO(ctx: Contexto, plan: ItemPlan[]): PlanItemDTO[] {
+  const total = ctx.estado.proveedores.reduce((a, p) => a + p.clientes, 0);
   return plan.map((item) => {
     const p = ctx.estado.proveedores.find((x) => x.id === item.proveedor_id);
-    const base = { proveedor_id: item.proveedor_id, proveedor_nombre: p?.nombre ?? item.proveedor_id, clientes: p?.clientes ?? 0 };
+    const clientes = p?.clientes ?? 0;
+    const base = {
+      proveedor_id: item.proveedor_id,
+      proveedor_nombre: p?.nombre ?? item.proveedor_id,
+      clientes,
+      clientes_pct: total > 0 ? redondear((100 * clientes) / total, 1) : 0,
+    };
     return "tipo" in item
       ? { ...base, tipo: item.tipo, objetivo: item.objetivo, sin_cobertura: null }
       : { ...base, tipo: null, objetivo: null, sin_cobertura: item.sin_cobertura };
@@ -173,7 +185,7 @@ function verificacionesRatificacion(ctx: Contexto, inst: any): VerificacionDTO[]
       clave: "senal",
       luz: "verde",
       titulo: "Medida ya aprobada",
-      detalle: `${nombreJuez(ctx, o.juez_id) ?? "El juez saliente"} aprobó la medida ${o.medida_id} en el minuto ${redondear(o.decidida_min ?? 0, 1)}. Huella ${corta(o.huella)}.`,
+      detalle: `${nombreJuez(ctx, o.juez_id) ?? "El juez saliente"} aprobó la medida ${o.medida_id} en el ${minuto(o.decidida_min ?? 0)}. Huella ${corta(o.huella)}.`,
     },
     {
       clave: "licenciatario",
@@ -196,7 +208,7 @@ function verificacionesRatificacion(ctx: Contexto, inst: any): VerificacionDTO[]
   ];
 }
 
-function verificacionesLevantamiento(inst: any): VerificacionDTO[] {
+function verificacionesLevantamiento(ctx: Contexto, inst: any): VerificacionDTO[] {
   const rc = inst.reclamo ?? {};
   const s = inst.servidor ?? {};
   const aLevantar: any[] = inst.ordenes_a_levantar ?? [];
@@ -218,7 +230,7 @@ function verificacionesLevantamiento(inst: any): VerificacionDTO[] {
       clave: "servidor",
       luz: "verde",
       titulo: `Se ${aLevantar.length === 1 ? "levanta 1 orden" : `levantan ${aLevantar.length} órdenes`}`,
-      detalle: aLevantar.map((o) => `${o.proveedor_id}: ${o.tipo} ${o.objetivo}`).join(" · "),
+      detalle: aLevantar.map((o) => `${nombreProveedor(ctx, o.proveedor_id)}: ${tipoTexto(o.tipo)} ${o.objetivo}`).join(" · "),
     },
     {
       clave: "colateral",
@@ -249,11 +261,11 @@ export function medidaDTO(ctx: Contexto, m: FilaMedida): MedidaDTO {
     verificaciones = verificacionesRatificacion(ctx, inst);
     pedido = `Ratificar el reenvío a ${conDestino.map((p) => p.proveedor_nombre).join(", ")}. ${inst.motivo ?? ""}`.trim();
   } else if (m.clase === "levantamiento") {
-    verificaciones = verificacionesLevantamiento(inst);
+    verificaciones = verificacionesLevantamiento(ctx, inst);
     pedido = `Levantar el bloqueo que afecta a ${inst.reclamo?.dominio}${conDestino.length ? " y reemplazarlo por uno más preciso" : ""}.`;
   } else {
     verificaciones = verificacionesBloqueo(inst);
-    const tipo = inst.riesgo?.tipo_recomendado === "ip" ? `la IP ${s?.ip}` : `el dominio ${s?.host}`;
+    const tipo = inst.riesgo?.tipo_recomendado === "ip" ? objetivoTexto("ip", s?.ip) : objetivoTexto("dominio", s?.host);
     pedido =
       m.clase === "ampliacion"
         ? `Ampliar el expediente a un servidor nuevo de la misma filtración: bloquear ${tipo} hasta el final del partido.`
@@ -315,9 +327,16 @@ export function medidaDTO(ctx: Contexto, m: FilaMedida): MedidaDTO {
             reclamo_id: inst.reclamo?.id ?? m.reclamo_id ?? "",
             dominio: inst.reclamo?.dominio ?? "",
             proveedor_id: inst.reclamo?.proveedor_id ?? "",
+            proveedor_nombre: nombreProveedor(ctx, inst.reclamo?.proveedor_id ?? ""),
             mensaje: inst.reclamo?.mensaje ?? "",
             verificacion: inst.verificacion ?? "",
-            ordenes_a_levantar: inst.ordenes_a_levantar ?? [],
+            ordenes_a_levantar: (inst.ordenes_a_levantar ?? []).map((o: any) => ({
+              orden_id: o.orden_id,
+              proveedor_id: o.proveedor_id,
+              proveedor_nombre: nombreProveedor(ctx, o.proveedor_id),
+              tipo: o.tipo,
+              objetivo: o.objetivo,
+            })),
           }
         : null,
     decision: decidida
@@ -335,7 +354,11 @@ export function medidaDTO(ctx: Contexto, m: FilaMedida): MedidaDTO {
 }
 
 export function colaDTO(ctx: Contexto, u: UsuarioBase, seq: number): ColaDTO {
-  const pendientes = todas<FilaMedida>(ctx.db, "SELECT * FROM medidas WHERE estado = 'pendiente' ORDER BY n");
+  // Un levantamiento va primero: hay un sitio legítimo caído ahora mismo.
+  const pendientes = todas<FilaMedida>(
+    ctx.db,
+    "SELECT * FROM medidas WHERE estado = 'pendiente' ORDER BY CASE clase WHEN 'levantamiento' THEN 0 ELSE 1 END, n",
+  );
   const recientes = todas<FilaMedida>(
     ctx.db,
     "SELECT * FROM medidas WHERE estado <> 'pendiente' ORDER BY COALESCE(decidida_min, creada_min) DESC, n DESC LIMIT 20",
@@ -360,6 +383,29 @@ const PRIORIDAD: Record<string, number> = {
   no_enviada: 2,
   rechazada: 1,
 };
+
+/**
+ * El mayor porcentaje de clientes con el bloqueo aplicado a la vez. Cada orden
+ * cuenta desde que el proveedor la aplicó hasta que venció o se levantó.
+ */
+function coberturaMaxima(ctx: Contexto, ordenes: FilaOrden[], total: number): number {
+  if (total <= 0) return 0;
+  const tramos = ordenes
+    .filter((o) => o.aplicada_min != null)
+    .map((o) => ({
+      proveedor: o.proveedor_id,
+      desde: o.aplicada_min!,
+      hasta: o.finalizada_min ?? (o.estado === "aplicada" ? Number.POSITIVE_INFINITY : o.vence_min),
+    }))
+    .filter((t) => t.hasta > t.desde);
+  let maximo = 0;
+  for (const instante of new Set(tramos.map((t) => t.desde))) {
+    const proveedores = new Set(tramos.filter((t) => t.desde <= instante && instante < t.hasta).map((t) => t.proveedor));
+    const clientes = ctx.estado.proveedores.filter((p) => proveedores.has(p.id)).reduce((a, p) => a + p.clientes, 0);
+    maximo = Math.max(maximo, clientes);
+  }
+  return redondear((100 * maximo) / total, 1);
+}
 
 function servidorDTO(ctx: Contexto, s: FilaServidor): ServidorDTO {
   const riesgo = riesgoDe(s);
@@ -392,6 +438,7 @@ function servidorDTO(ctx: Contexto, s: FilaServidor): ServidorDTO {
   });
 
   const aplicadas = ordenes.map((o) => o.aplicada_min).filter((x): x is number => x != null);
+  const actual = total > 0 ? redondear((100 * cubiertos) / total, 1) : 0;
   return {
     id: s.id,
     host: s.host,
@@ -406,7 +453,8 @@ function servidorDTO(ctx: Contexto, s: FilaServidor): ServidorDTO {
     medida_clase: medida?.clase ?? null,
     medida_estado: medida ? (medida.estado === "aprobando" ? "aprobada" : medida.estado) : null,
     primer_bloqueo_min: aplicadas.length ? redondear(Math.max(0, Math.min(...aplicadas) - s.primera_deteccion_min)) : null,
-    cobertura_pct: total > 0 ? redondear((100 * cubiertos) / total, 1) : 0,
+    cobertura_pct: actual,
+    cobertura_max_pct: Math.max(actual, coberturaMaxima(ctx, ordenes, total)),
     por_proveedor: porProveedor,
   };
 }
@@ -434,57 +482,110 @@ function expedienteResumen(ctx: Contexto, e: FilaExpediente): ExpedienteResumenD
 }
 
 function resumirEvento(ctx: Contexto, tipo: string, actor: string, d: any): string {
-  const prov = (id: string) => nombreProveedor(ctx, id);
+  const prov = (id: string | null | undefined) => (id ? nombreProveedor(ctx, id) : "un proveedor");
+  const juez = (id: string | null | undefined) => nombreJuez(ctx, id) ?? id ?? "Un juez";
+  const quien = () => {
+    if (actor === "sistema") return "Offside";
+    const j = ctx.jueces.find((x) => x.id === actor || x.usuario === actor);
+    if (j) return j.nombre;
+    const p = ctx.estado.proveedores.find((x) => x.id === actor);
+    return p?.nombre ?? actor;
+  };
+  const bloqueo = (t: string | null | undefined, objetivo: string | null | undefined) =>
+    objetivo ? objetivoTexto(t, objetivo) : "el objetivo";
+  const elBloqueo = (t: string | null | undefined, objetivo: string | null | undefined) =>
+    objetivo ? `el bloqueo ${deObjetivo(t, objetivo)}` : "el bloqueo";
+  const conPunto = (texto: string | null | undefined) => {
+    const t = (texto ?? "").trim();
+    return !t ? "" : /[.!?]$/.test(t) ? t : `${t}.`;
+  };
   switch (tipo) {
+    case "arranque":
+      return `Offside arrancó${d.base_nueva ? " con una base nueva" : ""}${d.simulacro ? ", con el simulacro de reclamos activo" : ""}.`;
+    case "ingreso": {
+      const rol = d.rol === "juez" ? "como juez" : d.rol === "fiscalia" ? "como fiscalía" : "";
+      return `${d.nombre ?? quien()} ingresó${rol ? ` ${rol}` : ""}.`;
+    }
+    case "medida_recuperada":
+      return `La medida ${d.medida_id} había quedado a medio aprobar por un corte de Offside: volvió a la cola sin firmar.`;
+    case "simulador_reiniciado":
+      return d.minuto_anterior != null
+        ? `El simulador se reinició: el reloj volvió del ${minuto(d.minuto_anterior)} al ${minuto(d.minuto_actual)}.`
+        : `El simulador se reinició: ${conPunto(d.motivo) || "cambió el partido."}`;
+    case "base_reiniciada":
+      return `Base nueva tras el reinicio del simulador${d.archivo ? `; la anterior quedó archivada en ${d.archivo}` : ""}. Los jueces tienen que volver a ingresar.`;
     case "deteccion_archivada":
-      return `Detección ${d.deteccion_id} archivada: ${d.motivo}`;
+      return `Detección ${d.deteccion_id} archivada: ${conPunto(d.motivo)}`;
     case "expediente_abierto":
       return `Se abrió ${d.expediente_id} por la marca ${d.marca}.`;
     case "evidencia_agregada":
       return `Nueva evidencia en ${d.expediente_id}: detección ${d.deteccion_id}.`;
-    case "medida_presentada":
-      return `Medida ${d.medida_id} (${d.clase}) presentada al juez de turno: ${d.servidor?.host} por ${d.tipo_recomendado}.`;
+    case "medida_presentada": {
+      const objetivo = d.tipo_recomendado === "ip" ? d.servidor?.ip : d.servidor?.host;
+      if (d.clase === "levantamiento") {
+        return `Se presentó al juez de turno el levantamiento ${d.medida_id}${d.reclamo_id ? ` por el reclamo ${d.reclamo_id}` : ""}.`;
+      }
+      return `Se presentó al juez de turno la ${CLASE_TEXTO[d.clase] ?? "medida"} ${d.medida_id}: bloquear ${bloqueo(d.tipo_recomendado, objetivo)}.`;
+    }
     case "decision":
-      return `${nombreJuez(ctx, actor) ?? actor} ${d.resultado === "aprobada" ? "aprobó" : "rechazó"} la medida ${d.medida_id}.`;
+      return d.resultado === "aprobada"
+        ? `${juez(actor)} aprobó la medida ${d.medida_id}.`
+        : `${juez(actor)} rechazó la medida ${d.medida_id}${d.motivo ? `: ${conPunto(d.motivo)}` : "."}`;
     case "reconsideracion":
-      return `${nombreJuez(ctx, actor) ?? actor} reabrió la medida ${d.medida_id}.`;
+      return `${juez(actor)} reabrió la medida ${d.medida_id}.`;
+    case "orden_firmada":
+      return `${juez(d.juez_id ?? actor)} firmó la orden para ${prov(d.proveedor)}: bloquear ${bloqueo(d.tipo, d.objetivo)}${d.intento > 1 ? ` (intento ${d.intento})` : ""}.`;
     case "orden_enviada":
-      return `Orden enviada a ${prov(d.proveedor)}: ${d.tipo} ${d.objetivo}${d.intento > 1 ? ` (intento ${d.intento})` : ""}.`;
+      return `Orden ${d.ya_recibida ? "confirmada" : "enviada"} a ${prov(d.proveedor)}: bloquear ${bloqueo(d.tipo, d.objetivo)}${d.intento > 1 ? ` (intento ${d.intento})` : ""}.`;
     case "orden_aplicada":
-      return `${prov(d.proveedor)} confirmó el bloqueo de ${d.objetivo}.`;
+      return `${prov(d.proveedor)} aplicó ${elBloqueo(d.tipo, d.objetivo)}.`;
     case "orden_fallida":
-      return `${prov(d.proveedor)} falló al aplicar el bloqueo de ${d.objetivo}.`;
+      return `${prov(d.proveedor)} no pudo aplicar ${elBloqueo(d.tipo, d.objetivo)}.`;
     case "orden_vencida":
-      return `Venció el bloqueo de ${d.objetivo} en ${prov(d.proveedor)}.`;
+      return `Venció ${elBloqueo(d.tipo, d.objetivo)} en ${prov(d.proveedor)}.`;
     case "orden_levantada":
     case "orden_levantada_confirmada":
-      return `Se levantó el bloqueo de ${d.objetivo} en ${prov(d.proveedor)}.`;
+      return `Se levantó ${elBloqueo(d.tipo, d.objetivo)} en ${prov(d.proveedor)}.`;
     case "orden_rechazada":
-      return `Un proveedor rechazó la orden ${d.orden_id}: ${d.error}`;
+      return `${prov(d.proveedor)} rechazó la orden ${d.orden_id}: ${conPunto(d.error)}`;
     case "orden_no_enviada":
-      return `No se envió la orden a ${prov(d.proveedor)}: ${d.motivo}`;
+      return `No se envió la orden a ${prov(d.proveedor)}: ${conPunto(d.motivo)}`;
     case "envio_con_corte":
-      return `Corte de red al enviar a ${prov(d.proveedor)}; se reintenta con la misma orden.`;
+      return `Se cortó la comunicación al enviar a ${prov(d.proveedor)}; se reintenta con la misma orden.`;
     case "reintento":
       return `Reenvío a ${prov(d.proveedor)} con una orden nueva tras la falla.`;
     case "reintentos_agotados":
-      return `${prov(d.proveedor)} agotó los reintentos.`;
+      return `${prov(d.proveedor)} falló ${plural(d.intentos ?? 0, "vez", "veces")}: Offside dejó de reintentar.`;
     case "ratificacion_solicitada":
-      return `Se pidió ratificación al juez entrante (${d.medida_id}) para ${prov(d.proveedor)}.`;
-    case "traspaso_turno":
-      return `Cambio de turno: ${(d.salientes ?? []).map((j: string) => nombreJuez(ctx, j)).join(", ")} entrega a ${(d.entrantes ?? []).map((j: string) => nombreJuez(ctx, j)).join(", ")} con ${plural((d.medidas_pendientes ?? []).length, "medida pendiente", "medidas pendientes")}.`;
+      return `Se pidió al juez de turno que ratifique el envío a ${prov(d.proveedor)} (${d.medida_id}).`;
+    case "traspaso_turno": {
+      const salen = lista((d.salientes ?? []).map((j: string) => juez(j)));
+      const entran = lista((d.entrantes ?? []).map((j: string) => juez(j)));
+      const pendientes = plural((d.medidas_pendientes ?? []).length, "medida pendiente", "medidas pendientes");
+      return `Cambio de turno: ${salen || "nadie"} entrega a ${entran || "nadie"}, con ${pendientes}.`;
+    }
     case "medida_sin_efecto":
-      return `La medida ${d.medida_id} quedó sin efecto: ${d.motivo}`;
+      return `La medida ${d.medida_id} quedó sin efecto: ${conPunto(d.motivo)}`;
     case "reclamo_recibido":
-      return `Reclamo ${d.reclamo_id} de ${d.dominio}: ${d.verificado ? "verificado" : "no corresponde a un bloqueo nuestro"}.`;
+      return `Reclamo ${d.reclamo_id} de ${d.dominio} en ${prov(d.proveedor)}: ${
+        d.estado === "resuelto" ? "ya estaba resuelto" : d.verificado ? "verificado" : "no corresponde a un bloqueo de Offside"
+      }.`;
     case "levantamiento":
-      return `Levantamiento ejecutado por el reclamo ${d.reclamo_id}: ${plural(d.ordenes_levantadas?.length ?? 0, "orden levantada", "órdenes levantadas")}.`;
+      return `Levantamiento por el reclamo ${d.reclamo_id}: ${plural(d.ordenes_levantadas?.length ?? 0, "orden levantada", "órdenes levantadas")}${
+        d.ordenes_de_reemplazo?.length ? ` y ${plural(d.ordenes_de_reemplazo.length, "bloqueo de reemplazo", "bloqueos de reemplazo")}` : ""
+      }.`;
+    case "levantamiento_fallido":
+      return `No se pudo levantar la orden en ${prov(d.proveedor)}: ${conPunto(d.error)}`;
     case "partido_cerrado":
       return "Partido cerrado: no quedan órdenes activas.";
     case "exportacion":
-      return `Exportación a ${d.carpeta}.`;
-    default:
-      return tipo.replaceAll("_", " ");
+      return `Exportación de los expedientes a ${d.carpeta}${d.archivos?.length ? ` (${plural(d.archivos.length, "archivo", "archivos")})` : ""}.`;
+    case "error_interno":
+      return `Error interno en ${d.paso ?? "el motor"}: ${conPunto(d.error)}`;
+    default: {
+      const t = String(tipo).replaceAll("_", " ");
+      return `${t.charAt(0).toUpperCase()}${t.slice(1)}.`;
+    }
   }
 }
 
@@ -546,6 +647,9 @@ export function tableroDTO(ctx: Contexto, seq: number): TableroDTO {
       cobertura_media_pct: aprobados.length
         ? redondear(aprobados.reduce((a, s) => a + s.cobertura_pct, 0) / aprobados.length, 1)
         : null,
+      cobertura_max_pct: aprobados.length
+        ? redondear(aprobados.reduce((a, s) => a + s.cobertura_max_pct, 0) / aprobados.length, 1)
+        : null,
       reclamos: cuenta("SELECT COUNT(*) AS n FROM reclamos"),
       dano_evitado: { sitios, senales_legitimas: senales },
     },
@@ -570,6 +674,7 @@ export function tableroDTO(ctx: Contexto, seq: number): TableroDTO {
       minuto: r.minuto,
       dominio: r.dominio,
       proveedor_id: r.proveedor_id,
+      proveedor_nombre: nombreProveedor(ctx, r.proveedor_id),
       mensaje: r.mensaje,
       estado: r.estado,
       medida_id: r.medida_id,
@@ -579,17 +684,17 @@ export function tableroDTO(ctx: Contexto, seq: number): TableroDTO {
 }
 
 export function avisoTitular(ctx: Contexto, e: FilaExpediente, servidores: { host: string; ip: string }[]): string {
-  const titular = ctx.estado.partido?.titular_derechos ?? "titular de derechos";
-  const lista = servidores.map((s) => `${s.host} (${s.ip})`).join(", ");
+  const titular = ctx.estado.partido?.titular_derechos?.trim();
+  const servidoresTexto = lista(servidores.map((s) => `${s.host} (IP ${s.ip})`));
   return [
-    `Aviso al ${titular} — Expediente ${e.id}.`,
-    `La señal con marca de agua ${e.marca} se está retransmitiendo sin autorización desde ${plural(servidores.length, "servidor", "servidores")}: ${lista}.`,
+    `Aviso al titular de los derechos${titular ? ` (${titular})` : ""} — Expediente ${e.id}.`,
+    `La señal con marca de agua ${e.marca} se está retransmitiendo sin autorización desde ${plural(servidores.length, "servidor", "servidores")}: ${servidoresTexto}.`,
     "Esa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.",
     "Nota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse.",
   ].join("\n");
 }
 
-export function expedienteDTO(ctx: Contexto, id: string): ExpedienteDTO | null {
+export function expedienteDTO(ctx: Contexto, id: string, seq = 0): ExpedienteDTO | null {
   const e = expedientePorId(ctx.db, id);
   if (!e) return null;
   const resumen = expedienteResumen(ctx, e);
@@ -603,6 +708,7 @@ export function expedienteDTO(ctx: Contexto, id: string): ExpedienteDTO | null {
   const p = ctx.estado.partido;
   return {
     ...resumen,
+    estado_general: estadoDTO(ctx, seq),
     partido: p ? { id: p.id, nombre: p.nombre, titular_derechos: p.titular_derechos ?? null } : null,
     medidas: medidas.map((m) => medidaDTO(ctx, m)),
     detecciones: detecciones.map((d) => ({
@@ -623,7 +729,7 @@ export function expedienteDTO(ctx: Contexto, id: string): ExpedienteDTO | null {
 
 // --- transparencia -------------------------------------------------------------------------------
 
-export function transparenciaDTO(ctx: Contexto): TransparenciaDTO {
+export function transparenciaDTO(ctx: Contexto, seq = 0): TransparenciaDTO {
   const ordenes = todas<FilaOrden>(
     ctx.db,
     "SELECT * FROM ordenes WHERE estado IN ('recibida', 'aplicada', 'vencida', 'levantada') ORDER BY creada_min, orden_id",
@@ -665,6 +771,7 @@ export function transparenciaDTO(ctx: Contexto): TransparenciaDTO {
   const p = ctx.estado.partido;
   const cabecera = ctx.auditoria.cabecera();
   return {
+    estado: estadoDTO(ctx, seq),
     partido: p ? { id: p.id, nombre: p.nombre, titular_derechos: p.titular_derechos ?? null } : null,
     minuto: redondear(ctx.estado.minuto),
     fin_min: ctx.estado.fin_min,

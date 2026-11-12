@@ -138,23 +138,35 @@ test("si el simulador no está, el cliente lanza para que el motor lo trate como
 // --- configuración ---------------------------------------------------------------------
 
 test("cargarConfig usa valores por defecto y respeta las variables de entorno", () => {
-  const porDefecto = cargarConfig({});
+  const porDefecto = cargarConfig({}, []);
   assert.equal(porDefecto.simuladorUrl, "http://localhost:8080");
   assert.equal(porDefecto.puerto, 3000);
+  assert.equal(porDefecto.host, "0.0.0.0");
   assert.equal(porDefecto.simulacro, false);
+  // Un proveedor que falla no se abandona por el resto del partido.
+  assert.ok(porDefecto.maxIntentos >= 100);
 
-  const c = cargarConfig({
-    SIMULADOR_URL: "http://10.0.0.5:9000/",
-    PUERTO: "4000",
-    OFFSIDE_DB: "otra.db",
-    OFFSIDE_INTERVALO_MS: "150",
-    OFFSIDE_SIMULACRO: "1",
-  });
+  const c = cargarConfig(
+    {
+      SIMULADOR_URL: "http://10.0.0.5:9000/",
+      PUERTO: "4000",
+      OFFSIDE_HOST: "127.0.0.1",
+      OFFSIDE_DB: "otra.db",
+      OFFSIDE_INTERVALO_MS: "150",
+    },
+    [],
+  );
   assert.equal(c.simuladorUrl, "http://10.0.0.5:9000");
   assert.equal(c.puerto, 4000);
+  assert.equal(c.host, "127.0.0.1");
   assert.equal(c.dbRuta, "otra.db");
   assert.equal(c.intervaloMs, 150);
-  assert.equal(c.simulacro, true);
+});
+
+test("el simulacro solo se activa con la bandera --simulacro, nunca por una variable de entorno", () => {
+  assert.equal(cargarConfig({ OFFSIDE_SIMULACRO: "1" }, []).simulacro, false);
+  assert.equal(cargarConfig({ OFFSIDE_SIMULACRO: "true" }, ["node", "index.ts"]).simulacro, false);
+  assert.equal(cargarConfig({}, ["node", "index.ts", "--simulacro"]).simulacro, true);
 });
 
 test("cargarJueces lee jueces y operadores y exige las claves de firma", () => {

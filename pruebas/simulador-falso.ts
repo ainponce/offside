@@ -3,19 +3,21 @@
 // el juez estaba de turno al recibir la orden, y hace avanzar las órdenes.
 
 import { createHmac } from "node:crypto";
-import type {
-  Deteccion,
-  DnsDominio,
-  DnsIp,
-  EstadoOrdenProveedor,
-  EstadoOrdenSim,
-  EstadoSim,
-  OrdenSim,
-  Partido,
-  Proveedor,
-  ReclamoSim,
-  RespuestaEnvio,
-  Simulador,
+import {
+  type Deteccion,
+  type DnsDominio,
+  type DnsIp,
+  ErrorDeRed,
+  type EstadoOrdenProveedor,
+  type EstadoOrdenSim,
+  type EstadoSim,
+  type JuzgadosSim,
+  type OrdenSim,
+  type Partido,
+  type Proveedor,
+  type ReclamoSim,
+  type RespuestaEnvio,
+  type Simulador,
 } from "../src/server/simulador.ts";
 
 export const CLAVES: Record<string, string> = { "jueza-a": "clave-a", "juez-b": "clave-b" };
@@ -69,7 +71,7 @@ export class SimuladorFalso implements Simulador {
     "192.0.2.10": { asn: 64640, organizacion: "Canal Sur", dominios: ["canalsur.test"] },
   };
 
-  private publicadas: Deteccion[] = [];
+  private publicadas: { det: unknown; minuto: number }[] = [];
   private reclamosEmitidos: ReclamoSim[] = [];
   readonly libro = new Map<string, Map<string, OrdenRecibida>>();
   /** Proveedores cuya próxima orden va a fallar al aplicarse. */
@@ -84,7 +86,19 @@ export class SimuladorFalso implements Simulador {
   // --- control desde las pruebas -------------------------------------------------
 
   publicar(det: Deteccion): void {
-    this.publicadas.push(det);
+    this.publicadas.push({ det, minuto: det.minuto });
+  }
+
+  /** Publica cualquier cosa (null, números, objetos rotos) como si fuera una detección del minuto dado. */
+  publicarCrudo(det: unknown, minuto: number): void {
+    this.publicadas.push({ det, minuto });
+  }
+
+  /** Simula un reinicio del simulador: mismas detecciones por publicar, reloj y órdenes desde cero. */
+  reiniciar(minuto = 0): void {
+    this.minuto = minuto;
+    this.libro.clear();
+    this.reclamosEmitidos = [];
   }
 
   emitirReclamo(r: ReclamoSim): void {
@@ -121,7 +135,7 @@ export class SimuladorFalso implements Simulador {
   }
 
   private exigirConexion(): void {
-    if (this.caido) throw new Error("fetch failed: ECONNREFUSED");
+    if (this.caido) throw new ErrorDeRed("fetch failed: ECONNREFUSED");
   }
 
   // --- interfaz Simulador ----------------------------------------------------------
@@ -143,16 +157,37 @@ export class SimuladorFalso implements Simulador {
     return this.partidoDatos;
   }
 
+  /** Falso si el simulador no publica GET /juzgados (para probar que Offside sigue sin el horario). */
+  conJuzgados = true;
+  llamadasJuzgados = 0;
+
+  async juzgados(): Promise<JuzgadosSim> {
+    this.exigirConexion();
+    this.llamadasJuzgados += 1;
+    if (!this.conJuzgados) throw new ErrorDeRed("El simulador respondió 404 en /juzgados: Ruta inexistente");
+    return {
+      juzgados: [
+        { id: "jg-1", nombre: "Juzgado 1", jueces: [{ id: "jueza-a", nombre: "Dra. A" }] },
+        { id: "jg-2", nombre: "Juzgado 2", jueces: [{ id: "juez-b", nombre: "Dr. B" }] },
+      ],
+      turnos: this.turnos.map((t) => ({ ...t })),
+    };
+  }
+
   async detecciones(desde: number): Promise<{ minuto_actual: number; detecciones: Deteccion[] }> {
     this.exigirConexion();
     return {
       minuto_actual: this.minuto,
-      detecciones: this.publicadas.filter((d) => d.minuto > desde && d.minuto <= this.minuto),
+      detecciones: this.publicadas.filter((d) => d.minuto > desde && d.minuto <= this.minuto).map((d) => d.det as Deteccion),
     };
   }
 
+  /** Se llama al consultar el DNS pasivo por IP (por ejemplo, para mover el reloj durante la guardia). */
+  alConsultarDns: (() => void) | null = null;
+
   async dnsIp(ip: string): Promise<DnsIp | null> {
     this.exigirConexion();
+    this.alConsultarDns?.();
     const r = this.dns[ip];
     return r ? { ip, asn: r.asn, organizacion: r.organizacion, dominios: r.dominios } : null;
   }
@@ -175,7 +210,7 @@ export class SimuladorFalso implements Simulador {
     this.llamadasEnvio += 1;
     if (this.cortesAntes > 0) {
       this.cortesAntes -= 1;
-      throw new Error("fetch failed: socket hang up");
+      throw new ErrorDeRed("fetch failed: socket hang up");
     }
     const proveedor = this.proveedoresLista.find((p) => p.id === proveedorId);
     if (!proveedor) return { ok: false, estado: 404, error: "Proveedor desconocido" };
@@ -208,7 +243,7 @@ export class SimuladorFalso implements Simulador {
     });
     if (this.cortesDespues > 0) {
       this.cortesDespues -= 1;
-      throw new Error("fetch failed: respuesta perdida");
+      throw new ErrorDeRed("fetch failed: respuesta perdida");
     }
     return { ok: true };
   }
@@ -251,6 +286,6 @@ export class SimuladorFalso implements Simulador {
 
   async reclamos(desde: number): Promise<{ minuto_actual: number; reclamos: ReclamoSim[] }> {
     this.exigirConexion();
-    return { minuto_actual: this.minuto, reclamos: this.reclamosEmitidos.filter((r) => r.minuto > desde) };
+    return { minuto_actual: this.minuto, reclamos: this.reclamosEmitidos.filter((r) => r == null || r.minuto > desde) };
   }
 }

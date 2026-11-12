@@ -25,6 +25,16 @@ export interface Sellos {
   hora_local_iso: string;
 }
 
+/**
+ * Cabecera de la auditoría en el momento de crear la medida. Queda dentro de la
+ * huella, la huella viaja en cada orden_id y el simulador anota cada orden que
+ * recibe: así su registro ancla la cadena de auditoría hasta acá.
+ */
+export interface Ancla {
+  seq: number;
+  cabecera: string;
+}
+
 export function sellos(partido: Partido | null, minuto: number, ahora: Date = new Date()): Sellos {
   let horaPartido: string | null = null;
   const inicio = partido?.inicio_iso ? Date.parse(partido.inicio_iso) : Number.NaN;
@@ -46,6 +56,7 @@ export function instantaneaBloqueo(p: {
   vence_min: number;
   servidores_previos: { host: string; ip: string; medida_id: string | null; estado: string | null }[];
   sellos: Sellos;
+  auditoria: Ancla;
 }): string {
   return JSON.stringify({
     version: 1,
@@ -67,6 +78,7 @@ export function instantaneaBloqueo(p: {
     plan: p.plan,
     vence_min: p.vence_min,
     sellos: p.sellos,
+    auditoria: p.auditoria,
   });
 }
 
@@ -80,6 +92,7 @@ export function instantaneaRatificacion(p: {
   motivo: string;
   vence_min: number;
   sellos: Sellos;
+  auditoria: Ancla;
 }): string {
   return JSON.stringify({
     version: 1,
@@ -99,6 +112,7 @@ export function instantaneaRatificacion(p: {
     plan: p.plan,
     vence_min: p.vence_min,
     sellos: p.sellos,
+    auditoria: p.auditoria,
   });
 }
 
@@ -113,6 +127,7 @@ export function instantaneaLevantamiento(p: {
   verificacion: string;
   vence_min: number;
   sellos: Sellos;
+  auditoria: Ancla;
 }): string {
   return JSON.stringify({
     version: 1,
@@ -127,5 +142,6 @@ export function instantaneaLevantamiento(p: {
     plan: p.reemplazo,
     vence_min: p.vence_min,
     sellos: p.sellos,
+    auditoria: p.auditoria,
   });
 }

@@ -269,7 +269,7 @@ test("una orden fallida después del cambio de turno espera la ratificación del
 
 test("si el envío se corta y el turno cambia antes del reenvío, no sale con la firma del juez saliente", async () => {
   const a = armar();
-  await publicarYProcesar(a, deteccion({ id: "D-1", minuto: 49.8 }));
+  await publicarYProcesar(a, deteccion({ id: "D-1", minuto: 49 }));
   a.sim.cortesAntes = 3;
   await aprobarMedida(a.ctx, medidas(a)[0]!.id, "jueza-a");
   assert.equal(a.sim.recibidas().length, 0);
@@ -381,18 +381,4 @@ test("cada cambio de estado avisa a la interfaz", async () => {
   const antes = a.cambios.n;
   await aprobarMedida(a.ctx, medidas(a)[0]!.id, "jueza-a");
   assert.ok(a.cambios.n > antes);
-});
-
-test("si el reloj del simulador vuelve atrás, Offside avisa que hace falta una base nueva", async () => {
-  const a = armar();
-  await publicarYProcesar(a, deteccion({ id: "D-1", minuto: 30 }));
-  assert.equal(a.ctx.estado.alertas.length, 0);
-
-  // El simulador se reinició: mismo partido, reloj en el minuto 2.
-  a.sim.minuto = 2;
-  await a.motor.tick();
-  await a.motor.tick();
-  assert.equal(a.ctx.estado.alertas.length, 1);
-  assert.match(a.ctx.estado.alertas[0]!, /--nuevo/);
-  assert.equal(eventos(a.db, "simulador_reiniciado").length, 1);
 });

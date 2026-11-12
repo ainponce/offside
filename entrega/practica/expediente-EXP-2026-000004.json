@@ -6,9 +6,14 @@
     "prefijo": "LP26-PRA-OFI",
     "origen_prefijo": "Señal oficial del titular (plataforma propia)",
     "clave": "LP26-PRA-OFI-S063002",
-    "abierto_min": 55
+    "abierto_min": 55.01
   },
-  "partido": null,
+  "partido": {
+    "id": "practica-01",
+    "nombre": "Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo",
+    "titular_derechos": "Liga Profesional Ficticia",
+    "fin_min": 105
+  },
   "detecciones": [
     {
       "id": "D-0021",
@@ -18,8 +23,8 @@
       "crudo": "{\"id\":\"D-0021\",\"minuto\":55,\"pagina\":\"https://tribuna-pirata.test/ver\",\"stream_url\":\"https://x9.tribuna-pirata.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"x9.tribuna-pirata.test\",\"ip_servidor\":\"203.0.113.40\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S063002\",\"captura\":{\"capturada_min\":55,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R8ZHaQHiNtvu3CX0pK1QOi6u3IqdeCtWC5KXH9fBoC+055M8+UR7TajvW7zZMYk64uMzHpA7VzpDRDqGwcP8fQ==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/tribuna-vip\",\"minuto\":53},{\"red\":\"telegram\",\"url\":\"https://t.example/tribunapirata\",\"minuto\":54}]}",
       "sha256": "c85dd42e2e6f9bd4bbdcb4c509f6f72f9c1d77222d429ce4c17d745778c2ce00",
       "captura_sha256": "5e3d43564f3ab28fd6d042ea219ea19c302093798435a7d197b3f64092d6a6e6",
-      "recibida_min": 55,
-      "recibida_iso": "2026-11-11T23:15:35.138Z"
+      "recibida_min": 55.01,
+      "recibida_iso": "2026-11-12T01:45:33.034Z"
     },
     {
       "id": "D-0025",
@@ -29,8 +34,8 @@
       "crudo": "{\"id\":\"D-0025\",\"minuto\":65,\"pagina\":\"https://tribuna-pirata.test/ver\",\"stream_url\":\"https://x9.tribuna-pirata.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"x9.tribuna-pirata.test\",\"ip_servidor\":\"203.0.113.40\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S063002\",\"captura\":{\"capturada_min\":65,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RxmuDTWmyttfBg4wUU8GnqwvQXDijJKsoQeLQJmVK//v+d2MMTneMdI/eS15i68vZJtLMdLZHT40ox2Cg2wfPw==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/tribuna-vip\",\"minuto\":53},{\"red\":\"telegram\",\"url\":\"https://t.example/tribunapirata\",\"minuto\":54}]}",
       "sha256": "5eb282546f48ca2e378ee22a0d8fb45253ccdb1f1366a5bc3084f963701f1b60",
       "captura_sha256": "2f5e151797e1ace2fc6048b7daf4ddf1538383bce9950389dc760c673bbb0562",
-      "recibida_min": 65.01,
-      "recibida_iso": "2026-11-11T23:17:15.175Z"
+      "recibida_min": 65,
+      "recibida_iso": "2026-11-12T01:47:12.982Z"
     },
     {
       "id": "D-0030",
@@ -41,7 +46,7 @@
       "sha256": "f3906cd37097e7d509808c794dc469f0d35ef643eb90133814689dcf890bc85d",
       "captura_sha256": "6777a82ff42fdb4928359b6402df0798e8325676c507aa47e5e3d43e7eeadf5f",
       "recibida_min": 75.01,
-      "recibida_iso": "2026-11-11T23:18:55.176Z"
+      "recibida_iso": "2026-11-12T01:48:53.053Z"
     },
     {
       "id": "D-0034",
@@ -51,8 +56,8 @@
       "crudo": "{\"id\":\"D-0034\",\"minuto\":82,\"pagina\":\"https://tribuna-pirata.test/ver\",\"stream_url\":\"https://x10.tribuna-pirata.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"x10.tribuna-pirata.test\",\"ip_servidor\":\"203.0.113.41\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-PRA-OFI-S063002\",\"captura\":{\"capturada_min\":82,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R6VWz/XEpDLRE3L0IVUXZgJLzsy2JgoVxDZb+CmnTa5fue8v5LlzyuzYyUon2CnqfjvSZHfvIE4Qv1a41foqCw==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/tribuna-vip\",\"minuto\":53},{\"red\":\"telegram\",\"url\":\"https://t.example/tribunapirata\",\"minuto\":54}]}",
       "sha256": "9d7b6df4ef309a6ba2fd73d2ff123c8934d1f14a4f5a475fd58ef3db76b677fe",
       "captura_sha256": "767fccc3e8c85585c487925e6d3b8f51e3dd4d796d61cebb11fc2b6e9b2828ee",
-      "recibida_min": 82.01,
-      "recibida_iso": "2026-11-11T23:20:05.203Z"
+      "recibida_min": 82,
+      "recibida_iso": "2026-11-12T01:50:02.942Z"
     },
     {
       "id": "D-0039",
@@ -63,7 +68,7 @@
       "sha256": "5937ef83c0b00d6aa85155ff62e2690ad4f7099ff86d98e6dd18e570fcb6953d",
       "captura_sha256": "251796ec5a50f39186ddc58702ae2b6c09f2ac2101528d40e71a695c08fb41dd",
       "recibida_min": 92.01,
-      "recibida_iso": "2026-11-11T23:21:45.246Z"
+      "recibida_iso": "2026-11-12T01:51:43.031Z"
     },
     {
       "id": "D-0043",
@@ -74,7 +79,7 @@
       "sha256": "dd633fa57111727894e6cb729d8bee5e1e11008fc2b2f372f0ebadf8dcdc80dc",
       "captura_sha256": "cdae9850e2f0202d95cda22aa487785987580ad8d3b40498410ba8c120fd09bd",
       "recibida_min": 102,
-      "recibida_iso": "2026-11-11T23:23:25.138Z"
+      "recibida_iso": "2026-11-12T01:53:23.006Z"
     }
   ],
   "servidores": [
@@ -112,82 +117,114 @@
       "id": "M-0005",
       "clase": "inicial",
       "estado": "aprobada",
-      "creada_min": 55,
+      "creada_min": 55.01,
       "origen_medida_id": null,
       "reclamo_id": null,
-      "instantanea": "{\"version\":1,\"medida_id\":\"M-0005\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000004\",\"partido\":{\"id\":\"practica-01\",\"nombre\":\"Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-PRA-OFI-S063002\",\"prefijo\":\"LP26-PRA-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-PRA-OFI-S063002\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"x9.tribuna-pirata.test\",\"ip\":\"203.0.113.40\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[],\"terceros\":[],\"motivo\":\"La IP solo aloja este servidor: se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0021\",\"minuto\":55,\"capturada_min\":55,\"deteccion_sha256\":\"c85dd42e2e6f9bd4bbdcb4c509f6f72f9c1d77222d429ce4c17d745778c2ce00\",\"captura_sha256\":\"5e3d43564f3ab28fd6d042ea219ea19c302093798435a7d197b3f64092d6a6e6\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://tribuna-pirata.test/ver\",\"stream_url\":\"https://x9.tribuna-pirata.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/tribuna-vip\",\"minuto\":53},{\"red\":\"telegram\",\"url\":\"https://t.example/tribunapirata\",\"minuto\":54}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.40\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.40\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"x9.tribuna-pirata.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.40\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":55,\"hora_partido_iso\":\"2026-11-11T21:55:00.000Z\",\"hora_local_iso\":\"2026-11-11T23:15:35.138Z\"}}",
-      "huella": "c778a7e6ab8f68100b4cf99966005e5b0cbc67fd7bb343e0bf11262d54795c47",
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0005\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000004\",\"partido\":{\"id\":\"practica-01\",\"nombre\":\"Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-PRA-OFI-S063002\",\"prefijo\":\"LP26-PRA-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-PRA-OFI-S063002\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"x9.tribuna-pirata.test\",\"ip\":\"203.0.113.40\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[],\"terceros\":[],\"motivo\":\"La IP solo aloja este servidor: se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0021\",\"minuto\":55,\"capturada_min\":55,\"deteccion_sha256\":\"c85dd42e2e6f9bd4bbdcb4c509f6f72f9c1d77222d429ce4c17d745778c2ce00\",\"captura_sha256\":\"5e3d43564f3ab28fd6d042ea219ea19c302093798435a7d197b3f64092d6a6e6\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://tribuna-pirata.test/ver\",\"stream_url\":\"https://x9.tribuna-pirata.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/tribuna-vip\",\"minuto\":53},{\"red\":\"telegram\",\"url\":\"https://t.example/tribunapirata\",\"minuto\":54}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.40\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.40\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"x9.tribuna-pirata.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.40\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":55.01,\"hora_partido_iso\":\"2026-11-11T21:55:00.600Z\",\"hora_local_iso\":\"2026-11-12T01:45:33.035Z\"},\"auditoria\":{\"seq\":85,\"cabecera\":\"dcb6ae4c67e9e2aba7f371b2995d0289599fe3642f2c42a0ce00958909f52198\"}}",
+      "huella": "08c40c03efad5c3ca1b9f3d3e62be16bb4c0a6460092dca05fe25722e2e1bb44",
       "decision": {
         "juez_id": "juez-martin-ejemplo",
         "juez_nombre": "Dr. Martín Ejemplo",
         "juzgado_id": "jg-norte-1",
         "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
         "decidida_min": 56.01,
-        "decidida_iso": "2026-11-11T23:15:45.149Z",
+        "decidida_iso": "2026-11-12T01:45:43.054Z",
         "motivo": null
       },
       "ordenes": [
         {
-          "orden_id": "OFS-000004-0005-andina-1-c778a7e6ab8f6810",
+          "orden_id": "OFS-000004-0005-andina-1-08c40c03efad5c3c",
           "proveedor_id": "andina",
           "tipo": "ip",
           "objetivo": "203.0.113.40",
           "vence_min": 105,
           "juez_id": "juez-martin-ejemplo",
           "juzgado_id": "jg-norte-1",
-          "firma": "f1d806d09a5ea8431fab047b2af3804db11d7783c6412aee90c721a4dadaaaac",
+          "firma": "7672b48dacd6e5ea51ec33cfcf52b03f54d86aee8ebb5221b9164e011d1661a5",
           "intento": 1,
           "estado": "vencida",
           "enviada_min": 56.01,
-          "aplicada_min": 58.105,
+          "aplicada_min": 57.447,
           "finalizada_min": 105,
           "error": null
         },
         {
-          "orden_id": "OFS-000004-0005-aurora-1-c778a7e6ab8f6810",
+          "orden_id": "OFS-000004-0005-aurora-1-08c40c03efad5c3c",
           "proveedor_id": "aurora",
           "tipo": "ip",
           "objetivo": "203.0.113.40",
           "vence_min": 105,
           "juez_id": "juez-martin-ejemplo",
           "juzgado_id": "jg-norte-1",
-          "firma": "6d1a2da600a1b3c8b541998369fd9627a92c33c6083dd8ca3cd7a1554161473d",
+          "firma": "3a67f75e9ed0b5db2d91ff9cd1faaba74c442d22dfc6aabd4501413cd1500bb6",
           "intento": 1,
           "estado": "vencida",
           "enviada_min": 56.01,
-          "aplicada_min": 56.429,
+          "aplicada_min": 56.607,
           "finalizada_min": 105,
           "error": null
         },
         {
-          "orden_id": "OFS-000004-0005-cumbre-1-c778a7e6ab8f6810",
+          "orden_id": "OFS-000004-0005-cumbre-1-08c40c03efad5c3c",
           "proveedor_id": "cumbre",
           "tipo": "ip",
           "objetivo": "203.0.113.40",
           "vence_min": 105,
           "juez_id": "juez-martin-ejemplo",
           "juzgado_id": "jg-norte-1",
-          "firma": "b72b325a33a535f118da642e21b579aef954ba1c0ccb6f27347c64de1e5fe5fe",
+          "firma": "dfa13875b34c93f2f223b828a1bba892dc3649b34678e717c1835ecdbf547a3d",
           "intento": 1,
-          "estado": "vencida",
+          "estado": "fallida",
           "enviada_min": 56.01,
-          "aplicada_min": 59.4,
+          "aplicada_min": null,
+          "finalizada_min": null,
+          "error": "Error interno del proveedor. Reenviar la orden con un nuevo orden_id."
+        },
+        {
+          "orden_id": "OFS-000004-0005-cumbre-2-08c40c03efad5c3c",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.40",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "532b38fbb9dc3492d484aa4bcc6de0aa5a027308d3e2fd1109222fcf019be5a1",
+          "intento": 2,
+          "estado": "fallida",
+          "enviada_min": 59.56,
+          "aplicada_min": null,
+          "finalizada_min": null,
+          "error": "Error interno del proveedor. Reenviar la orden con un nuevo orden_id."
+        },
+        {
+          "orden_id": "OFS-000004-0005-cumbre-3-08c40c03efad5c3c",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.40",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "b37123612b1a8e3ce897c582b682e297d68459b6c46bda787860d2552d59cc05",
+          "intento": 3,
+          "estado": "vencida",
+          "enviada_min": 61.82,
+          "aplicada_min": 63.946,
           "finalizada_min": 105,
           "error": null
         },
         {
-          "orden_id": "OFS-000004-0005-valle-1-c778a7e6ab8f6810",
+          "orden_id": "OFS-000004-0005-valle-1-08c40c03efad5c3c",
           "proveedor_id": "valle",
           "tipo": "dominio",
           "objetivo": "x9.tribuna-pirata.test",
           "vence_min": 105,
           "juez_id": "juez-martin-ejemplo",
           "juzgado_id": "jg-norte-1",
-          "firma": "fbf34c9fb50320b74b7786b56748cbf1ce4a4d710080786509c08011c4102084",
+          "firma": "de1b19e0bbcad10a4ce40680f28f809875ddd96cce0a31200e24327bec2a1b1d",
           "intento": 1,
           "estado": "vencida",
           "enviada_min": 56.01,
-          "aplicada_min": 61.272,
+          "aplicada_min": 62.106,
           "finalizada_min": 105,
           "error": null
         }
@@ -197,87 +234,87 @@
       "id": "M-0007",
       "clase": "ampliacion",
       "estado": "aprobada",
-      "creada_min": 82.01,
+      "creada_min": 82,
       "origen_medida_id": null,
       "reclamo_id": null,
-      "instantanea": "{\"version\":1,\"medida_id\":\"M-0007\",\"clase\":\"ampliacion\",\"expediente_id\":\"EXP-2026-000004\",\"partido\":{\"id\":\"practica-01\",\"nombre\":\"Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-PRA-OFI-S063002\",\"prefijo\":\"LP26-PRA-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-PRA-OFI-S063002\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"x10.tribuna-pirata.test\",\"ip\":\"203.0.113.41\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[{\"host\":\"x9.tribuna-pirata.test\",\"ip\":\"203.0.113.40\",\"medida_id\":\"M-0005\",\"estado\":\"aprobada\"}],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[],\"terceros\":[],\"motivo\":\"La IP solo aloja este servidor: se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0034\",\"minuto\":82,\"capturada_min\":82,\"deteccion_sha256\":\"9d7b6df4ef309a6ba2fd73d2ff123c8934d1f14a4f5a475fd58ef3db76b677fe\",\"captura_sha256\":\"767fccc3e8c85585c487925e6d3b8f51e3dd4d796d61cebb11fc2b6e9b2828ee\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://tribuna-pirata.test/ver\",\"stream_url\":\"https://x10.tribuna-pirata.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/tribuna-vip\",\"minuto\":53},{\"red\":\"telegram\",\"url\":\"https://t.example/tribunapirata\",\"minuto\":54}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.41\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.41\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"x10.tribuna-pirata.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.41\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":82.01,\"hora_partido_iso\":\"2026-11-11T22:22:00.600Z\",\"hora_local_iso\":\"2026-11-11T23:20:05.203Z\"}}",
-      "huella": "85c1fa5ebb33d46f49617cfbe20400743074cd9133809e5420fa5f117aa44dd0",
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0007\",\"clase\":\"ampliacion\",\"expediente_id\":\"EXP-2026-000004\",\"partido\":{\"id\":\"practica-01\",\"nombre\":\"Partido de práctica — Club Ficticio del Norte vs. Deportivo Ejemplo\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-PRA-OFI-S063002\",\"prefijo\":\"LP26-PRA-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-PRA-OFI-S063002\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"x10.tribuna-pirata.test\",\"ip\":\"203.0.113.41\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[{\"host\":\"x9.tribuna-pirata.test\",\"ip\":\"203.0.113.40\",\"medida_id\":\"M-0005\",\"estado\":\"aprobada\"}],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[],\"terceros\":[],\"motivo\":\"La IP solo aloja este servidor: se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0034\",\"minuto\":82,\"capturada_min\":82,\"deteccion_sha256\":\"9d7b6df4ef309a6ba2fd73d2ff123c8934d1f14a4f5a475fd58ef3db76b677fe\",\"captura_sha256\":\"767fccc3e8c85585c487925e6d3b8f51e3dd4d796d61cebb11fc2b6e9b2828ee\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://tribuna-pirata.test/ver\",\"stream_url\":\"https://x10.tribuna-pirata.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/tribuna-vip\",\"minuto\":53},{\"red\":\"telegram\",\"url\":\"https://t.example/tribunapirata\",\"minuto\":54}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.41\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.41\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"x10.tribuna-pirata.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.41\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":82,\"hora_partido_iso\":\"2026-11-11T22:22:00.000Z\",\"hora_local_iso\":\"2026-11-12T01:50:02.943Z\"},\"auditoria\":{\"seq\":136,\"cabecera\":\"2f82e24860abd06f9bf2b1d1a8d1f3ea530bcdf8bce19f884a5fe323595d0f60\"}}",
+      "huella": "972a4b53ff1deef7bf549ecf981fac047a921590ab7be3f289dbf15968c49a3f",
       "decision": {
         "juez_id": "juez-martin-ejemplo",
         "juez_nombre": "Dr. Martín Ejemplo",
         "juzgado_id": "jg-norte-1",
         "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
         "decidida_min": 83.01,
-        "decidida_iso": "2026-11-11T23:20:15.223Z",
+        "decidida_iso": "2026-11-12T01:50:13.007Z",
         "motivo": null
       },
       "ordenes": [
         {
-          "orden_id": "OFS-000004-0007-andina-1-85c1fa5ebb33d46f",
+          "orden_id": "OFS-000004-0007-andina-1-972a4b53ff1deef7",
           "proveedor_id": "andina",
           "tipo": "ip",
           "objetivo": "203.0.113.41",
           "vence_min": 105,
           "juez_id": "juez-martin-ejemplo",
           "juzgado_id": "jg-norte-1",
-          "firma": "44c7fdf8a12592ebfe1a32349002f657fe8c02a36f1a43c8c6d6e6fb4b233a8e",
+          "firma": "5abdc010ca3e53f01b7e139f02cad9cf417a430f86472bcec6c9beb8519bac61",
           "intento": 1,
           "estado": "vencida",
           "enviada_min": 83.01,
-          "aplicada_min": 85.202,
+          "aplicada_min": 84.482,
           "finalizada_min": 105,
           "error": null
         },
         {
-          "orden_id": "OFS-000004-0007-aurora-1-85c1fa5ebb33d46f",
+          "orden_id": "OFS-000004-0007-aurora-1-972a4b53ff1deef7",
           "proveedor_id": "aurora",
           "tipo": "ip",
           "objetivo": "203.0.113.41",
           "vence_min": 105,
           "juez_id": "juez-martin-ejemplo",
           "juzgado_id": "jg-norte-1",
-          "firma": "0debb6c60a040c4a04ad39ade339e7501dbf923a3b0f8007f9b240dcb849d02a",
+          "firma": "f0cf83f7c8815cb3d3f96f2d7d9212f7263d0527cffeb91061d403d3a8db70c6",
           "intento": 1,
           "estado": "vencida",
           "enviada_min": 83.01,
-          "aplicada_min": 83.446,
+          "aplicada_min": 83.553,
           "finalizada_min": 105,
           "error": null
         },
         {
-          "orden_id": "OFS-000004-0007-cumbre-1-85c1fa5ebb33d46f",
+          "orden_id": "OFS-000004-0007-cumbre-1-972a4b53ff1deef7",
           "proveedor_id": "cumbre",
           "tipo": "ip",
           "objetivo": "203.0.113.41",
           "vence_min": 105,
           "juez_id": "juez-martin-ejemplo",
           "juzgado_id": "jg-norte-1",
-          "firma": "1521cdd5530b988f79e8d038598a8141841d1b932a07f06592e1244ab1341309",
+          "firma": "f3c895624d6b5db0dd33d9de8e13e4d00ca4ae8447dbb578cac6cf4a5e85d2d5",
           "intento": 1,
           "estado": "vencida",
           "enviada_min": 83.01,
-          "aplicada_min": 86.678,
+          "aplicada_min": 86.312,
           "finalizada_min": 105,
           "error": null
         },
         {
-          "orden_id": "OFS-000004-0007-valle-1-85c1fa5ebb33d46f",
+          "orden_id": "OFS-000004-0007-valle-1-972a4b53ff1deef7",
           "proveedor_id": "valle",
           "tipo": "dominio",
           "objetivo": "x10.tribuna-pirata.test",
           "vence_min": 105,
           "juez_id": "juez-martin-ejemplo",
           "juzgado_id": "jg-norte-1",
-          "firma": "2ef15c7c2a55eb9e08b04f0c9c8843fd2dedbed0f50e036443a66138fafe921e",
+          "firma": "990566299a0cd79eced0f5bf5725da6c8c1260f6f33112aa9ab0f2553770f802",
           "intento": 1,
           "estado": "vencida",
           "enviada_min": 83.01,
-          "aplicada_min": 89.03,
+          "aplicada_min": 88.064,
           "finalizada_min": 105,
           "error": null
         }
       ]
     }
   ],
-  "aviso_titular": "Aviso al titular de derechos — Expediente EXP-2026-000004.\nLa señal con marca de agua LP26-PRA-OFI-S063002 se está retransmitiendo sin autorización desde 2 servidores: x9.tribuna-pirata.test (203.0.113.40), x10.tribuna-pirata.test (203.0.113.41).\nEsa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.\nNota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse."
+  "aviso_titular": "Aviso al titular de los derechos (Liga Profesional Ficticia) — Expediente EXP-2026-000004.\nLa señal con marca de agua LP26-PRA-OFI-S063002 se está retransmitiendo sin autorización desde 2 servidores: x9.tribuna-pirata.test (IP 203.0.113.40) y x10.tribuna-pirata.test (IP 203.0.113.41).\nEsa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.\nNota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse."
 }

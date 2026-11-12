@@ -4,12 +4,17 @@
 // Los textos que se hashean (detección cruda, instantánea, contenido de auditoría)
 // se exportan como texto, tal cual se guardaron: el verificador independiente
 // recalcula los hashes sin volver a serializar nada.
+//
+// La exportación se cierra con una entrada de auditoría que lista el hash de cada
+// archivo exportado; después se escribe auditoria.jsonl (que termina en esa
+// entrada) y al final el manifiesto.
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { MedidaDTO } from "../compartido/tipos.ts";
 import type { Contexto } from "./contexto.ts";
 import { sha256Hex } from "./evidencia.ts";
+import { minuto, num, tipoTexto } from "./texto.ts";
 import {
   type FilaDeteccion,
   type FilaExpediente,
@@ -44,7 +49,7 @@ function medidaLegible(m: MedidaDTO): string {
   if (m.terceros.length) lineas.push(`**Sitios ajenos en la misma IP (no se bloquean):** ${m.terceros.join(", ")}`, "");
   if (m.evidencia.length) {
     lineas.push("**Evidencia**", "", fila(["Detección", "Minuto", "SHA-256 de la detección", "SHA-256 de la captura"]), fila(["---", "---", "---", "---"]));
-    for (const e of m.evidencia) lineas.push(fila([e.deteccion_id, e.minuto, e.deteccion_sha256, e.captura_sha256]));
+    for (const e of m.evidencia) lineas.push(fila([e.deteccion_id, num(e.minuto, 2), e.deteccion_sha256, e.captura_sha256]));
     lineas.push("");
   }
   if (m.promocion.length) lineas.push(`**Dónde se promocionó:** ${m.promocion.map((p) => `${p.red} (${p.url})`).join(", ")}`, "");
@@ -52,14 +57,14 @@ function medidaLegible(m: MedidaDTO): string {
   if (m.decision) {
     const quien = m.decision.juez_nombre ?? "—";
     const resultado = { aprobada: "Aprobada", rechazada: "Rechazada", sin_efecto: "Sin efecto" }[m.decision.resultado];
-    lineas.push(`**Decisión:** ${resultado}${m.decision.juez_nombre ? ` por ${quien}` : ""}${m.decision.minuto != null ? `, minuto ${m.decision.minuto} del partido` : ""}${m.decision.hora_iso ? ` (${m.decision.hora_iso})` : ""}.${m.decision.motivo ? ` Motivo: ${m.decision.motivo}` : ""}`, "");
+    lineas.push(`**Decisión:** ${resultado}${m.decision.juez_nombre ? ` por ${quien}` : ""}${m.decision.minuto != null ? `, ${minuto(m.decision.minuto)} del partido` : ""}${m.decision.hora_iso ? ` (${m.decision.hora_iso})` : ""}.${m.decision.motivo ? ` Motivo: ${m.decision.motivo}` : ""}`, "");
   } else {
     lineas.push("**Decisión:** pendiente.", "");
   }
   if (m.ordenes.length) {
     lineas.push("**Órdenes**", "", fila(["Proveedor", "Tipo", "Objetivo", "Intento", "Estado", "Enviada", "Aplicada", "Fin", "Vence", "Identificador"]), fila(Array(10).fill("---")));
     for (const o of m.ordenes) {
-      lineas.push(fila([o.proveedor_nombre, o.tipo, o.objetivo, o.intento, o.estado.replaceAll("_", " "), o.enviada_min, o.aplicada_min, o.finalizada_min, o.vence_min, `\`${o.orden_id}\``]));
+      lineas.push(fila([o.proveedor_nombre, tipoTexto(o.tipo), o.objetivo, o.intento, o.estado.replaceAll("_", " "), num(o.enviada_min, 2), num(o.aplicada_min, 2), num(o.finalizada_min, 2), o.vence_min, `\`${o.orden_id}\``]));
     }
     lineas.push("");
   }
@@ -72,17 +77,21 @@ function expedienteLegible(ctx: Contexto, id: string): string {
   lineas.push(`# Expediente ${e.id}`, "");
   if (e.partido) lineas.push(`**Partido:** ${e.partido.nombre}${e.partido.titular_derechos ? ` · Titular de derechos: ${e.partido.titular_derechos}` : ""}`, "");
   lineas.push(`**Filtración:** marca de agua \`${e.marca}\` (prefijo ${e.prefijo}${e.origen_prefijo ? `, ${e.origen_prefijo}` : ""}).`, "");
-  lineas.push(`Abierto en el minuto ${e.abierto_min} del partido. Los tiempos de este documento son minutos de partido.`, "");
+  lineas.push(`Abierto en el ${minuto(e.abierto_min)} del partido. Los tiempos de este documento son minutos de partido.`, "");
   lineas.push("## Servidores", "", fila(["Servidor", "IP", "Organización", "Primera detección", "Detecciones", "Bloqueo propuesto", "Primer bloqueo confirmado", "Sitios ajenos en la IP"]), fila(Array(8).fill("---")));
   for (const s of e.servidores) {
-    lineas.push(fila([s.host, s.ip, s.organizacion, s.primera_deteccion_min, s.detecciones, s.tipo_recomendado, s.primer_bloqueo_min == null ? null : `a los ${s.primer_bloqueo_min} min`, s.terceros.length]));
+    lineas.push(fila([s.host, s.ip, s.organizacion, num(s.primera_deteccion_min, 2), s.detecciones, `por ${tipoTexto(s.tipo_recomendado)}`, s.primer_bloqueo_min == null ? null : `a los ${num(s.primer_bloqueo_min, 2)} min`, s.terceros.length]));
   }
   lineas.push("", "## Medidas", "");
   for (const m of e.medidas) lineas.push(medidaLegible(m));
   lineas.push("## Aviso al titular", "", e.aviso_titular, "");
   lineas.push("## Registro de auditoría de este expediente", "", fila(["Sec.", "Minuto", "Actor", "Evento", "Hash"]), fila(Array(5).fill("---")));
-  for (const a of e.auditoria) lineas.push(fila([a.seq, a.minuto, a.actor, a.resumen, `\`${a.hash.slice(0, 16)}…\``]));
-  lineas.push("", "La integridad de este expediente se comprueba con `python3 herramientas/verificar_expediente.py <carpeta>`.", "");
+  for (const a of e.auditoria) lineas.push(fila([a.seq, num(a.minuto, 2), a.actor, a.resumen, `\`${a.hash.slice(0, 16)}…\``]));
+  lineas.push(
+    "",
+    "La integridad de este expediente se comprueba con `python3 herramientas/verificar_expediente.py <carpeta> --juzgados <claves> --registro <registro del simulador>`. Sin el registro del simulador, el verificador solo prueba que la carpeta es coherente consigo misma.",
+    "",
+  );
   return lineas.join("\n");
 }
 
@@ -168,12 +177,6 @@ export function exportar(ctx: Contexto, carpeta: string, opciones: { nota?: stri
   };
 
   const expedientes = todas<FilaExpediente>(ctx.db, "SELECT * FROM expedientes ORDER BY n");
-  ctx.auditoria.registrar({
-    minuto: ctx.estado.minuto,
-    actor: "sistema",
-    tipo: "exportacion",
-    datos: { carpeta, expedientes: expedientes.map((e) => e.id) },
-  });
 
   for (const e of expedientes) {
     escribir(`expediente-${e.id}.json`, JSON.stringify(expedienteVerificable(ctx, e), null, 2) + "\n");
@@ -205,12 +208,19 @@ export function exportar(ctx: Contexto, carpeta: string, opciones: { nota?: stri
     ) + "\n",
   );
 
-  escribir("auditoria.jsonl", ctx.auditoria.exportarJsonl());
+  // Cierre: la auditoría registra el hash de cada archivo antes de exportarse a sí misma.
+  // Se exporta hasta el cierre: si Offside sigue en marcha y agrega entradas, quedan para la próxima.
+  const cabecera = ctx.auditoria.registrar({
+    minuto: ctx.estado.minuto,
+    actor: "sistema",
+    tipo: "exportacion",
+    datos: { carpeta, expedientes: expedientes.map((e) => e.id), archivos: escritos.map((a) => ({ ...a })) },
+  });
+  escribir("auditoria.jsonl", ctx.auditoria.exportarJsonl(cabecera.seq));
 
-  const cabecera = ctx.auditoria.cabecera();
   const p = ctx.estado.partido;
   const manifiesto = {
-    formato: "offside-exportacion-v1",
+    formato: "offside-exportacion-v2",
     generado_iso: new Date().toISOString(),
     nota: opciones.nota ?? null,
     partido: p ? { id: p.id, nombre: p.nombre } : null,

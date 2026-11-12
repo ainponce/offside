@@ -38,7 +38,7 @@ Offside bloquea en vivo las transmisiones piratas con un juez firmando cada medi
 
 **La prueba (25 s)**
 
-> La firma de la jueza cubre la evidencia: la huella de lo que vio viaja dentro de la orden. Si alguien cambia un byte del expediente después… *(correr el verificador)* …salta.
+> La firma de la jueza cubre la evidencia: la huella de lo que vio viaja dentro de la orden, y la orden queda en el registro del simulador, que no controlamos. Si alguien cambia un byte del expediente después… *(correr el verificador)* …salta.
 >
 > En los ensayos, con el verificador oficial: todas las fases piratas bloqueadas, el primer bloqueo cerca de un minuto después de la detección, cero sitios legítimos afectados, cero órdenes fuera de turno y cero bloqueos vivos después del partido.
 
@@ -81,8 +81,10 @@ En vivo:
 Para el momento 6, con una exportación ya hecha en `entrega/practica`:
 
 ```bash
-python3 herramientas/verificar_expediente.py entrega/practica --juzgados config/jueces.demo.json
+python3 herramientas/verificar_expediente.py entrega/practica --juzgados config/jueces.demo.json --registro entrega/practica/registro-simulador.jsonl
 ```
+
+Primero corrélo sin tocar nada: termina en "VERIFICACIÓN CORRECTA" y dice hasta qué entrada de la auditoría la ancla el registro del simulador. Después cambiá un carácter (por ejemplo, una letra de un `contenido_b64` en un `expediente-*.json`) y volvé a correrlo. Al terminar, restaurá la carpeta: cualquier cambio, hasta en un `.md`, la hace fallar.
 
 Plan B: si algo no anda en vivo, mostrás el video. Tené el archivo abierto en otra ventana.
 
@@ -104,7 +106,7 @@ Ante la duda, dominio. Solo proponemos IP si todos los dominios de esa IP son de
 Porque en una IP exclusiva el pirata suele tener dominios de respaldo; el bloqueo por IP los cubre a todos. Coincide con el bloqueo recomendado por la organización en las siete fases del partido de práctica.
 
 **¿Qué tan inalterable es el registro?**
-Cada entrada lleva el hash de la anterior, y un verificador independiente lo recalcula. Además la huella de cada expediente queda en el identificador de la orden, que guarda el proveedor: para reescribir la historia habría que alterar también los registros de todos los proveedores. En producción sumaríamos un sello de tiempo de un tercero.
+Cada entrada lleva el hash de la anterior, y un verificador independiente la recalcula y la cruza con los expedientes: detecciones, decisiones, estados de las órdenes, archivos. Eso prueba que la carpeta es coherente; no alcanza contra quien la rehaga entera, porque las claves de demostración son públicas. Por eso cada medida guarda la cabecera de la auditoría en su huella, y la huella viaja en el identificador de la orden, que queda en el registro del simulador: con ese registro, la auditoría queda anclada afuera hasta la última medida enviada, y el verificador dice hasta qué entrada. Lo posterior (vencimientos, la exportación) depende solo de la carpeta. En producción sumaríamos un sello de tiempo de un tercero.
 
 **¿Qué pasa si un proveedor falla justo cuando cambia el turno?**
 El reenvío no sale con la firma del juez saliente: le aparece al entrante como ratificación y la firma con un toque. El simulador mira el turno cuando el proveedor recibe la orden, y en los ensayos no hubo ninguna orden fuera de turno.

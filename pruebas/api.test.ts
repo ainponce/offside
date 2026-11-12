@@ -133,6 +133,23 @@ test("aprobar por la API envía las órdenes y un segundo intento responde 409",
   assert.equal(cola.recientes[0]!.ordenes.length, 3);
 });
 
+test("aprobar con la huella vista: si la medida cambió responde 409 y no firma", async () => {
+  const m = montar();
+  await publicarYProcesar(m, deteccion({ id: "D-1", minuto: 2 }));
+  const token = await m.ingresar("a", "clave-de-a");
+  const medida = ((await m.pedir("/api/juez/cola", { token })).datos as ColaDTO).pendientes[0]!;
+
+  const vieja = await m.pedir(`/api/juez/medidas/${medida.id}/aprobar`, { token, cuerpo: { huella: "0".repeat(64) } });
+  assert.equal(vieja.estado, 409);
+  assert.equal(vieja.datos.error, "La medida cambió: revisala de nuevo");
+  assert.equal(m.sim.recibidas().length, 0);
+  assert.equal(((await m.pedir("/api/juez/cola", { token })).datos as ColaDTO).pendientes.length, 1);
+
+  const bien = await m.pedir(`/api/juez/medidas/${medida.id}/aprobar`, { token, cuerpo: { huella: medida.huella } });
+  assert.equal(bien.estado, 200, bien.texto);
+  assert.equal(m.sim.recibidas().length, 3);
+});
+
 test("rechazar y reconsiderar por la API", async () => {
   const m = montar();
   await publicarYProcesar(m, deteccion({ id: "D-1", minuto: 2 }));

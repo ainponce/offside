@@ -9,7 +9,8 @@
 //   GET  /api/estado                              público   -> EstadoDTO
 //   GET  /api/eventos                             público   -> SSE: evento `cambio` con {seq}; `latido` cada 5 s
 //   GET  /api/juez/cola                           juez      -> ColaDTO
-//   POST /api/juez/medidas/:id/aprobar            juez      -> {ok: true} | 403 | 409 | 503 ErrorDTO
+//   POST /api/juez/medidas/:id/aprobar  {huella?}  juez      -> {ok: true} | 403 | 409 | 503 ErrorDTO
+//        (con `huella`, 409 "La medida cambió: revisala de nuevo" si no es la huella actual de la medida)
 //   POST /api/juez/medidas/:id/rechazar {motivo}  juez      -> {ok: true} | 403 | 409 ErrorDTO
 //   POST /api/juez/medidas/:id/reconsiderar       juez      -> {ok: true} | 403 | 409 ErrorDTO
 //   GET  /api/tablero                             juez o fiscalía -> TableroDTO
@@ -17,6 +18,7 @@
 //   GET  /api/transparencia                       público   -> TransparenciaDTO
 //
 // Los tiempos son minutos de partido según el simulador (número con decimales).
+// Los textos que escribe el servidor usan coma decimal ("minuto 37,5") e "IP" en mayúsculas.
 
 export type Rol = "juez" | "fiscalia";
 export type TipoBloqueo = "ip" | "dominio";
@@ -63,11 +65,24 @@ export interface EstadoDTO {
   /** Minutos de partido por minuto real. */
   acelerar: number;
   jueces_de_turno: { id: string; nombre: string; juzgado_nombre: string }[];
+  /**
+   * Horario de turnos según GET /juzgados del simulador, en el orden en que lo publica.
+   * Vacío si el simulador no lo publica (entonces solo vale `jueces_de_turno`).
+   */
+  turnos: TurnoDTO[];
   alertas: string[];
   /** Verdadero si el servidor corre con el simulacro de reclamos activado. */
   simulacro: boolean;
   /** Contador de cambios; coincide con el `seq` del último evento `cambio`. */
   seq: number;
+}
+
+export interface TurnoDTO {
+  juez_id: string;
+  nombre: string;
+  /** De turno desde este minuto (incluido) hasta `hasta_min` (excluido). */
+  desde_min: number;
+  hasta_min: number;
 }
 
 /** Una de las cuatro verificaciones que ve el juez en la tarjeta. */
@@ -83,6 +98,8 @@ export interface PlanItemDTO {
   proveedor_id: string;
   proveedor_nombre: string;
   clientes: number;
+  /** Clientes del proveedor sobre el total de clientes de todos los proveedores (0 a 100, un decimal). */
+  clientes_pct: number;
   /** null cuando no se envía a ese proveedor. */
   tipo: TipoBloqueo | null;
   objetivo: string | null;
@@ -164,9 +181,10 @@ export interface MedidaDTO {
     reclamo_id: string;
     dominio: string;
     proveedor_id: string;
+    proveedor_nombre: string;
     mensaje: string;
     verificacion: string;
-    ordenes_a_levantar: { orden_id: string; proveedor_id: string; tipo: TipoBloqueo; objetivo: string }[];
+    ordenes_a_levantar: { orden_id: string; proveedor_id: string; proveedor_nombre: string; tipo: TipoBloqueo; objetivo: string }[];
   } | null;
   decision: DecisionDTO | null;
   ordenes: OrdenDTO[];
@@ -175,7 +193,10 @@ export interface MedidaDTO {
 export interface ColaDTO {
   estado: EstadoDTO;
   yo: UsuarioDTO;
-  /** Medidas que esperan decisión. Un juez fuera de turno las ve pero no puede firmar. */
+  /**
+   * Medidas que esperan decisión. Un juez fuera de turno las ve pero no puede firmar.
+   * Primero los levantamientos (hay un sitio legítimo caído ahora); después, en orden de llegada.
+   */
   pendientes: MedidaDTO[];
   /** Últimas medidas decididas (cualquier juez), la más nueva primero. */
   recientes: MedidaDTO[];
@@ -200,6 +221,8 @@ export interface ServidorDTO {
   primer_bloqueo_min: number | null;
   /** Porcentaje de clientes del país con el bloqueo aplicado ahora. */
   cobertura_pct: number;
+  /** El mayor porcentaje de clientes con el bloqueo aplicado a la vez en algún momento (no cae a 0 al vencer). */
+  cobertura_max_pct: number;
   /** Una celda por proveedor del registro, en el mismo orden que TableroDTO.proveedores. */
   por_proveedor: { proveedor_id: string; estado: EstadoCelda; tipo: TipoBloqueo | null; intento: number }[];
 }
@@ -236,6 +259,8 @@ export interface TableroDTO {
     ordenes_activas: number;
     tiempo_medio_primer_bloqueo_min: number | null;
     cobertura_media_pct: number | null;
+    /** Promedio de `cobertura_max_pct` de los servidores con medida aprobada: no cae a 0 después del pitazo final. */
+    cobertura_max_pct: number | null;
     reclamos: number;
     /** Lo que habría caído con un bloqueo automático por IP. */
     dano_evitado: { sitios: string[]; senales_legitimas: string[] };
@@ -256,6 +281,7 @@ export interface TableroDTO {
     minuto: number;
     dominio: string;
     proveedor_id: string;
+    proveedor_nombre: string;
     mensaje: string;
     estado: "verificado" | "no_verificado" | "resuelto";
     medida_id: string | null;
@@ -264,6 +290,8 @@ export interface TableroDTO {
 }
 
 export interface ExpedienteDTO extends ExpedienteResumenDTO {
+  /** Lo mismo que GET /api/estado (`estado`, heredado del resumen, es el del expediente). */
+  estado_general: EstadoDTO;
   partido: { id: string; nombre: string; titular_derechos: string | null } | null;
   medidas: MedidaDTO[];
   detecciones: {
@@ -283,6 +311,8 @@ export interface ExpedienteDTO extends ExpedienteResumenDTO {
 }
 
 export interface TransparenciaDTO {
+  /** Lo mismo que GET /api/estado. */
+  estado: EstadoDTO;
   partido: { id: string; nombre: string; titular_derechos: string | null } | null;
   minuto: number;
   fin_min: number;
