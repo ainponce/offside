@@ -1,0 +1,460 @@
+@import "tailwindcss";
+
+/* Tipografías empaquetadas: nada se pide a internet en tiempo de ejecución.
+   Archivo y Faustina son de Omnibus-Type (Buenos Aires); IBM Plex Mono para huellas y hashes. */
+@font-face {
+  font-family: "Archivo Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  src: url("../../node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2") format("woff2-variations");
+}
+@font-face {
+  font-family: "Faustina Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 800;
+  src: url("../../node_modules/@fontsource-variable/faustina/files/faustina-latin-wght-normal.woff2") format("woff2-variations");
+}
+@font-face {
+  font-family: "Faustina Variable";
+  font-style: italic;
+  font-display: swap;
+  font-weight: 300 800;
+  src: url("../../node_modules/@fontsource-variable/faustina/files/faustina-latin-wght-italic.woff2") format("woff2-variations");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url("../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-600-normal.woff2") format("woff2");
+}
+
+@theme {
+  --font-sans: "Archivo Variable", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-serif: "Faustina Variable", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --breakpoint-xs: 26rem;
+  --breakpoint-3xl: 100rem;
+
+  --animate-sellar: sellar 320ms cubic-bezier(0.2, 0.9, 0.25, 1.15) both;
+  --animate-aparecer: aparecer 220ms ease-out both;
+  --animate-subir: subir 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-latir: latir 1.6s ease-in-out infinite;
+  --animate-llenar: llenar 600ms linear both;
+}
+
+/* Los colores de cada tema son variables; Tailwind los expone como utilidades. */
+@theme inline {
+  --color-mesa: var(--mesa);
+  --color-papel: var(--papel);
+  --color-hundido: var(--hundido);
+  --color-tinta: var(--tinta);
+  --color-tinta-2: var(--tinta-2);
+  --color-tinta-3: var(--tinta-3);
+  --color-regla: var(--regla);
+  --color-firma: var(--firma);
+  --color-firma-2: var(--firma-2);
+  --color-firma-suave: var(--firma-suave);
+  --color-sobre-firma: var(--sobre-firma);
+  --color-verde: var(--verde);
+  --color-verde-luz: var(--verde-luz);
+  --color-verde-suave: var(--verde-suave);
+  --color-ambar: var(--ambar);
+  --color-ambar-luz: var(--ambar-luz);
+  --color-ambar-suave: var(--ambar-suave);
+  --color-roja: var(--roja);
+  --color-roja-luz: var(--roja-luz);
+  --color-roja-suave: var(--roja-suave);
+}
+
+/* Papel y tinta: juez, expediente, transparencia e ingreso.
+   El azul de firma es el único acento. Verde, ámbar y rojo quedan para
+   las verificaciones y los estados de las órdenes. */
+:root,
+[data-tema="papel"] {
+  --mesa: #e8eaef;
+  --papel: #fcfcfa;
+  --hundido: #f1f2f1;
+  --tinta: #131722;
+  --tinta-2: #4a5162;
+  --tinta-3: #747b8c;
+  --regla: #cdd1da;
+  --firma: #1b3bcb;
+  --firma-2: #132b9a;
+  --firma-suave: #e5eafb;
+  --sobre-firma: #ffffff;
+  --verde: #12783b;
+  --verde-luz: #1fa85a;
+  --verde-suave: #def2e5;
+  --ambar: #8f5400;
+  --ambar-luz: #eb9c00;
+  --ambar-suave: #fcefcc;
+  --roja: #b4221a;
+  --roja-luz: #db3a2f;
+  --roja-suave: #fae2df;
+  color-scheme: light;
+}
+
+/* Sala de control de un partido nocturno: azul noche, blanco de reflector y celeste. */
+[data-tema="noche"] {
+  --mesa: #0b1533;
+  --papel: #121f47;
+  --hundido: #0e1a3c;
+  --tinta: #f2f5ff;
+  --tinta-2: #b0bce0;
+  --tinta-3: #7f8dba;
+  --regla: #273868;
+  --firma: #7db7e8;
+  --firma-2: #a9d2f4;
+  --firma-suave: #1a2d60;
+  --sobre-firma: #0b1533;
+  --verde: #5be39a;
+  --verde-luz: #2bbd72;
+  --verde-suave: #14432f;
+  --ambar: #ffc55c;
+  --ambar-luz: #ffb020;
+  --ambar-suave: #4a3a16;
+  --roja: #ff8a80;
+  --roja-luz: #ff5448;
+  --roja-suave: #53202a;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background: var(--mesa);
+    color: var(--tinta);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    min-height: 100dvh;
+    margin: 0;
+    background: var(--mesa);
+    font-size: 1rem;
+    line-height: 1.45;
+    overscroll-behavior-y: none;
+  }
+  button,
+  a,
+  summary,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+  button:not(:disabled),
+  summary,
+  [role="button"] {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 3px solid var(--firma);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  ::selection {
+    background: var(--firma);
+    color: var(--sobre-firma);
+  }
+}
+
+@layer components {
+  /* Anchos de Archivo: angosta para cifras y rótulos de marcador, normal para leer. */
+  .angosta {
+    font-stretch: 78%;
+  }
+  .muy-angosta {
+    font-stretch: 66%;
+  }
+  .cifras {
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+  .huella {
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* La línea de offside: separa lo que se bloquea de lo que no se toca. */
+  .linea-offside {
+    width: 3px;
+    align-self: stretch;
+    background: var(--firma);
+    flex: none;
+  }
+
+  /* Rayado en tinta: simulacros, sin cobertura y cortes de conexión. No usa colores de estado. */
+  .rayado {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--tinta) 88%, transparent) 0 7px,
+      transparent 7px 14px
+    );
+  }
+  .rayado-suave {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--tinta) 16%, transparent) 0 4px,
+      transparent 4px 9px
+    );
+  }
+
+  /* El sello del juez: lo que queda en el papel después de firmar. */
+  .sello {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 7px 12px 6px;
+    border: 2px solid var(--firma);
+    border-radius: 5px;
+    color: var(--firma);
+    transform: rotate(-1.6deg);
+    transform-origin: left center;
+    line-height: 1.15;
+  }
+  .sello-rechazo {
+    border-color: var(--tinta);
+    color: var(--tinta);
+    border-style: double;
+    border-width: 4px;
+  }
+
+  /* Tres tramos: por enviar, recibida, aplicada. */
+  .pasos {
+    display: inline-grid;
+    grid-auto-flow: column;
+    gap: 3px;
+    flex: none;
+  }
+  .pasos > i {
+    display: block;
+    width: 16px;
+    height: 8px;
+    border-radius: 1px;
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--regla);
+    transition: background-color 240ms ease-out, box-shadow 240ms ease-out;
+  }
+  .pasos[data-tono="ambar"] > i[data-lleno] {
+    background: var(--ambar-luz);
+    box-shadow: none;
+  }
+  .pasos[data-tono="verde"] > i[data-lleno] {
+    background: var(--verde-luz);
+    box-shadow: none;
+  }
+  .pasos[data-tono="roja"] > i {
+    background: var(--roja-luz);
+    box-shadow: none;
+  }
+  .pasos[data-tono="neutro"] > i[data-lleno] {
+    background: var(--tinta-3);
+    box-shadow: none;
+  }
+  .pasos-grande > i {
+    width: 26px;
+    height: 10px;
+  }
+
+  /* Botones. Altura mínima de 48 px para el pulgar. */
+  .boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding: 0 1.1rem;
+    border: 2px solid var(--tinta);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--tinta);
+    font-weight: 650;
+    font-size: 1rem;
+    line-height: 1.1;
+    text-decoration: none;
+    transition: background-color 120ms, color 120ms, transform 80ms;
+    user-select: none;
+  }
+  .boton:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--tinta) 8%, transparent);
+  }
+  .boton:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  .boton:disabled {
+    border-color: var(--regla);
+    color: var(--tinta-3);
+  }
+  .boton-firma {
+    border-color: var(--firma);
+    background: var(--firma);
+    color: var(--sobre-firma);
+  }
+  .boton-firma:hover:not(:disabled) {
+    background: var(--firma-2);
+    border-color: var(--firma-2);
+  }
+  .boton-firma:disabled {
+    background: var(--hundido);
+    border-color: var(--regla);
+    color: var(--tinta-3);
+  }
+  .boton-chico {
+    min-height: 40px;
+    padding: 0 0.8rem;
+    font-size: 0.9375rem;
+    border-width: 1.5px;
+  }
+  .boton-plano {
+    border-color: transparent;
+  }
+
+  .campo {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 0.9rem;
+    border: 2px solid var(--tinta);
+    border-radius: 6px;
+    background: var(--papel);
+    color: var(--tinta);
+    font: inherit;
+    font-size: 1.0625rem;
+  }
+  textarea.campo {
+    padding: 0.7rem 0.9rem;
+    min-height: 88px;
+    resize: vertical;
+  }
+  .campo::placeholder {
+    color: var(--tinta-3);
+  }
+
+  .enlace {
+    color: var(--firma);
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+  }
+  .enlace:hover {
+    color: var(--firma-2);
+  }
+
+  /* Barras de desplazamiento discretas en los paneles del tablero. */
+  .panel-con-scroll {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--regla) transparent;
+  }
+}
+
+/* Ninguna animación arranca invisible: si el equipo pierde cuadros (proyector, pestaña
+   en segundo plano), lo importante igual se ve desde el primer instante. */
+@keyframes sellar {
+  0% {
+    opacity: 0.45;
+    transform: rotate(-7deg) scale(1.45);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-1.6deg) scale(1);
+  }
+}
+@keyframes aparecer {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes subir {
+  from {
+    transform: translateY(22px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes latir {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes llenar {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* El expediente se imprime como un documento: sin controles, en papel blanco. */
+@page {
+  size: A4;
+  margin: 16mm 15mm 18mm;
+}
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+  .no-imprimir {
+    display: none !important;
+  }
+  .hoja {
+    box-shadow: none !important;
+    border: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    background: #fff !important;
+  }
+  .no-cortar {
+    break-inside: avoid;
+  }
+  .salto-antes {
+    break-before: page;
+  }
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

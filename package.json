@@ -17,9 +17,13 @@
     "test": "tsx --disable-warning=ExperimentalWarning --test pruebas/*.test.ts",
     "ensayo": "tsx --disable-warning=ExperimentalWarning scripts/ensayo.ts",
     "exportar": "tsx --disable-warning=ExperimentalWarning scripts/exportar.ts",
-    "demo": "tsx --disable-warning=ExperimentalWarning scripts/demo.ts"
+    "demo": "tsx --disable-warning=ExperimentalWarning scripts/demo.ts",
+    "video": "tsx --disable-warning=ExperimentalWarning scripts/video.ts"
   },
   "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/faustina": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
     "@hono/node-server": "^2.1.7",
     "hono": "^4.13.18",
     "react": "^19.3.1",
@@ -32,6 +36,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
+    "playwright-core": "^1.65.0",
     "tailwindcss": "^4.3.5",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
