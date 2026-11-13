@@ -1,0 +1,266 @@
+{
+  "formato": "offside-expediente-v1",
+  "expediente": {
+    "id": "EXP-2026-000005",
+    "marca": "LP26-FIN-OFI-S088004",
+    "prefijo": "LP26-FIN-OFI",
+    "origen_prefijo": "Señal oficial del titular (plataforma propia)",
+    "clave": "LP26-FIN-OFI-S088004",
+    "abierto_min": 70.03
+  },
+  "partido": {
+    "id": "final-01",
+    "nombre": "Partido final — Club Ficticio del Sur vs. Atlético Demostración",
+    "titular_derechos": "Liga Profesional Ficticia",
+    "fin_min": 105
+  },
+  "detecciones": [
+    {
+      "id": "D-0031",
+      "minuto": 70,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0031\",\"minuto\":70,\"pagina\":\"https://canalpirata-hd.test/vip\",\"stream_url\":\"https://a1.canalpirata-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"a1.canalpirata-hd.test\",\"ip_servidor\":\"203.0.113.95\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S088004\",\"captura\":{\"capturada_min\":70,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R2Os/8YeRTCbLwQMQpt9lXd4Akm1Rx6EnCSc2QL2nbmYJD62KVMbZfaSWU5wHfLenE9t4sGKVWgJAjSh6CPhyA==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/canalpiratahd\",\"minuto\":68},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/canalpirata\",\"minuto\":69}]}",
+      "sha256": "88b457a5fa5b47138b5d0b02d27696253f1c7fdd54837358316282040e36af76",
+      "captura_sha256": "98e1a7c709f4d6b304ed5cdf8a9083f0b93468de62187909c7891fa07c7f4a2a",
+      "recibida_min": 70.03,
+      "recibida_iso": "2026-11-13T14:33:24.401Z"
+    },
+    {
+      "id": "D-0036",
+      "minuto": 80,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0036\",\"minuto\":80,\"pagina\":\"https://canalpirata-hd.test/vip\",\"stream_url\":\"https://a1.canalpirata-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"a1.canalpirata-hd.test\",\"ip_servidor\":\"203.0.113.95\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S088004\",\"captura\":{\"capturada_min\":80,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R1IR5LDByWnKbnyndMc4Cu5QdQlGbyBp9y+x1PiJoOZwXNj0YeEOlspZ1lFOWNzVmKkfVt38w035jpiCLNIZ6A==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/canalpiratahd\",\"minuto\":68},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/canalpirata\",\"minuto\":69}]}",
+      "sha256": "9daf1209aa3b6de7a70b08507ea0e34f57629615cf835b83df663b06a37bd2b7",
+      "captura_sha256": "bb31fe4f917e99601d740bcc0ceb7eab34af7554795d53fd9f7a4c0dcd5a6fb3",
+      "recibida_min": 79.99,
+      "recibida_iso": "2026-11-13T14:36:42.862Z"
+    },
+    {
+      "id": "D-0041",
+      "minuto": 88,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0041\",\"minuto\":88,\"pagina\":\"https://canalpirata-hd.test/vip\",\"stream_url\":\"https://a2.canalpirata-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"a2.canalpirata-hd.test\",\"ip_servidor\":\"203.0.113.96\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S088004\",\"captura\":{\"capturada_min\":88,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R62KMy+7wTVNovUz1tFe3Tcy08WZr3YrhPDLSJGMRg9Q2xrb4YLdjep05eOFK9L3Ck1ORx0SoVmR5wMrm9IqGw==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/canalpiratahd\",\"minuto\":68},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/canalpirata\",\"minuto\":69}]}",
+      "sha256": "bdf6a09e7a2b7e0d6ce16c6fcd18c0cbeaa67c252a155ffe0e2da6e17ba66bed",
+      "captura_sha256": "437229b54a2ff81b92ae2f77d08edd569c937af3fcb285448492bf78e1f70bbd",
+      "recibida_min": 87.99,
+      "recibida_iso": "2026-11-13T14:39:23.112Z"
+    },
+    {
+      "id": "D-0046",
+      "minuto": 98,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0046\",\"minuto\":98,\"pagina\":\"https://canalpirata-hd.test/vip\",\"stream_url\":\"https://a2.canalpirata-hd.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"a2.canalpirata-hd.test\",\"ip_servidor\":\"203.0.113.96\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S088004\",\"captura\":{\"capturada_min\":98,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R8lBmUcHhgyk3Y0mdY4/OklYGuK0ky4EBHvfxHa1LmACLmIJkT/uKCsKBTbzh0zhJhKReaSgsVAHgrYpyXF9OQ==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/canalpiratahd\",\"minuto\":68},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/canalpirata\",\"minuto\":69}]}",
+      "sha256": "31bed0de7b9fb36ad32df418fff0be8cc24526513e8f40deabe33c7df0cd446a",
+      "captura_sha256": "67d34bec73fd031768bc8e879fea892f077909c43ff68eb70e6c31dd94283c98",
+      "recibida_min": 98.03,
+      "recibida_iso": "2026-11-13T14:42:43.578Z"
+    }
+  ],
+  "servidores": [
+    {
+      "host": "a1.canalpirata-hd.test",
+      "ip": "203.0.113.95",
+      "asn": 64600,
+      "organizacion": "Bruma Hosting Dedicado (ficticio)",
+      "primera_deteccion_min": 70,
+      "riesgo": {
+        "tipo_recomendado": "ip",
+        "cotenants": [],
+        "terceros": [],
+        "motivo": "La IP solo aloja este servidor: se bloquea la IP.",
+        "advertencias": []
+      }
+    },
+    {
+      "host": "a2.canalpirata-hd.test",
+      "ip": "203.0.113.96",
+      "asn": 64600,
+      "organizacion": "Bruma Hosting Dedicado (ficticio)",
+      "primera_deteccion_min": 88,
+      "riesgo": {
+        "tipo_recomendado": "ip",
+        "cotenants": [],
+        "terceros": [],
+        "motivo": "La IP solo aloja este servidor: se bloquea la IP.",
+        "advertencias": []
+      }
+    }
+  ],
+  "medidas": [
+    {
+      "id": "M-0007",
+      "clase": "inicial",
+      "estado": "aprobada",
+      "creada_min": 70.03,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0007\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000005\",\"partido\":{\"id\":\"final-01\",\"nombre\":\"Partido final — Club Ficticio del Sur vs. Atlético Demostración\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-FIN-OFI-S088004\",\"prefijo\":\"LP26-FIN-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-FIN-OFI-S088004\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"a1.canalpirata-hd.test\",\"ip\":\"203.0.113.95\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[],\"terceros\":[],\"motivo\":\"La IP solo aloja este servidor: se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0031\",\"minuto\":70,\"capturada_min\":70,\"deteccion_sha256\":\"88b457a5fa5b47138b5d0b02d27696253f1c7fdd54837358316282040e36af76\",\"captura_sha256\":\"98e1a7c709f4d6b304ed5cdf8a9083f0b93468de62187909c7891fa07c7f4a2a\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://canalpirata-hd.test/vip\",\"stream_url\":\"https://a1.canalpirata-hd.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/canalpiratahd\",\"minuto\":68},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/canalpirata\",\"minuto\":69}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.95\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.95\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"a1.canalpirata-hd.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.95\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":70.03,\"hora_partido_iso\":\"2026-11-13T19:10:01.800Z\",\"hora_local_iso\":\"2026-11-13T14:33:24.401Z\"},\"auditoria\":{\"seq\":37,\"cabecera\":\"525959c920bec69d15d22bb126262273e14e7dda64a8dc5d9fad97b8dfbd5018\"}}",
+      "huella": "c4e790bc7b06edb35c38378f0a428ae220c4e7cc3bb6bb79485e228cef6452f9",
+      "decision": {
+        "juez_id": "juez-martin-ejemplo",
+        "juez_nombre": "Dr. Martín Ejemplo",
+        "juzgado_id": "jg-norte-1",
+        "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
+        "decidida_min": 82.84,
+        "decidida_iso": "2026-11-13T14:37:39.616Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000005-0007-andina-1-c4e790bc7b06edb3",
+          "proveedor_id": "andina",
+          "tipo": "ip",
+          "objetivo": "203.0.113.95",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "aa2519c4309637c5a82737b4913527d6dcc965ec0430ac0c320d28a9fa4aed4f",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 82.88,
+          "aplicada_min": 84.749,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000005-0007-aurora-1-c4e790bc7b06edb3",
+          "proveedor_id": "aurora",
+          "tipo": "ip",
+          "objetivo": "203.0.113.95",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "40b9c2332b82eaf748c614db115a45cbd6e75101b04f946ee92b3e48a77e9a01",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 82.86,
+          "aplicada_min": 83.493,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000005-0007-cumbre-1-c4e790bc7b06edb3",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.95",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "2e9cffb7f64844e95bbf4a77b3e999c7ec4ef2464040cb269c16dc9d21f8d3a1",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 82.88,
+          "aplicada_min": 85.814,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000005-0007-valle-1-c4e790bc7b06edb3",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "a1.canalpirata-hd.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "3ab8b02c28476f8310045429f5fb0a9d8479daa8f03bb4761fd5336297db9447",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 82.85,
+          "aplicada_min": 89.077,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    },
+    {
+      "id": "M-0008",
+      "clase": "ampliacion",
+      "estado": "aprobada",
+      "creada_min": 87.99,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0008\",\"clase\":\"ampliacion\",\"expediente_id\":\"EXP-2026-000005\",\"partido\":{\"id\":\"final-01\",\"nombre\":\"Partido final — Club Ficticio del Sur vs. Atlético Demostración\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-FIN-OFI-S088004\",\"prefijo\":\"LP26-FIN-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-FIN-OFI-S088004\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"a2.canalpirata-hd.test\",\"ip\":\"203.0.113.96\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[{\"host\":\"a1.canalpirata-hd.test\",\"ip\":\"203.0.113.95\",\"medida_id\":\"M-0007\",\"estado\":\"aprobada\"}],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[],\"terceros\":[],\"motivo\":\"La IP solo aloja este servidor: se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0041\",\"minuto\":88,\"capturada_min\":88,\"deteccion_sha256\":\"bdf6a09e7a2b7e0d6ce16c6fcd18c0cbeaa67c252a155ffe0e2da6e17ba66bed\",\"captura_sha256\":\"437229b54a2ff81b92ae2f77d08edd569c937af3fcb285448492bf78e1f70bbd\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://canalpirata-hd.test/vip\",\"stream_url\":\"https://a2.canalpirata-hd.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/canalpiratahd\",\"minuto\":68},{\"red\":\"discord\",\"url\":\"https://discord.example/invite/canalpirata\",\"minuto\":69}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.96\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.96\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"a2.canalpirata-hd.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.96\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":87.99,\"hora_partido_iso\":\"2026-11-13T19:27:59.400Z\",\"hora_local_iso\":\"2026-11-13T14:39:23.112Z\"},\"auditoria\":{\"seq\":147,\"cabecera\":\"d8347ab4fd8c5d8152a81ef5f4f09a61953f2ff7ece64a4c89fe6fe9436076f2\"}}",
+      "huella": "1430b62e99e3ba34bb02eedcdabcf4f6d4356b50454e5de3ad56b2f34c540dc5",
+      "decision": {
+        "juez_id": "juez-martin-ejemplo",
+        "juez_nombre": "Dr. Martín Ejemplo",
+        "juzgado_id": "jg-norte-1",
+        "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
+        "decidida_min": 89.49,
+        "decidida_iso": "2026-11-13T14:39:52.667Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000005-0008-andina-1-1430b62e99e3ba34",
+          "proveedor_id": "andina",
+          "tipo": "ip",
+          "objetivo": "203.0.113.96",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "947d10d2a21b9c197b6e086ba18ea2170250167c02e7853eb959d33ce38cd302",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 89.51,
+          "aplicada_min": 91.087,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000005-0008-aurora-1-1430b62e99e3ba34",
+          "proveedor_id": "aurora",
+          "tipo": "ip",
+          "objetivo": "203.0.113.96",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "ef2ee03a4d22e03b8c17e89e32f1a3ec6a7bc141bcad321240b4e1d19748fc30",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 89.51,
+          "aplicada_min": 90.087,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000005-0008-cumbre-1-1430b62e99e3ba34",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.96",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "7c3f7e83be664b81e83594c5deb5ea5a4f9f5fede2f23a0ff60f05b7fc3cbb81",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 89.54,
+          "aplicada_min": 92.763,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000005-0008-valle-1-1430b62e99e3ba34",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "a2.canalpirata-hd.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "9f4c08558dcd859d28a88a085b67f5360647ce5a160584f15ee8fd27c2d05e7b",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 89.5,
+          "aplicada_min": 94.723,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "aviso_titular": "Aviso al titular de los derechos (Liga Profesional Ficticia) — Expediente EXP-2026-000005.\nLa señal con marca de agua LP26-FIN-OFI-S088004 se está retransmitiendo sin autorización desde 2 servidores: a1.canalpirata-hd.test (IP 203.0.113.95) y a2.canalpirata-hd.test (IP 203.0.113.96).\nEsa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.\nNota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse."
+}

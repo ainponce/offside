@@ -1,0 +1,455 @@
+{
+  "formato": "offside-expediente-v1",
+  "expediente": {
+    "id": "EXP-2026-000001",
+    "marca": "LP26-FIN-OFI-S020318",
+    "prefijo": "LP26-FIN-OFI",
+    "origen_prefijo": "Señal oficial del titular (plataforma propia)",
+    "clave": "LP26-FIN-OFI-S020318",
+    "abierto_min": 52.58
+  },
+  "partido": {
+    "id": "final-01",
+    "nombre": "Partido final — Club Ficticio del Sur vs. Atlético Demostración",
+    "titular_derechos": "Liga Profesional Ficticia",
+    "fin_min": 105
+  },
+  "detecciones": [
+    {
+      "id": "D-0001",
+      "minuto": 2,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0001\",\"minuto\":2,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sa.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sa.futbolpasion.test\",\"ip_servidor\":\"203.0.113.60\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":2,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R18/6D88JQm0lo57ver7rFnrlpw/eNqNP48IRdwapV9ZJo1xCej7YXnoG9KBysiBQPBS+D+rp2h93eDhrLUVsg==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "1fde211239932164e68f8f886595e0affb99df04e6811bf2d4b0767e9b66fba5",
+      "captura_sha256": "c60104faf76e511083ffea258f135c53fd3a8a0b6a6cba7f0353d605cc959ef8",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:36.579Z"
+    },
+    {
+      "id": "D-0004",
+      "minuto": 12,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0004\",\"minuto\":12,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sa.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sa.futbolpasion.test\",\"ip_servidor\":\"203.0.113.60\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":12,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RzxbXlc9vb5daGaCnCf4oFTAmF/zY/9Be6qLpEPLYE7hXoUOpAayBJbj8dar3DKbNMAO2J+xiP7PVy96a0e9rw==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "eb05af6479229dad26dd4c69a63751666964887bfc4ae09425005f40c4778ee6",
+      "captura_sha256": "ec67deb65b285ca88697e9d5fd0108b237b0c2ceecd8673c2e6d488a15023d96",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:36.812Z"
+    },
+    {
+      "id": "D-0008",
+      "minuto": 22,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0008\",\"minuto\":22,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sa.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sa.futbolpasion.test\",\"ip_servidor\":\"203.0.113.60\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":22,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R+vo1QPjMqrrqx0Tq0HkFIf5uyWEUbZEatKS+wdHL5+GiUeCSeP3wO4BSY6d1ZQPKYsXvu9AcYA9mNUg0LPVNQ==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "e24c75e5f0e307d9527c0d216ed341b7f5845432011a69f3fc00e7ae047188ea",
+      "captura_sha256": "b9623d0658878d0e9720b8feb0b0170bc9afaf1e489e397ddf41877cb42aaab4",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.026Z"
+    },
+    {
+      "id": "D-0011",
+      "minuto": 26,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0011\",\"minuto\":26,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sb.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sb.futbolpasion.test\",\"ip_servidor\":\"203.0.113.61\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":26,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R1XVTgwNd/v3CWEQdnYEMPVkVKX3mYtH1djYQAca6bk/VyFAI/zKEmZoq1UxMVbvDGAlf4aS0mS6BGDKUkxuEA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "1b026e2354fd2b657d6594dcab8619b3be3c348fe743c3f881ba40baa77631c2",
+      "captura_sha256": "825351ab4ef10e5aa12add229f4f8eb50e8d06091c77f4998d114282c076bdd6",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.253Z"
+    },
+    {
+      "id": "D-0015",
+      "minuto": 36,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0015\",\"minuto\":36,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sb.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sb.futbolpasion.test\",\"ip_servidor\":\"203.0.113.61\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":36,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R7q/Sfq0+Qt9BM1WdS/R7Qb+llN6P/ZFFrZ1AHNz52q5T2CKev45IJlyfNWSr74ChIdL+aT5W4cdCn9coU4lnQ==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "0c6653969a97e04032bce652867d99a783b92cdaadb160b27f5c33462f730a63",
+      "captura_sha256": "5bb563cecbbddd7f71f787938279c0fb4047272be0cab1a08bac135bc859bd08",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.509Z"
+    },
+    {
+      "id": "D-0021",
+      "minuto": 46,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0021\",\"minuto\":46,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sb.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sb.futbolpasion.test\",\"ip_servidor\":\"203.0.113.61\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":46,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R3e4GCSOBR43zv1OOeRgPKwKVY5e5d4sb8BuFwmEG669Hcx5Wsf45P2vw0KkQAjjs9bR1baKGwXusrAZqfoWXg==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "82f5911bf6fb7c18b1543df02c5dcbb883f21caa0bb7c6405897755126f9c476",
+      "captura_sha256": "f06822fbf724f77f244668a43e74f3a9887aad95b43854987539462990ec784c",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.511Z"
+    },
+    {
+      "id": "D-0025",
+      "minuto": 56,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0025\",\"minuto\":56,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sb.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sb.futbolpasion.test\",\"ip_servidor\":\"203.0.113.61\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":56,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R7Qp0O3OKpjVwEd5J4xt5JAsSvcSudChsreAvAX9oxkRGCXDRmqbdAVZeS50VhiibkUpcJWK/YNvejhmSG44Ww==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "9b694997f5be27a1ce41c73d22b116d65667b9be902f90782fa9a8f731e56bcc",
+      "captura_sha256": "bfc4fe81241dedf26ce8e1e95a832c96c39659fb4ca6e32d0a65ffe2316dc156",
+      "recibida_min": 56.03,
+      "recibida_iso": "2026-11-13T14:28:43.568Z"
+    },
+    {
+      "id": "D-0026",
+      "minuto": 59,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0026\",\"minuto\":59,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sc.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sc.futbolpasion.test\",\"ip_servidor\":\"198.51.100.160\",\"asn\":64630,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":59,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R7Ts0SI7SBYAYAx3puXQF1aHFV4xNYzqUP7HF2T3m2j5hWnGJM4XbsG+8cwzbGpXLVXor4SEGeAgBkFmbDBDag==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "61e647685c11251013ffb1290f428531c75e8aedf2626f983d5b58b02859c51e",
+      "captura_sha256": "bd76872e48cdb6a12493be0263795f62a1c316df11b1d2a443a41a01b5bace5e",
+      "recibida_min": 59.02,
+      "recibida_iso": "2026-11-13T14:29:44.392Z"
+    },
+    {
+      "id": "D-0030",
+      "minuto": 69,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0030\",\"minuto\":69,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sc.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sc.futbolpasion.test\",\"ip_servidor\":\"198.51.100.160\",\"asn\":64630,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":69,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R28g+UwhiqyDkm9fWaKZGqO9FQKpwUSXMHjrd5kUA4dC4hSdLT304vLbJ0Jl9gNjOQPZyNwA2SZ1fVPR3Y6cyw==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "a8290dc8d8da9f3448d91c939f723d25fee507246bb8e0e0013e517e21089ad0",
+      "captura_sha256": "f5a186ee21440587b015bfbe1906fa3a22830e41127a1c8d107c51f7efc9a1ad",
+      "recibida_min": 69,
+      "recibida_iso": "2026-11-13T14:33:03.000Z"
+    },
+    {
+      "id": "D-0035",
+      "minuto": 79,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0035\",\"minuto\":79,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sc.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sc.futbolpasion.test\",\"ip_servidor\":\"198.51.100.160\",\"asn\":64630,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":79,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R+lkDy+B+fTt6QudSarg9O0e9x+XKoiXxG6ZpBHKyjsSh+1AqCuVq0EKatZWZmNBYPKUu8+zdgFvFAz4ojc81Q==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "99fa89cbfed31d0e87da3d4e216cf610fab954d71585ac30e27f0c3438ad212d",
+      "captura_sha256": "cf652cd8dc3a3cc2214859f771f6950de6fa22836eaf571d8b121609ab2be542",
+      "recibida_min": 79.03,
+      "recibida_iso": "2026-11-13T14:36:23.582Z"
+    },
+    {
+      "id": "D-0042",
+      "minuto": 89,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0042\",\"minuto\":89,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sc.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sc.futbolpasion.test\",\"ip_servidor\":\"198.51.100.160\",\"asn\":64630,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":89,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RwIHEmsStS6p9UZrQ0CrBXpiNJ4DGp3vsrC5EjDb8byUMIqzt9rxSQ8oSwy1uKyuoDkFdolSFPW69PeqrLEHag==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "c61496681ea590fd00867625e320c73e0f8559fb7029bd552dd64f593137fbf7",
+      "captura_sha256": "b3e2ee885b3ad17167c3927deb58adb064ca367956b9fe9d19e7a3adac1b9ab5",
+      "recibida_min": 89.03,
+      "recibida_iso": "2026-11-13T14:39:43.653Z"
+    },
+    {
+      "id": "D-0047",
+      "minuto": 99,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0047\",\"minuto\":99,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sc.futbolpasion.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"sc.futbolpasion.test\",\"ip_servidor\":\"198.51.100.160\",\"asn\":64630,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S020318\",\"captura\":{\"capturada_min\":99,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R/NRaTIW1/Zwr9DnvWksK006603nPyS7dkxjUG2P5MSge0zZrJUYdCAEeoXezeE7+01HMM8nCBnf+B/0rNb3LQ==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}",
+      "sha256": "70d2709faff23011efee2e43286b924ccd99dd3ba85163501054e31915fb7061",
+      "captura_sha256": "aade2acfa8b571399c5dd6469643b04575add876e50fb200de0c6ec9482115e9",
+      "recibida_min": 99.03,
+      "recibida_iso": "2026-11-13T14:43:03.726Z"
+    }
+  ],
+  "servidores": [
+    {
+      "host": "sa.futbolpasion.test",
+      "ip": "203.0.113.60",
+      "asn": 64600,
+      "organizacion": "Bruma Hosting Dedicado (ficticio)",
+      "primera_deteccion_min": 2,
+      "riesgo": {
+        "tipo_recomendado": "ip",
+        "cotenants": [],
+        "terceros": [],
+        "motivo": "La IP solo aloja este servidor: se bloquea la IP.",
+        "advertencias": []
+      }
+    },
+    {
+      "host": "sb.futbolpasion.test",
+      "ip": "203.0.113.61",
+      "asn": 64600,
+      "organizacion": "Bruma Hosting Dedicado (ficticio)",
+      "primera_deteccion_min": 26,
+      "riesgo": {
+        "tipo_recomendado": "ip",
+        "cotenants": [
+          "sb-alt.futbolpasion.test"
+        ],
+        "terceros": [],
+        "motivo": "La IP solo aloja dominios del mismo operador (futbolpasion.test): se bloquea la IP.",
+        "advertencias": []
+      }
+    },
+    {
+      "host": "sc.futbolpasion.test",
+      "ip": "198.51.100.160",
+      "asn": 64630,
+      "organizacion": "Servidores Litoral (ficticio)",
+      "primera_deteccion_min": 59,
+      "riesgo": {
+        "tipo_recomendado": "ip",
+        "cotenants": [],
+        "terceros": [],
+        "motivo": "La IP solo aloja este servidor: se bloquea la IP.",
+        "advertencias": []
+      }
+    }
+  ],
+  "medidas": [
+    {
+      "id": "M-0001",
+      "clase": "inicial",
+      "estado": "aprobada",
+      "creada_min": 52.58,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0001\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000001\",\"partido\":{\"id\":\"final-01\",\"nombre\":\"Partido final — Club Ficticio del Sur vs. Atlético Demostración\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-FIN-OFI-S020318\",\"prefijo\":\"LP26-FIN-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-FIN-OFI-S020318\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"sa.futbolpasion.test\",\"ip\":\"203.0.113.60\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[],\"terceros\":[],\"motivo\":\"La IP solo aloja este servidor: se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0001\",\"minuto\":2,\"capturada_min\":2,\"deteccion_sha256\":\"1fde211239932164e68f8f886595e0affb99df04e6811bf2d4b0767e9b66fba5\",\"captura_sha256\":\"c60104faf76e511083ffea258f135c53fd3a8a0b6a6cba7f0353d605cc959ef8\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sa.futbolpasion.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.60\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.60\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"sa.futbolpasion.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.60\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":52.58,\"hora_partido_iso\":\"2026-11-13T18:52:34.800Z\",\"hora_local_iso\":\"2026-11-13T14:27:36.580Z\"},\"auditoria\":{\"seq\":2,\"cabecera\":\"35cb9c2fedd61ceeacbc6dc8e75b0dcc4adaa9830e7e35a448f5b101c62c85fb\"}}",
+      "huella": "eefa031157c4a76aef0570b20dbc31628d4ec8a889bd8e28c4c8976a7d1f9fb9",
+      "decision": {
+        "juez_id": "juez-martin-ejemplo",
+        "juez_nombre": "Dr. Martín Ejemplo",
+        "juzgado_id": "jg-norte-1",
+        "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
+        "decidida_min": 76,
+        "decidida_iso": "2026-11-13T14:35:22.824Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000001-0001-andina-1-eefa031157c4a76a",
+          "proveedor_id": "andina",
+          "tipo": "ip",
+          "objetivo": "203.0.113.60",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "f604ae242fa900a0552a0b3eba98e2ddc80788f74525cbeb6d801472b616fd6b",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 76.05,
+          "aplicada_min": 78.384,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0001-aurora-1-eefa031157c4a76a",
+          "proveedor_id": "aurora",
+          "tipo": "ip",
+          "objetivo": "203.0.113.60",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "4e801577903329fdff0bed0297b07d251232233515bb9b6c146adc564647f9cb",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 76.03,
+          "aplicada_min": 76.641,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0001-cumbre-1-eefa031157c4a76a",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.60",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "f5b074228cfe30f15f069000eff6c12cfef211d835dbb7998280967dae282e9a",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 76.05,
+          "aplicada_min": 78.802,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0001-valle-1-eefa031157c4a76a",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "sa.futbolpasion.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "428433440c7af6740a2315f8eb48a1555cd2e863476d7849ab247f23d4ca2301",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 76.04,
+          "aplicada_min": 81.583,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    },
+    {
+      "id": "M-0004",
+      "clase": "inicial",
+      "estado": "aprobada",
+      "creada_min": 52.58,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0004\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000001\",\"partido\":{\"id\":\"final-01\",\"nombre\":\"Partido final — Club Ficticio del Sur vs. Atlético Demostración\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-FIN-OFI-S020318\",\"prefijo\":\"LP26-FIN-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-FIN-OFI-S020318\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"sb.futbolpasion.test\",\"ip\":\"203.0.113.61\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[{\"host\":\"sa.futbolpasion.test\",\"ip\":\"203.0.113.60\",\"medida_id\":\"M-0001\",\"estado\":\"pendiente\"}],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[\"sb-alt.futbolpasion.test\"],\"terceros\":[],\"motivo\":\"La IP solo aloja dominios del mismo operador (futbolpasion.test): se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0011\",\"minuto\":26,\"capturada_min\":26,\"deteccion_sha256\":\"1b026e2354fd2b657d6594dcab8619b3be3c348fe743c3f881ba40baa77631c2\",\"captura_sha256\":\"825351ab4ef10e5aa12add229f4f8eb50e8d06091c77f4998d114282c076bdd6\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sb.futbolpasion.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.61\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.61\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"sb.futbolpasion.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.61\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":52.58,\"hora_partido_iso\":\"2026-11-13T18:52:34.800Z\",\"hora_local_iso\":\"2026-11-13T14:27:37.253Z\"},\"auditoria\":{\"seq\":14,\"cabecera\":\"767536684f3892b8c324905c71d3767f84f1cd3538abc7ab023b1d2a349d9d18\"}}",
+      "huella": "d9d897eff22aacdafbbe45e62d6cac9d96a3851bb9da956a698f896e53b9ec39",
+      "decision": {
+        "juez_id": "juez-martin-ejemplo",
+        "juez_nombre": "Dr. Martín Ejemplo",
+        "juzgado_id": "jg-norte-1",
+        "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
+        "decidida_min": 78.55,
+        "decidida_iso": "2026-11-13T14:36:13.774Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000001-0004-andina-1-d9d897eff22aacda",
+          "proveedor_id": "andina",
+          "tipo": "ip",
+          "objetivo": "203.0.113.61",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "282bed21454b5c1d15313486cd7d27cb897ce1a9e152907782abdca9a9728b9f",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 78.57,
+          "aplicada_min": 80.769,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0004-aurora-1-d9d897eff22aacda",
+          "proveedor_id": "aurora",
+          "tipo": "ip",
+          "objetivo": "203.0.113.61",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "193a7aed06fa1a29b4ac6b220c40c7443fced3c40e4571df325a3b251d7a6190",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 78.57,
+          "aplicada_min": 79.185,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0004-cumbre-1-d9d897eff22aacda",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.61",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "a1b074e6c85e3d3280b99f2ed337d5692dd17f28cf604ffc61de286942ea762f",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 78.59,
+          "aplicada_min": 81.413,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0004-valle-1-d9d897eff22aacda",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "sb.futbolpasion.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "691ad2b8cd895e4cbdb90d7c7a8bd00df526b982f9eeb96203e39116acfaed91",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 78.56,
+          "aplicada_min": 85.029,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    },
+    {
+      "id": "M-0006",
+      "clase": "inicial",
+      "estado": "aprobada",
+      "creada_min": 59.02,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0006\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000001\",\"partido\":{\"id\":\"final-01\",\"nombre\":\"Partido final — Club Ficticio del Sur vs. Atlético Demostración\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-FIN-OFI-S020318\",\"prefijo\":\"LP26-FIN-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-FIN-OFI-S020318\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"sc.futbolpasion.test\",\"ip\":\"198.51.100.160\",\"asn\":64630,\"organizacion\":\"Servidores Litoral (ficticio)\"},\"servidores_previos\":[{\"host\":\"sa.futbolpasion.test\",\"ip\":\"203.0.113.60\",\"medida_id\":\"M-0001\",\"estado\":\"pendiente\"},{\"host\":\"sb.futbolpasion.test\",\"ip\":\"203.0.113.61\",\"medida_id\":\"M-0004\",\"estado\":\"pendiente\"}],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[],\"terceros\":[],\"motivo\":\"La IP solo aloja este servidor: se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0026\",\"minuto\":59,\"capturada_min\":59,\"deteccion_sha256\":\"61e647685c11251013ffb1290f428531c75e8aedf2626f983d5b58b02859c51e\",\"captura_sha256\":\"bd76872e48cdb6a12493be0263795f62a1c316df11b1d2a443a41a01b5bace5e\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://futbolpasion.test/hoy\",\"stream_url\":\"https://sc.futbolpasion.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/futbolpasion_ar/status/9001\",\"minuto\":1}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"198.51.100.160\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"198.51.100.160\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"sc.futbolpasion.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"198.51.100.160\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":59.02,\"hora_partido_iso\":\"2026-11-13T18:59:01.200Z\",\"hora_local_iso\":\"2026-11-13T14:29:44.393Z\"},\"auditoria\":{\"seq\":31,\"cabecera\":\"925438c21b058b077aef6d024b7d30c9a61528cedadd7aa59ea1d3b4ba8678ca\"}}",
+      "huella": "f268d7bae7ef06efae22408639971599de3a4418564a533fe9168885ebdd66fd",
+      "decision": {
+        "juez_id": "juez-martin-ejemplo",
+        "juez_nombre": "Dr. Martín Ejemplo",
+        "juzgado_id": "jg-norte-1",
+        "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
+        "decidida_min": 81.82,
+        "decidida_iso": "2026-11-13T14:37:19.167Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000001-0006-andina-1-f268d7bae7ef06ef",
+          "proveedor_id": "andina",
+          "tipo": "ip",
+          "objetivo": "198.51.100.160",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "623080a1bae5fd21c30a810ecf381f894e99a9f5edd7910d841b71fa7c0f89e0",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 81.84,
+          "aplicada_min": 84.305,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0006-aurora-1-f268d7bae7ef06ef",
+          "proveedor_id": "aurora",
+          "tipo": "ip",
+          "objetivo": "198.51.100.160",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "fd0360ba1aa7e0288e0a527b91427b24af0f7bb0567bf5a305ae7bfacb855fba",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 81.84,
+          "aplicada_min": 82.23,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0006-cumbre-1-f268d7bae7ef06ef",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "198.51.100.160",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "1c6e660dbd194ab4ace8b1c6f3593cc815f8902ef7b70693214af26d9354a651",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 81.86,
+          "aplicada_min": 84.559,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000001-0006-valle-1-f268d7bae7ef06ef",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "sc.futbolpasion.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "e6ab768443def880fdaadf0d46d3e632ede60bf9f4bb8c0e4a7b761ba8664e4d",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 81.83,
+          "aplicada_min": 89.639,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "aviso_titular": "Aviso al titular de los derechos (Liga Profesional Ficticia) — Expediente EXP-2026-000001.\nLa señal con marca de agua LP26-FIN-OFI-S020318 se está retransmitiendo sin autorización desde 3 servidores: sa.futbolpasion.test (IP 203.0.113.60), sb.futbolpasion.test (IP 203.0.113.61) y sc.futbolpasion.test (IP 198.51.100.160).\nEsa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.\nNota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse."
+}

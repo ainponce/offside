@@ -1,0 +1,66 @@
+{
+  "formato": "offside-archivadas-v1",
+  "nota": "Detecciones que no dieron lugar a una medida, con su motivo. No se bloqueó nada por ellas.",
+  "detecciones": [
+    {
+      "id": "D-0002",
+      "minuto": 3,
+      "host": "vivo.surandino.test",
+      "ip": "192.0.2.140",
+      "marca": "LP26-FIN-LIC-SUR",
+      "veredicto": "licenciatario_autorizado",
+      "motivo": "Canal Sur Andino (ficticio) retransmite con licencia en un dominio autorizado.",
+      "crudo": "{\"id\":\"D-0002\",\"minuto\":3,\"pagina\":\"https://surandino.test/vivo\",\"stream_url\":\"https://vivo.surandino.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"vivo.surandino.test\",\"ip_servidor\":\"192.0.2.140\",\"asn\":64650,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":3,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R4zuxEgCQ3DyNTXcT3lsaVBQ7GMaCXHWueyVzSJ0g69/jjehOZdWM5oEXDC+D9W0spi48KykpkP1HAV22+J/CA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/surandino/status/9002\",\"minuto\":2}]}",
+      "sha256": "eeabfa12bcdff84ec026dd03b2e6682715c790557df2160c0b089f1659505bbd",
+      "captura_sha256": "762a8dc9711c751c66dfe46425c0a8f36692fc908ef1cdd098b7d58ec1a44043"
+    },
+    {
+      "id": "D-0007",
+      "minuto": 15,
+      "host": "replay.archivo-futbol.test",
+      "ip": "198.51.100.180",
+      "marca": null,
+      "veredicto": "no_es_la_senal",
+      "motivo": "La captura no trae marca de agua.",
+      "crudo": "{\"id\":\"D-0007\",\"minuto\":15,\"pagina\":\"https://archivo-futbol.test/clasicos\",\"stream_url\":\"https://replay.archivo-futbol.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"replay.archivo-futbol.test\",\"ip_servidor\":\"198.51.100.180\",\"asn\":64630,\"marca_de_agua_extraida\":null,\"captura\":{\"capturada_min\":15,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R40GZ6jk7duUG9BT4CPoalGWuYkb1A0BvnC3s9XZbZU1if0iRmLtzOxcwuj3nTarIvJZiGlf/PC36KhZqWVWtA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/archivofutbol/status/9555\",\"minuto\":14}]}",
+      "sha256": "65e940d92ebcab076277d2da5d836639bf6b8288c67eab50cd9455f3b8947857",
+      "captura_sha256": "303f82b94695205afff5a4490d93947935e5e1e4adc4e01b43fa9775f3bd338f"
+    },
+    {
+      "id": "D-0018",
+      "minuto": 43,
+      "host": "vivo.surandino.test",
+      "ip": "192.0.2.140",
+      "marca": "LP26-FIN-LIC-SUR",
+      "veredicto": "licenciatario_autorizado",
+      "motivo": "Canal Sur Andino (ficticio) retransmite con licencia en un dominio autorizado.",
+      "crudo": "{\"id\":\"D-0018\",\"minuto\":43,\"pagina\":\"https://surandino.test/vivo\",\"stream_url\":\"https://vivo.surandino.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"vivo.surandino.test\",\"ip_servidor\":\"192.0.2.140\",\"asn\":64650,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":43,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"Rwi/9csWdOvlh7gUlHqS4mvuP26BWXsRTu0v+VcC9ltBVTU95Q7UcbCzegD2J9RhdRDuSVZsxQXV7AaijYyfaQ==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/surandino/status/9002\",\"minuto\":2}]}",
+      "sha256": "cf21fdccced41634853d8199015d4b01d2b3083f4e624985460e5c073cadd771",
+      "captura_sha256": "6c0038fe64d9bc1811c59f5df52164d69afaeee569cff9d4ceebdc99d27afacf"
+    },
+    {
+      "id": "D-0020",
+      "minuto": 45,
+      "host": "replay.archivo-futbol.test",
+      "ip": "198.51.100.180",
+      "marca": null,
+      "veredicto": "no_es_la_senal",
+      "motivo": "La captura no trae marca de agua.",
+      "crudo": "{\"id\":\"D-0020\",\"minuto\":45,\"pagina\":\"https://archivo-futbol.test/clasicos\",\"stream_url\":\"https://replay.archivo-futbol.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"replay.archivo-futbol.test\",\"ip_servidor\":\"198.51.100.180\",\"asn\":64630,\"marca_de_agua_extraida\":null,\"captura\":{\"capturada_min\":45,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R9Pd2q0Qq8uKAQizGhqbeJETG0L5cqoTBlBEMi4/4VqZFFLEv3IA9Bdo0PAhx1VtLsFQ4iwUZDFZeumWw13BAA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/archivofutbol/status/9555\",\"minuto\":14}]}",
+      "sha256": "4c0f33f35ddf12b59e018fb29f1d7f13928fece91e62e980ece9659074ff22fd",
+      "captura_sha256": "93882a95d58fe7610a4f16fab6cef26bcbf3d64fd35ea4c8f62cff5791cc2827"
+    },
+    {
+      "id": "D-0039",
+      "minuto": 83,
+      "host": "vivo.surandino.test",
+      "ip": "192.0.2.140",
+      "marca": "LP26-FIN-LIC-SUR",
+      "veredicto": "licenciatario_autorizado",
+      "motivo": "Canal Sur Andino (ficticio) retransmite con licencia en un dominio autorizado.",
+      "crudo": "{\"id\":\"D-0039\",\"minuto\":83,\"pagina\":\"https://surandino.test/vivo\",\"stream_url\":\"https://vivo.surandino.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"vivo.surandino.test\",\"ip_servidor\":\"192.0.2.140\",\"asn\":64650,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":83,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R8P4ReoFRtA4O2XLTXVXKt/Nl34Ns2GYQT3RJEdvx4TapfPv36Y4a2cd6Xx30GMdMNw1qwhjYT+ajzYPYGzGWg==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/surandino/status/9002\",\"minuto\":2}]}",
+      "sha256": "b988ddab20f2ff245c9c9122e340f7b030fc3a958bebd0db5b06579e0e3e4b8c",
+      "captura_sha256": "5a7115dc2973669f6de2eba50ffa81849ca4dd89d53b3ad97e2ca7c6a6ebea28"
+    }
+  ]
+}

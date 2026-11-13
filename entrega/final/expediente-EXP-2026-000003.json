@@ -1,0 +1,260 @@
+{
+  "formato": "offside-expediente-v1",
+  "expediente": {
+    "id": "EXP-2026-000003",
+    "marca": "LP26-FIN-OFI-S031877",
+    "prefijo": "LP26-FIN-OFI",
+    "origen_prefijo": "Señal oficial del titular (plataforma propia)",
+    "clave": "LP26-FIN-OFI-S031877",
+    "abierto_min": 52.58
+  },
+  "partido": {
+    "id": "final-01",
+    "nombre": "Partido final — Club Ficticio del Sur vs. Atlético Demostración",
+    "titular_derechos": "Liga Profesional Ficticia",
+    "fin_min": 105
+  },
+  "detecciones": [
+    {
+      "id": "D-0005",
+      "minuto": 12,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0005\",\"minuto\":12,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"hd.mirapartido.test\",\"ip_servidor\":\"192.0.2.120\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S031877\",\"captura\":{\"capturada_min\":12,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RxtT03w7p5TNI55koYU4zr9p42vn80kXs35EgBnP5xsk0e4hSiqCy2M8C6irBejX8J32DFbx2WhI1Qq+hJFb3g==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}",
+      "sha256": "936436269d8019dce258f44f2056f0915d4f9b39b3f71ef6ade6d24a177c2f8a",
+      "captura_sha256": "1f6515d22d26597cad963315282859d85f9d1567c78acc802603b376c6889326",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.025Z"
+    },
+    {
+      "id": "D-0009",
+      "minuto": 22,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0009\",\"minuto\":22,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"hd.mirapartido.test\",\"ip_servidor\":\"192.0.2.120\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S031877\",\"captura\":{\"capturada_min\":22,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R4UPnBKG+RTPcj0MSitmPzgDTMjuUl8+XYLA0DOIqLFV1kRC7F21ur2RDVay+ru5AyAB9u8hjN9wZAHXSAKD/w==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}",
+      "sha256": "217e64c3f5200d2354cd90f9d85ae620b03232e8e84a951e82506373fb723df9",
+      "captura_sha256": "670d2c81d5a24ea54f267e627df7de6145ff1e1a9c3973084cfc759cdc470db3",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.026Z"
+    },
+    {
+      "id": "D-0013",
+      "minuto": 32,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0013\",\"minuto\":32,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"hd.mirapartido.test\",\"ip_servidor\":\"192.0.2.120\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S031877\",\"captura\":{\"capturada_min\":32,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R1IfdQw/VIK1jYaS2UMlG/jjPMQ0/Xm/Khfl/yl46iEATq5VR9l3Gj2vLzmgZwMt8mrV3PFMTeW7U1TpnASjgA==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}",
+      "sha256": "be658278f8e49a5d9deee63a287019271912afa9ebbd3f303b13a41e6d5e67c2",
+      "captura_sha256": "cc653f51918e90de57956bcc9582801a207072914ce5b1750d97e543dd1615d9",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.507Z"
+    },
+    {
+      "id": "D-0017",
+      "minuto": 42,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0017\",\"minuto\":42,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"hd.mirapartido.test\",\"ip_servidor\":\"192.0.2.120\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S031877\",\"captura\":{\"capturada_min\":42,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"Rw4wLS8MD8/3lIa7Sbx9YwC/wa4jAF8J3tAF8KCzYdOkw7ESOMe71u9FhG839eEpZdtYZ1dgtgCDI1G8b+GmOw==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}",
+      "sha256": "a2fa2cd69c6604be637b591365bb591b637f98cbb70e7596a7c326724e530ecf",
+      "captura_sha256": "6c9e95c41d5e830740374896e41c34e0d6a662b8cc57ebf602310103168c577f",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.509Z"
+    },
+    {
+      "id": "D-0023",
+      "minuto": 52,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0023\",\"minuto\":52,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"hd.mirapartido.test\",\"ip_servidor\":\"192.0.2.120\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S031877\",\"captura\":{\"capturada_min\":52,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RzNpghNGU67pYOl50H5JL5yMbN+UQFRSUA/XtMxfyRIdEB8wVvo4KdojwXf2u76uYGmzzwqVgL48Wm1jt0eWfg==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}",
+      "sha256": "5de09dd057773e8d7a2ef8c676e788a5d9eb48f7a66d97dfb0edfc5becf9eec9",
+      "captura_sha256": "8081fc8062e9d1c521216ae4bed3139f90746a27c61562cc84bd458adef5ce97",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.511Z"
+    },
+    {
+      "id": "D-0028",
+      "minuto": 62,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0028\",\"minuto\":62,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"hd.mirapartido.test\",\"ip_servidor\":\"192.0.2.120\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S031877\",\"captura\":{\"capturada_min\":62,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"Rym+fs8hiAMb6yeYfJsWWuw9QvccwKNAj/0hyXjyvgnjRyeJ0e5XDc0HVub3ckoWgxHbQprAFTAa3L6ctMONtg==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}",
+      "sha256": "2e4fa642fdf7ab279f93135b727dfeb4c402fec186d4304b8005b3ab63b6acb2",
+      "captura_sha256": "a84800b375bc5b8ab65dcdd8d6e417bb3f61a1be7f7ec059155fbc14ca864e24",
+      "recibida_min": 62.02,
+      "recibida_iso": "2026-11-13T14:30:43.351Z"
+    },
+    {
+      "id": "D-0033",
+      "minuto": 72,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0033\",\"minuto\":72,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"hd.mirapartido.test\",\"ip_servidor\":\"192.0.2.120\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S031877\",\"captura\":{\"capturada_min\":72,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R62OXMK1e0m0DLOlPjeEpmD2O9zOA+/L6MkOAW+UKebrRwQ3YPcDWfR8L80q+oj1QT8xRU91XJ9Eu8O7h23TOQ==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}",
+      "sha256": "2420e78443fa1c7c246a8831171012007c8427e0f028f8c4278392949b8e8de2",
+      "captura_sha256": "5ce058de0e3751c400a014c4fef0bd5e6fc2d6d5ed4d4740d47ccb3dac468980",
+      "recibida_min": 72,
+      "recibida_iso": "2026-11-13T14:34:03.094Z"
+    },
+    {
+      "id": "D-0038",
+      "minuto": 82,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0038\",\"minuto\":82,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"hd.mirapartido.test\",\"ip_servidor\":\"192.0.2.120\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S031877\",\"captura\":{\"capturada_min\":82,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R3gqfbteDfW0nxkUkN5F/3rny5frlqcbFuiCZG1gCJ6eeuJsPoVLrMfFIp6x6gvIGir+HnoN2Rni/G6wBMYtOA==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}",
+      "sha256": "6146eef5d4a715f9fb8693f0cc0d756774915a2743a44f607200cc87b7a4a326",
+      "captura_sha256": "aefbeae8592d5552292e01630403935234cbf676d4cd3b9d0c541357554e9cd0",
+      "recibida_min": 81.99,
+      "recibida_iso": "2026-11-13T14:37:22.839Z"
+    },
+    {
+      "id": "D-0044",
+      "minuto": 92,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0044\",\"minuto\":92,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"hd.mirapartido.test\",\"ip_servidor\":\"192.0.2.120\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S031877\",\"captura\":{\"capturada_min\":92,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RyqvjmRHLpR/bHnvNyc5WeIm4Qx+pAmsXxKMGPP7aBuCd5azxATgUmAiqf8eLFiyHP+bC7tMfcGb5/n3PMHDgw==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}",
+      "sha256": "af94a99c771774f5dd186bf1a32b0c9d9d703c41904753e7fd4e7069e7749dea",
+      "captura_sha256": "1d6e67c1785beafb0c890db8c43d5f4ea111d9a75a1bceeb2f520fea0863d0c1",
+      "recibida_min": 92,
+      "recibida_iso": "2026-11-13T14:40:42.946Z"
+    },
+    {
+      "id": "D-0049",
+      "minuto": 102,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0049\",\"minuto\":102,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"hd.mirapartido.test\",\"ip_servidor\":\"192.0.2.120\",\"asn\":64620,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S031877\",\"captura\":{\"capturada_min\":102,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R+H66pKWNXjwHNuyO2dPU/v9V1ymxIIKFu0OmWIxHCxshIQpsll3pBxHCrCPi1bSlvMkyLRfMWPagZtpBCYyIA==\"},\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}",
+      "sha256": "f91fb45bea45d8cfe6b8ad93df71ae90a2743767746de88f6324bb6ff431c9d1",
+      "captura_sha256": "42c7c84b443643fe9dee372bf6c32265fe55c671b6ebfc8ccdb5c0b7143cc89f",
+      "recibida_min": 102.04,
+      "recibida_iso": "2026-11-13T14:44:03.956Z"
+    }
+  ],
+  "servidores": [
+    {
+      "host": "hd.mirapartido.test",
+      "ip": "192.0.2.120",
+      "asn": 64620,
+      "organizacion": "Pampa Web Hosting Compartido (ficticio)",
+      "primera_deteccion_min": 12,
+      "riesgo": {
+        "tipo_recomendado": "dominio",
+        "cotenants": [
+          "mirapartido.test",
+          "ferreteria-central.test",
+          "jardin-de-infantes-7.test",
+          "consultorio-odontologico-sur.test",
+          "coro-municipal-ejemplo.test"
+        ],
+        "terceros": [
+          "ferreteria-central.test",
+          "jardin-de-infantes-7.test",
+          "consultorio-odontologico-sur.test",
+          "coro-municipal-ejemplo.test"
+        ],
+        "motivo": "La IP aloja 4 sitios ajenos al operador: se bloquea solo el dominio.",
+        "advertencias": []
+      }
+    }
+  ],
+  "medidas": [
+    {
+      "id": "M-0003",
+      "clase": "inicial",
+      "estado": "aprobada",
+      "creada_min": 52.58,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0003\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000003\",\"partido\":{\"id\":\"final-01\",\"nombre\":\"Partido final — Club Ficticio del Sur vs. Atlético Demostración\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-FIN-OFI-S031877\",\"prefijo\":\"LP26-FIN-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-FIN-OFI-S031877\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"hd.mirapartido.test\",\"ip\":\"192.0.2.120\",\"asn\":64620,\"organizacion\":\"Pampa Web Hosting Compartido (ficticio)\"},\"servidores_previos\":[],\"riesgo\":{\"tipo_recomendado\":\"dominio\",\"cotenants\":[\"mirapartido.test\",\"ferreteria-central.test\",\"jardin-de-infantes-7.test\",\"consultorio-odontologico-sur.test\",\"coro-municipal-ejemplo.test\"],\"terceros\":[\"ferreteria-central.test\",\"jardin-de-infantes-7.test\",\"consultorio-odontologico-sur.test\",\"coro-municipal-ejemplo.test\"],\"motivo\":\"La IP aloja 4 sitios ajenos al operador: se bloquea solo el dominio.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0005\",\"minuto\":12,\"capturada_min\":12,\"deteccion_sha256\":\"936436269d8019dce258f44f2056f0915d4f9b39b3f71ef6ade6d24a177c2f8a\",\"captura_sha256\":\"1f6515d22d26597cad963315282859d85f9d1567c78acc802603b376c6889326\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://mirapartido.test/en-vivo\",\"stream_url\":\"https://hd.mirapartido.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"telegram\",\"url\":\"https://t.example/mirapartido\",\"minuto\":10}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"dominio\",\"objetivo\":\"hd.mirapartido.test\"},{\"proveedor_id\":\"andina\",\"tipo\":\"dominio\",\"objetivo\":\"hd.mirapartido.test\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"hd.mirapartido.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"dominio\",\"objetivo\":\"hd.mirapartido.test\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":52.58,\"hora_partido_iso\":\"2026-11-13T18:52:34.800Z\",\"hora_local_iso\":\"2026-11-13T14:27:37.025Z\"},\"auditoria\":{\"seq\":8,\"cabecera\":\"f2990aecfcc25e31c8498c52d28bbb730b9c49974b6849c055232db450c5f420\"}}",
+      "huella": "ee81800d15155b42a78a10929e471c0fb2e7c45e4cd1b8028c029c4e8130caab",
+      "decision": {
+        "juez_id": "juez-martin-ejemplo",
+        "juez_nombre": "Dr. Martín Ejemplo",
+        "juzgado_id": "jg-norte-1",
+        "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
+        "decidida_min": 77.67,
+        "decidida_iso": "2026-11-13T14:35:56.191Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000003-0003-andina-1-ee81800d15155b42",
+          "proveedor_id": "andina",
+          "tipo": "dominio",
+          "objetivo": "hd.mirapartido.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "34a0cd7e644ff600292923da58b93b13b2f8e106df34531bc0585e6f8df2b634",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 77.68,
+          "aplicada_min": 79.845,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000003-0003-aurora-1-ee81800d15155b42",
+          "proveedor_id": "aurora",
+          "tipo": "dominio",
+          "objetivo": "hd.mirapartido.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "0f199f689cdc9ee9536df1eca4ecdeba8196aaeea9944256c4a55a3c8c851b60",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 77.68,
+          "aplicada_min": 78.111,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000003-0003-cumbre-1-ee81800d15155b42",
+          "proveedor_id": "cumbre",
+          "tipo": "dominio",
+          "objetivo": "hd.mirapartido.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "babcb23e90b4db07e3da8dc53f7fbc10d90affb61604eb25438a181763509dd9",
+          "intento": 1,
+          "estado": "fallida",
+          "enviada_min": 77.7,
+          "aplicada_min": null,
+          "finalizada_min": null,
+          "error": "Error interno del proveedor. Reenviar la orden con un nuevo orden_id."
+        },
+        {
+          "orden_id": "OFS-000003-0003-cumbre-2-ee81800d15155b42",
+          "proveedor_id": "cumbre",
+          "tipo": "dominio",
+          "objetivo": "hd.mirapartido.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "4cb4a771b6caedb9cfc730b54f5eee24057ae0b80695473e3a96fb78cad5261c",
+          "intento": 2,
+          "estado": "vencida",
+          "enviada_min": 81.48,
+          "aplicada_min": 84.73,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000003-0003-valle-1-ee81800d15155b42",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "hd.mirapartido.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "6b92bcabe0f99a45dcb1ee7a3e8758016fc118519289be802aeda7cd74b41d9c",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 77.68,
+          "aplicada_min": 81.892,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "aviso_titular": "Aviso al titular de los derechos (Liga Profesional Ficticia) — Expediente EXP-2026-000003.\nLa señal con marca de agua LP26-FIN-OFI-S031877 se está retransmitiendo sin autorización desde 1 servidor: hd.mirapartido.test (IP 192.0.2.120).\nEsa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.\nNota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse."
+}

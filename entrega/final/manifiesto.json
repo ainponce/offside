@@ -1,0 +1,72 @@
+{
+  "formato": "offside-exportacion-v2",
+  "generado_iso": "2026-11-13T14:45:26.987Z",
+  "nota": "Partido final",
+  "partido": {
+    "id": "final-01",
+    "nombre": "Partido final — Club Ficticio del Sur vs. Atlético Demostración"
+  },
+  "minuto_de_partido": 106.159,
+  "expedientes": [
+    "EXP-2026-000001",
+    "EXP-2026-000002",
+    "EXP-2026-000003",
+    "EXP-2026-000004",
+    "EXP-2026-000005"
+  ],
+  "auditoria": {
+    "entradas": 207,
+    "cabecera": "5b2c4bb9e863c387d5d49c9698abfe13e5ac389f9dd622559b3ec71e5a1954f6"
+  },
+  "archivos": [
+    {
+      "nombre": "expediente-EXP-2026-000001.json",
+      "sha256": "20030ab307e59de2914fdd046ac7d780b7a9c9124d33446da21ae32b1059e744"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000001.md",
+      "sha256": "01c7a19375fef474290658cd5767703d34460a86caba6227ccbcb4ca17266bbb"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000002.json",
+      "sha256": "84fd6030a85e116aebab58bd918f7e8b4b1a224ca6f54d941510ef55c9f29855"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000002.md",
+      "sha256": "882bfe914fefaeb9e4133692477b38ad48c5b7c6f3417ebc8ec526dd0e58ba3a"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000003.json",
+      "sha256": "e5093c92cb49651dc650c1c3dc8ab7ebc9f6b72a63ee8a9363ce33e15a6a5c23"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000003.md",
+      "sha256": "a67904cfb7ebcc740298aec227f557290565e77135e0fb8c866f4add9747e91c"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000004.json",
+      "sha256": "70f96d7c01cb61c20da940f1c9e8a49c06fafed0946489c036821da0d8f5c5ea"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000004.md",
+      "sha256": "9834ae4bf35b6354b1789033a1aaeef9019126acb0a9170e6166bf5d3000d52e"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000005.json",
+      "sha256": "29dffbdbeaee4854241c34322eef62545934ee9b354d0364503dd4d01310c9bc"
+    },
+    {
+      "nombre": "expediente-EXP-2026-000005.md",
+      "sha256": "17d65d284ea72a15162c5a0c5a2a9479110857291d0bbb253ac6d3176e97f4dd"
+    },
+    {
+      "nombre": "detecciones-archivadas.json",
+      "sha256": "c7eac7239ac1a68265b135651c3e5954228260655ed3437a414d0761724b7a35"
+    },
+    {
+      "nombre": "auditoria.jsonl",
+      "sha256": "bd4895fce0909018c4ea093d1313473d9a9e6163e9f91954874014845715202d"
+    }
+  ],
+  "como_verificar": "python3 herramientas/verificar_expediente.py <esta carpeta> --juzgados config/jueces.demo.json"
+}

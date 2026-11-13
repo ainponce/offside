@@ -1,0 +1,243 @@
+{
+  "formato": "offside-expediente-v1",
+  "expediente": {
+    "id": "EXP-2026-000004",
+    "marca": "LP26-FIN-LIC-SUR",
+    "prefijo": "LP26-FIN-LIC-SUR",
+    "origen_prefijo": "Licenciatario autorizado: Canal Sur Andino (ficticio)",
+    "clave": "LP26-FIN-LIC-SUR@tvgol-gratis.test",
+    "abierto_min": 52.58
+  },
+  "partido": {
+    "id": "final-01",
+    "nombre": "Partido final — Club Ficticio del Sur vs. Atlético Demostración",
+    "titular_derechos": "Liga Profesional Ficticia",
+    "fin_min": 105
+  },
+  "detecciones": [
+    {
+      "id": "D-0012",
+      "minuto": 30,
+      "veredicto": "pirata",
+      "motivo": "Señal de Canal Sur Andino (ficticio) retransmitida fuera de sus dominios autorizados.",
+      "crudo": "{\"id\":\"D-0012\",\"minuto\":30,\"pagina\":\"https://tvgol-gratis.test/canal-sur\",\"stream_url\":\"https://relay.tvgol-gratis.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"relay.tvgol-gratis.test\",\"ip_servidor\":\"203.0.113.90\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":30,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"Rxx7xp2XiQ/mMflEu8J6Qv4Iz66j2Bqyn4QGINo0O/zLGCGil8M16/5T4wxJL8iL+aKwfZBN9/uLHtx/ppzF2A==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/tvgolgratis/status/9310\",\"minuto\":28}]}",
+      "sha256": "fdee455ee7a3822b8a96790c3a7b612efd5a381400fd9a40dae05edac4b2b5ee",
+      "captura_sha256": "ec5e5c35d592401d51396ca710242d53473f5c87d17ac01558316524db75a855",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.506Z"
+    },
+    {
+      "id": "D-0016",
+      "minuto": 40,
+      "veredicto": "pirata",
+      "motivo": "Señal de Canal Sur Andino (ficticio) retransmitida fuera de sus dominios autorizados.",
+      "crudo": "{\"id\":\"D-0016\",\"minuto\":40,\"pagina\":\"https://tvgol-gratis.test/canal-sur\",\"stream_url\":\"https://relay.tvgol-gratis.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"relay.tvgol-gratis.test\",\"ip_servidor\":\"203.0.113.90\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":40,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R4c7ZALrLYvMAd2HgRgEChfiZCi9L4ZhqZ9oyYeLUgp33ZwQzWlRiPHBG8YAv0o8rXewPSHFpEC64LNS9O8fpg==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/tvgolgratis/status/9310\",\"minuto\":28}]}",
+      "sha256": "2aca43ddd9b75ae5830fa2174350e462158b5e3e75c425014412a7cb8241b493",
+      "captura_sha256": "bdeb22c179d7d3ba70b37d9f9e48a49c01fd9e3ad40c6593f82a4b3685215c53",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.509Z"
+    },
+    {
+      "id": "D-0022",
+      "minuto": 50,
+      "veredicto": "pirata",
+      "motivo": "Señal de Canal Sur Andino (ficticio) retransmitida fuera de sus dominios autorizados.",
+      "crudo": "{\"id\":\"D-0022\",\"minuto\":50,\"pagina\":\"https://tvgol-gratis.test/canal-sur\",\"stream_url\":\"https://relay.tvgol-gratis.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"relay.tvgol-gratis.test\",\"ip_servidor\":\"203.0.113.90\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":50,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R7leRijpZJ2I3ZlgliNjlbMSgQ5ZjjupyB3NOkUJhLQmzMr10369mDAshbksgqPXb3FHMPGvrOYHSAGNPFKtVA==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/tvgolgratis/status/9310\",\"minuto\":28}]}",
+      "sha256": "054bc035b15ad9f6d82d77c93cd7918c2f6a82e72d10bd83444507d3ae3d280b",
+      "captura_sha256": "0df0f07b65458e7e98579a95fd58f551a96ddfe20a008496680f7e72bc0c5081",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.511Z"
+    },
+    {
+      "id": "D-0027",
+      "minuto": 60,
+      "veredicto": "pirata",
+      "motivo": "Señal de Canal Sur Andino (ficticio) retransmitida fuera de sus dominios autorizados.",
+      "crudo": "{\"id\":\"D-0027\",\"minuto\":60,\"pagina\":\"https://tvgol-gratis.test/canal-sur\",\"stream_url\":\"https://relay.tvgol-gratis.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"relay.tvgol-gratis.test\",\"ip_servidor\":\"203.0.113.90\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":60,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RwP/R7e+Dq/7OFbb717jx/1/QD5krebftgI3FMIp9fwFPRcQl3ceiiZpL4jGR/F5gUzs2YMsfN3kLVl7fj6b5g==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/tvgolgratis/status/9310\",\"minuto\":28}]}",
+      "sha256": "024073b9b74332a1f82e87da31c855db87ff836dabba9eb77e1f70b9d5571f2f",
+      "captura_sha256": "2cb810f72718dd8cca5cfe05d120133a9cd2c1046381a953fc78a272b599a369",
+      "recibida_min": 60,
+      "recibida_iso": "2026-11-13T14:30:03.153Z"
+    },
+    {
+      "id": "D-0032",
+      "minuto": 70,
+      "veredicto": "pirata",
+      "motivo": "Señal de Canal Sur Andino (ficticio) retransmitida fuera de sus dominios autorizados.",
+      "crudo": "{\"id\":\"D-0032\",\"minuto\":70,\"pagina\":\"https://tvgol-gratis.test/canal-sur\",\"stream_url\":\"https://relay.tvgol-gratis.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"relay.tvgol-gratis.test\",\"ip_servidor\":\"203.0.113.90\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":70,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R9kKYCyZkC/sBjUYA6nXN9opAHiuPqxx3mrT684GP/QRqvgi0oiosiR/LIlzJsfZBSGWNPn31cZKEHlIXVsG1g==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/tvgolgratis/status/9310\",\"minuto\":28}]}",
+      "sha256": "960f1852678543cf0f0f004ef5df93a2696fd1a726a04aaeb595181cb034b6de",
+      "captura_sha256": "6bbb3470f2b391c0b11e00ee5e6b400171cd9418b721b19011291f0bc8c11747",
+      "recibida_min": 70.03,
+      "recibida_iso": "2026-11-13T14:33:24.408Z"
+    },
+    {
+      "id": "D-0037",
+      "minuto": 80,
+      "veredicto": "pirata",
+      "motivo": "Señal de Canal Sur Andino (ficticio) retransmitida fuera de sus dominios autorizados.",
+      "crudo": "{\"id\":\"D-0037\",\"minuto\":80,\"pagina\":\"https://tvgol-gratis.test/canal-sur\",\"stream_url\":\"https://relay.tvgol-gratis.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"relay.tvgol-gratis.test\",\"ip_servidor\":\"203.0.113.90\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":80,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R6REFSW9U/1nk8VGlvtLDIEXgfXHIPs72tisWTangQ21shb9VNPN7khwoNx5CjDh5ekTVV2x+boW/XjxXj30Rg==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/tvgolgratis/status/9310\",\"minuto\":28}]}",
+      "sha256": "c05b458a8f8e18755197d0f7e922184559518286e2b938b3ef41884fef68c690",
+      "captura_sha256": "236e72df27bd541e18c917e562fba03f2c06b4211de4017ef2943eb0f0d8141a",
+      "recibida_min": 79.99,
+      "recibida_iso": "2026-11-13T14:36:42.862Z"
+    },
+    {
+      "id": "D-0043",
+      "minuto": 90,
+      "veredicto": "pirata",
+      "motivo": "Señal de Canal Sur Andino (ficticio) retransmitida fuera de sus dominios autorizados.",
+      "crudo": "{\"id\":\"D-0043\",\"minuto\":90,\"pagina\":\"https://tvgol-gratis.test/canal-sur\",\"stream_url\":\"https://relay.tvgol-gratis.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"relay.tvgol-gratis.test\",\"ip_servidor\":\"203.0.113.90\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":90,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R8z4ro6yUA6gm5YWyd/y/wjuptX636wueFDOMhQkrYVtwISU25+QswxnbAGYL4J1eW3YvkuQ4Plnu7wOrVI9CQ==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/tvgolgratis/status/9310\",\"minuto\":28}]}",
+      "sha256": "84b38aa0f68679ef8f803fdc3d01cfa720257bd9ce50fc3b2c02e845a007b555",
+      "captura_sha256": "317557095f581a3cc4712ab4dc013654389775775841256e3b44e5b23d0ac64e",
+      "recibida_min": 90.01,
+      "recibida_iso": "2026-11-13T14:40:03.175Z"
+    },
+    {
+      "id": "D-0048",
+      "minuto": 100,
+      "veredicto": "pirata",
+      "motivo": "Señal de Canal Sur Andino (ficticio) retransmitida fuera de sus dominios autorizados.",
+      "crudo": "{\"id\":\"D-0048\",\"minuto\":100,\"pagina\":\"https://tvgol-gratis.test/canal-sur\",\"stream_url\":\"https://relay.tvgol-gratis.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"relay.tvgol-gratis.test\",\"ip_servidor\":\"203.0.113.90\",\"asn\":64600,\"marca_de_agua_extraida\":\"LP26-FIN-LIC-SUR\",\"captura\":{\"capturada_min\":100,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RxieWQGegmZBvciyGJI85XAqn+/QVabkAY+t5ibJWr2RXnNTeLLzaREpoC/rsW9Oa5Nc4Eh02DDOqG9CZctaMQ==\"},\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/tvgolgratis/status/9310\",\"minuto\":28}]}",
+      "sha256": "4f31ba58cf74a033b6d759fdd38b2aa744efffb49ade9e1354c7142ff76d3201",
+      "captura_sha256": "4b3c3b8a1c04c29290e17eb88fcb05d6b73286a117f3528677ea45abe74cf340",
+      "recibida_min": 100,
+      "recibida_iso": "2026-11-13T14:43:23.051Z"
+    }
+  ],
+  "servidores": [
+    {
+      "host": "relay.tvgol-gratis.test",
+      "ip": "203.0.113.90",
+      "asn": 64600,
+      "organizacion": "Bruma Hosting Dedicado (ficticio)",
+      "primera_deteccion_min": 30,
+      "riesgo": {
+        "tipo_recomendado": "ip",
+        "cotenants": [],
+        "terceros": [],
+        "motivo": "La IP solo aloja este servidor: se bloquea la IP.",
+        "advertencias": []
+      }
+    }
+  ],
+  "medidas": [
+    {
+      "id": "M-0005",
+      "clase": "inicial",
+      "estado": "aprobada",
+      "creada_min": 52.58,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0005\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000004\",\"partido\":{\"id\":\"final-01\",\"nombre\":\"Partido final — Club Ficticio del Sur vs. Atlético Demostración\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-FIN-LIC-SUR\",\"prefijo\":\"LP26-FIN-LIC-SUR\",\"origen_prefijo\":\"Licenciatario autorizado: Canal Sur Andino (ficticio)\",\"clave\":\"LP26-FIN-LIC-SUR@tvgol-gratis.test\",\"motivo\":\"Señal de Canal Sur Andino (ficticio) retransmitida fuera de sus dominios autorizados.\"},\"servidor\":{\"host\":\"relay.tvgol-gratis.test\",\"ip\":\"203.0.113.90\",\"asn\":64600,\"organizacion\":\"Bruma Hosting Dedicado (ficticio)\"},\"servidores_previos\":[],\"riesgo\":{\"tipo_recomendado\":\"ip\",\"cotenants\":[],\"terceros\":[],\"motivo\":\"La IP solo aloja este servidor: se bloquea la IP.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0012\",\"minuto\":30,\"capturada_min\":30,\"deteccion_sha256\":\"fdee455ee7a3822b8a96790c3a7b612efd5a381400fd9a40dae05edac4b2b5ee\",\"captura_sha256\":\"ec5e5c35d592401d51396ca710242d53473f5c87d17ac01558316524db75a855\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://tvgol-gratis.test/canal-sur\",\"stream_url\":\"https://relay.tvgol-gratis.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"x\",\"url\":\"https://x.example/tvgolgratis/status/9310\",\"minuto\":28}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.90\"},{\"proveedor_id\":\"andina\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.90\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"relay.tvgol-gratis.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"ip\",\"objetivo\":\"203.0.113.90\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":52.58,\"hora_partido_iso\":\"2026-11-13T18:52:34.800Z\",\"hora_local_iso\":\"2026-11-13T14:27:37.506Z\"},\"auditoria\":{\"seq\":16,\"cabecera\":\"4f692f1274a9c398aca16ff90b435476aca76a4b0d5510a9aab757293fae5d9c\"}}",
+      "huella": "97ed48b2f54e78dff6e417126fc11d995fcd7fd76568fa94269c2140477248a2",
+      "decision": {
+        "juez_id": "juez-martin-ejemplo",
+        "juez_nombre": "Dr. Martín Ejemplo",
+        "juzgado_id": "jg-norte-1",
+        "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
+        "decidida_min": 80.46,
+        "decidida_iso": "2026-11-13T14:36:51.911Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000004-0005-andina-1-97ed48b2f54e78df",
+          "proveedor_id": "andina",
+          "tipo": "ip",
+          "objetivo": "203.0.113.90",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "2500412ae1347cf5fa1d8e24b5dede0ab8cfdd652226f1043c1b4d2bba0182c7",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 80.48,
+          "aplicada_min": 83.073,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000004-0005-aurora-1-97ed48b2f54e78df",
+          "proveedor_id": "aurora",
+          "tipo": "ip",
+          "objetivo": "203.0.113.90",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "b965a3bc36a31db6e0d71e9dc97a3b5760e8cb064ee8e14ae8f8ac1e9ba27594",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 80.48,
+          "aplicada_min": 80.984,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000004-0005-cumbre-1-97ed48b2f54e78df",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.90",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "b5a298a5e0d7c0c2a3e53811ff47f8237e2dc4d3a498cc4055a3f4edf10f6e82",
+          "intento": 1,
+          "estado": "fallida",
+          "enviada_min": 80.48,
+          "aplicada_min": null,
+          "finalizada_min": null,
+          "error": "Error interno del proveedor. Reenviar la orden con un nuevo orden_id."
+        },
+        {
+          "orden_id": "OFS-000004-0005-cumbre-2-97ed48b2f54e78df",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.90",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "a77a89907479db329b33f8ab6ebe479cf6f514f480d0a22ccdfc046950ede35c",
+          "intento": 2,
+          "estado": "fallida",
+          "enviada_min": 83.74,
+          "aplicada_min": null,
+          "finalizada_min": null,
+          "error": "Error interno del proveedor. Reenviar la orden con un nuevo orden_id."
+        },
+        {
+          "orden_id": "OFS-000004-0005-cumbre-3-97ed48b2f54e78df",
+          "proveedor_id": "cumbre",
+          "tipo": "ip",
+          "objetivo": "203.0.113.90",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "650a0282f69c27ef3698079728eeb6bc9398474915831eb43431c7102c059678",
+          "intento": 3,
+          "estado": "vencida",
+          "enviada_min": 85.96,
+          "aplicada_min": 88.719,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000004-0005-valle-1-97ed48b2f54e78df",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "relay.tvgol-gratis.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "7a9f2d6ec2af873f7712454fc843e810d201755e7964b3a632b2fc9efccbbf54",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 80.49,
+          "aplicada_min": 87.351,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "aviso_titular": "Aviso al titular de los derechos (Liga Profesional Ficticia) — Expediente EXP-2026-000004.\nLa señal con marca de agua LP26-FIN-LIC-SUR se está retransmitiendo sin autorización desde 1 servidor: relay.tvgol-gratis.test (IP 203.0.113.90).\nEsa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.\nNota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse."
+}

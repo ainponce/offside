@@ -1,0 +1,264 @@
+{
+  "formato": "offside-expediente-v1",
+  "expediente": {
+    "id": "EXP-2026-000002",
+    "marca": "LP26-FIN-OFI-S055120",
+    "prefijo": "LP26-FIN-OFI",
+    "origen_prefijo": "Señal oficial del titular (plataforma propia)",
+    "clave": "LP26-FIN-OFI-S055120",
+    "abierto_min": 52.58
+  },
+  "partido": {
+    "id": "final-01",
+    "nombre": "Partido final — Club Ficticio del Sur vs. Atlético Demostración",
+    "titular_derechos": "Liga Profesional Ficticia",
+    "fin_min": 105
+  },
+  "detecciones": [
+    {
+      "id": "D-0003",
+      "minuto": 4,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0003\",\"minuto\":4,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":4,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R+cu9zW8V/QLgc5KVPj3qFekFvQXZg/gsH+8/lIMcR+54dHwEZKuzh/RY4E4+LFGpGw2Ssxx/9iYl4dTCa6gZQ==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "72438fb9393a2e6141190474dfbefd473b260bbbfeaa762fa7c3988e8f832cae",
+      "captura_sha256": "8c706aa5bb28a95aef2ec9d2c8e6902159d1cae74299cd60da75be2b77cb9fad",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:36.811Z"
+    },
+    {
+      "id": "D-0006",
+      "minuto": 14,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0006\",\"minuto\":14,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":14,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"Rxh3ozvafe1Gi8zRdiX4HgL280GJLW0pMWGzLp5+yuppcgsh1yOfGCBJnZ5a+3StJEantJITZQqSNjvRySeDQA==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "c91c4ac81531ffc59a7a5bd4eaf4c5da2c568468a60b38b04eb0562341e5d89d",
+      "captura_sha256": "7d48e2b0cf197820afcf768357d9db944618c4d398d87536b3a44d84585156ee",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.025Z"
+    },
+    {
+      "id": "D-0010",
+      "minuto": 24,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0010\",\"minuto\":24,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":24,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R0XsJO4MGJ54DBWDhrUQsoDyASHvEf/1JGRB0L2W/sQgYgZePO+70k6219rsuHZKhKCnctAav5ZPE4ol4wQiZA==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "ed40497a34cf66adbf01a6448db425e618a308014ecce3be86eba877029f03ef",
+      "captura_sha256": "e170a61df169e3020b915a8cdb0097e2d4ff225c45d877e51c924ee41f9209db",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.026Z"
+    },
+    {
+      "id": "D-0014",
+      "minuto": 34,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0014\",\"minuto\":34,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":34,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RwBgCOGrxhVUaHvnjuXawisvRClzwgPdRD69mO7tebr41oXVoO9sXFXSmfeZHjkMuAhjNrfnHWkxlDRIFvG8BA==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "1b45bfc3e9f581d8a4387ca08e5a34c7e6d1b200b9cf43dfe02c16f20d305004",
+      "captura_sha256": "5e576f6e204a7754d4090984449626da1f997c87b9a6c4f8384a42877ba28bb7",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.508Z"
+    },
+    {
+      "id": "D-0019",
+      "minuto": 44,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0019\",\"minuto\":44,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":44,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RxeZtqF1SkhO9mvGjI6s4EJsweV6FQZehUPurqLREhvIp3GxY69oMd4Sp4J05tX8/04xnUPtJIxAC5dFkvMbRw==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "9d086f3fb1aa4eae58b534c066d1c5461d48ec27bc006f79aae2a2022d0bbf2d",
+      "captura_sha256": "c87129fa7984eb9663f4b142babb5f708640231b453b5da026db6d3fc3f15129",
+      "recibida_min": 52.58,
+      "recibida_iso": "2026-11-13T14:27:37.510Z"
+    },
+    {
+      "id": "D-0024",
+      "minuto": 54,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0024\",\"minuto\":54,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":54,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R+D27ApVtquZ6IPtINtWyiVUeLYo1JGYgIUgGtjM40QQI4MRulnXnMyeT5oV6nCAHfjGPP6Tv5cG6a3vLupgyw==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "44b4c1b9597ab83f31fe8b553f708749b1c2b2d7d42f4938a72d38d796f3bd36",
+      "captura_sha256": "7fb481146744e0650d61a2f7c2ade6e3325239dfbcf364c232619049f556c589",
+      "recibida_min": 54.03,
+      "recibida_iso": "2026-11-13T14:28:03.569Z"
+    },
+    {
+      "id": "D-0029",
+      "minuto": 64,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0029\",\"minuto\":64,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":64,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R4PDhaMuOXOTAjsx+MQ3kltCZIhmy1AeA2vYOJVWSqrHUfHWpsZiBXsWP1bPa/R6oj+GCKSvT32Q8TQgXxNCmA==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "f4bc6c506bb0c51873880f6f478e7645dbcfdbb3a9593efcaef92810b5b3888f",
+      "captura_sha256": "db916add1ac30e5fa125bfdb8a7b82d1db4ef5f2c927badc41105a7d1c2ff43a",
+      "recibida_min": 64.02,
+      "recibida_iso": "2026-11-13T14:31:23.385Z"
+    },
+    {
+      "id": "D-0034",
+      "minuto": 74,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0034\",\"minuto\":74,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":74,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"RwC1MQ3gZTWife2XyPUdBt6YxbmzLCwiIat3WbpMRjeEXLNtqbKA0ko+WY731P5mVNes/PY1Rd94ZM8dzZ8Chg==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "f7838cc4f3848fa1d77ea469572a076a018649a222632b1edd79f769db8a5341",
+      "captura_sha256": "a390e59ee405e700f42e7b653de9402ffb07acafa91c04fe142c5756bad5a16e",
+      "recibida_min": 73.99,
+      "recibida_iso": "2026-11-13T14:34:43.122Z"
+    },
+    {
+      "id": "D-0040",
+      "minuto": 84,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0040\",\"minuto\":84,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":84,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R8ROjRaIYLyEpo5dLeuMzzBve6Qod19XZjHvDfNB6LsEZOQJFarXHWF4t7NAyUGJJIoUatB0LLYJe6pLE+85vg==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "3d4ae807d07310271726c81a3772c5f0d5d3c6d01f2d24e9255842412e9e2384",
+      "captura_sha256": "8e75f5291bd72bda144f0aeebe62105ba428dc7617f18edf3948baad07723706",
+      "recibida_min": 84.02,
+      "recibida_iso": "2026-11-13T14:38:03.519Z"
+    },
+    {
+      "id": "D-0045",
+      "minuto": 94,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0045\",\"minuto\":94,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":94,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"R8+T5HucaPgO7s/v2781XIMZI44NLyWhJhBEh93jB6lDsn4RFGiLWwXoYDVPHhI53ZxMR+mIcgMruPtihL2v4w==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "bc2ede9cbf974221c5cddf7459ce95d338aa4edba85d067531860eb69afc5d2b",
+      "captura_sha256": "6812104866cbb15b92ead4678744ffa26f8da70aaeb6d78192cdd7d1ace63bf7",
+      "recibida_min": 93.99,
+      "recibida_iso": "2026-11-13T14:41:22.955Z"
+    },
+    {
+      "id": "D-0050",
+      "minuto": 104,
+      "veredicto": "pirata",
+      "motivo": "Señal oficial del partido en un sitio sin autorización.",
+      "crudo": "{\"id\":\"D-0050\",\"minuto\":104,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"host_stream\":\"play.estadio-libre.test\",\"ip_servidor\":\"198.51.100.140\",\"asn\":64610,\"marca_de_agua_extraida\":\"LP26-FIN-OFI-S055120\",\"captura\":{\"capturada_min\":104,\"formato\":\"mpegts\",\"duracion_seg\":6,\"contenido_b64\":\"Rx9qh6SjuVI3r7Bp7kyowb6sIriqa6b1awU+ivr3jQgbDu6gUIO6OFKlNieQMz7cO8R1NKSP0+DaMgzUw47odw==\"},\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}",
+      "sha256": "4e256dfb276877bd6f9b73a2be6a2374a1e112a904ea262558bb7c9f856c4d2f",
+      "captura_sha256": "21a6c2a289341245a79293cebd7bdd1732a5efb0c64ee7f4fd0fa32ddc18202e",
+      "recibida_min": 104,
+      "recibida_iso": "2026-11-13T14:44:43.060Z"
+    }
+  ],
+  "servidores": [
+    {
+      "host": "play.estadio-libre.test",
+      "ip": "198.51.100.140",
+      "asn": 64610,
+      "organizacion": "NubeRápida CDN (ficticia)",
+      "primera_deteccion_min": 4,
+      "riesgo": {
+        "tipo_recomendado": "dominio",
+        "cotenants": [
+          "diario-salteno-ejemplo.example",
+          "farmacia-central-ejemplo.test",
+          "bodega-valle-calchaqui.example",
+          "gimnasio-ejemplo.test",
+          "agencia-de-viajes-norte.test",
+          "colegio-san-ejemplo.test",
+          "tienda-de-ponchos.example",
+          "cooperativa-agua-ejemplo.test",
+          "hotel-plaza-ejemplo.test"
+        ],
+        "terceros": [
+          "diario-salteno-ejemplo.example",
+          "farmacia-central-ejemplo.test",
+          "bodega-valle-calchaqui.example",
+          "gimnasio-ejemplo.test",
+          "agencia-de-viajes-norte.test",
+          "colegio-san-ejemplo.test",
+          "tienda-de-ponchos.example",
+          "cooperativa-agua-ejemplo.test",
+          "hotel-plaza-ejemplo.test"
+        ],
+        "motivo": "La IP aloja 9 sitios ajenos al operador: se bloquea solo el dominio.",
+        "advertencias": []
+      }
+    }
+  ],
+  "medidas": [
+    {
+      "id": "M-0002",
+      "clase": "inicial",
+      "estado": "aprobada",
+      "creada_min": 52.58,
+      "origen_medida_id": null,
+      "reclamo_id": null,
+      "instantanea": "{\"version\":1,\"medida_id\":\"M-0002\",\"clase\":\"inicial\",\"expediente_id\":\"EXP-2026-000002\",\"partido\":{\"id\":\"final-01\",\"nombre\":\"Partido final — Club Ficticio del Sur vs. Atlético Demostración\",\"titular_derechos\":\"Liga Profesional Ficticia\"},\"filtracion\":{\"marca\":\"LP26-FIN-OFI-S055120\",\"prefijo\":\"LP26-FIN-OFI\",\"origen_prefijo\":\"Señal oficial del titular (plataforma propia)\",\"clave\":\"LP26-FIN-OFI-S055120\",\"motivo\":\"Señal oficial del partido en un sitio sin autorización.\"},\"servidor\":{\"host\":\"play.estadio-libre.test\",\"ip\":\"198.51.100.140\",\"asn\":64610,\"organizacion\":\"NubeRápida CDN (ficticia)\"},\"servidores_previos\":[],\"riesgo\":{\"tipo_recomendado\":\"dominio\",\"cotenants\":[\"diario-salteno-ejemplo.example\",\"farmacia-central-ejemplo.test\",\"bodega-valle-calchaqui.example\",\"gimnasio-ejemplo.test\",\"agencia-de-viajes-norte.test\",\"colegio-san-ejemplo.test\",\"tienda-de-ponchos.example\",\"cooperativa-agua-ejemplo.test\",\"hotel-plaza-ejemplo.test\"],\"terceros\":[\"diario-salteno-ejemplo.example\",\"farmacia-central-ejemplo.test\",\"bodega-valle-calchaqui.example\",\"gimnasio-ejemplo.test\",\"agencia-de-viajes-norte.test\",\"colegio-san-ejemplo.test\",\"tienda-de-ponchos.example\",\"cooperativa-agua-ejemplo.test\",\"hotel-plaza-ejemplo.test\"],\"motivo\":\"La IP aloja 9 sitios ajenos al operador: se bloquea solo el dominio.\",\"advertencias\":[]},\"evidencia\":[{\"deteccion_id\":\"D-0003\",\"minuto\":4,\"capturada_min\":4,\"deteccion_sha256\":\"72438fb9393a2e6141190474dfbefd473b260bbbfeaa762fa7c3988e8f832cae\",\"captura_sha256\":\"8c706aa5bb28a95aef2ec9d2c8e6902159d1cae74299cd60da75be2b77cb9fad\",\"captura_bytes\":64,\"formato\":\"mpegts\",\"formato_ok\":true,\"pagina\":\"https://estadio-libre.test/ver\",\"stream_url\":\"https://play.estadio-libre.test/hls/en-vivo/index.m3u8\",\"promocion\":[{\"red\":\"discord\",\"url\":\"https://discord.example/invite/estadio-libre\",\"minuto\":2}]}],\"plan\":[{\"proveedor_id\":\"aurora\",\"tipo\":\"dominio\",\"objetivo\":\"play.estadio-libre.test\"},{\"proveedor_id\":\"andina\",\"tipo\":\"dominio\",\"objetivo\":\"play.estadio-libre.test\"},{\"proveedor_id\":\"valle\",\"tipo\":\"dominio\",\"objetivo\":\"play.estadio-libre.test\"},{\"proveedor_id\":\"cumbre\",\"tipo\":\"dominio\",\"objetivo\":\"play.estadio-libre.test\"}],\"vence_min\":105,\"sellos\":{\"minuto_partido\":52.58,\"hora_partido_iso\":\"2026-11-13T18:52:34.800Z\",\"hora_local_iso\":\"2026-11-13T14:27:36.811Z\"},\"auditoria\":{\"seq\":5,\"cabecera\":\"da4969ed692c293eab742b0f2479fc3d667aa11a965ad18f36e73367686bed76\"}}",
+      "huella": "74bd6cbd82d5d708f5fcb3fb5e5b26b28812a01ecc8288eaabeabd5c3e6aafbd",
+      "decision": {
+        "juez_id": "juez-martin-ejemplo",
+        "juez_nombre": "Dr. Martín Ejemplo",
+        "juzgado_id": "jg-norte-1",
+        "juzgado_nombre": "Juzgado de Garantías N.º 1 (ficticio) — Distrito Judicial Norte",
+        "decidida_min": 76.87,
+        "decidida_iso": "2026-11-13T14:35:40.202Z",
+        "motivo": null
+      },
+      "ordenes": [
+        {
+          "orden_id": "OFS-000002-0002-andina-1-74bd6cbd82d5d708",
+          "proveedor_id": "andina",
+          "tipo": "dominio",
+          "objetivo": "play.estadio-libre.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "90942f79ccccd52ff480f7932a9b90a44db58e66547e043ba8c4c2c30aaa5fd8",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 76.88,
+          "aplicada_min": 79.168,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000002-0002-aurora-1-74bd6cbd82d5d708",
+          "proveedor_id": "aurora",
+          "tipo": "dominio",
+          "objetivo": "play.estadio-libre.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "d790767e2f0615e92976bb3d6230eac7e5fe56242d0070f879794ae135095aa2",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 76.88,
+          "aplicada_min": 77.382,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000002-0002-cumbre-1-74bd6cbd82d5d708",
+          "proveedor_id": "cumbre",
+          "tipo": "dominio",
+          "objetivo": "play.estadio-libre.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "e246453bc3a7a01074ecbf86c892000de9e2894725f20721f328a0e08824e69e",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 76.9,
+          "aplicada_min": 79.523,
+          "finalizada_min": 105,
+          "error": null
+        },
+        {
+          "orden_id": "OFS-000002-0002-valle-1-74bd6cbd82d5d708",
+          "proveedor_id": "valle",
+          "tipo": "dominio",
+          "objetivo": "play.estadio-libre.test",
+          "vence_min": 105,
+          "juez_id": "juez-martin-ejemplo",
+          "juzgado_id": "jg-norte-1",
+          "firma": "f9e2ae57450827f6a940ec695e91ecc48b0612a248a2ae0765dfac3a0f2bc018",
+          "intento": 1,
+          "estado": "vencida",
+          "enviada_min": 76.88,
+          "aplicada_min": 82.561,
+          "finalizada_min": 105,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "aviso_titular": "Aviso al titular de los derechos (Liga Profesional Ficticia) — Expediente EXP-2026-000002.\nLa señal con marca de agua LP26-FIN-OFI-S055120 se está retransmitiendo sin autorización desde 1 servidor: play.estadio-libre.test (IP 198.51.100.140).\nEsa marca identifica de dónde sale la filtración. Se solicita ubicar la fuente asociada y cortarla: es la única medida que el operador no esquiva cambiando de servidor y que no puede afectar a terceros.\nNota: el simulador del desafío no modela este paso; el aviso se genera pero no tiene a quién enviarse."
+}
