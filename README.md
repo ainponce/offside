@@ -17,7 +17,14 @@ Tres consecuencias:
 - **Ningún sitio ajeno cae.** Solo se bloquea una IP cuando es exclusiva del operador; si es compartida, se bloquea el dominio. El tablero muestra con nombre los sitios legítimos que habrían caído con un bloqueo automático por IP.
 - **La firma cubre la prueba.** La huella de lo que vio el juez viaja dentro del identificador de la orden, que es parte de lo que se firma y queda en el registro del simulador. Cambiar un byte de la evidencia después rompe la verificación; reescribir la historia entera de forma coherente se descubre cruzando con ese registro, que Offside no controla.
 
-Además, cada expediente genera un aviso al titular para cortar la fuente que identifica la marca: la única medida que el operador no esquiva cambiando de servidor. El simulador no modela ese paso, así que el aviso se genera pero no se envía.
+Bloquear en los proveedores corta la señal para quien mira en el país, pero no es la única salida. Cada expediente arma también, con la orden firmada y la evidencia, los pedidos a quienes pueden cortar la filtración por otro lado:
+
+- **El titular de los derechos:** cortar la fuente que identifica la marca. Es la única medida que el operador no esquiva cambiando de servidor.
+- **La CDN**, si el pirata está detrás de una: bloquear en su borde para Argentina e informar el servidor de origen.
+- **El hosting:** en el país, un pedido de baja; en el exterior, un aviso a su contacto de abuso, porque una baja vinculante necesita cooperación internacional. Si la IP es compartida, se pide bajar el sitio y no el servidor.
+- **Cada plataforma donde se promocionó el enlace:** bajar la publicación y preservar los datos de la cuenta.
+
+Cada pedido dice si ya lo respalda una orden firmada o si espera al juez. El simulador no modela a estos destinatarios, así que Offside los arma y se copian desde el expediente, pero no se envían ([src/server/salidas.ts](src/server/salidas.ts)).
 
 ## El circuito
 
@@ -91,7 +98,7 @@ Si el simulador se reinicia con Offside en marcha (el reloj vuelve atrás, cambi
 |---|---|---|
 | `/juez` | Juez (pensada para el celular) | La cola de medidas, cada una con cuatro verificaciones, el plan por proveedor y dos acciones: firmar o rechazar. Avisa con sonido y vibración; con la guardia (la campana), también con una notificación del sistema cuando la pestaña está en segundo plano, y mantiene la pantalla prendida durante el turno. La guardia necesita https o localhost: en la red local por http el navegador no la ofrece |
 | `/tablero` | Fiscalía | El partido en vivo: expedientes, saltos de servidor (en carriles o en el mapa), estado por proveedor, daño evitado y auditoría |
-| `/expediente/:id` | Juez y fiscalía | El expediente completo, imprimible |
+| `/expediente/:id` | Juez y fiscalía | El expediente completo, imprimible, con los pedidos a quienes no son proveedores de internet listos para copiar: titular, CDN, hosting y plataformas |
 | `/transparencia` | Público | Qué está bloqueado, por orden de quién y hasta cuándo |
 
 ### Mapa de filtraciones

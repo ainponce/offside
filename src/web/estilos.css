@@ -3335,6 +3335,78 @@ p.sello {
 .aviso-titular {
   margin-top: 12px;
 }
+
+/* Salidas más allá de los proveedores */
+.salidas {
+  display: grid;
+  gap: 14px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.salida {
+  padding: 18px 20px 8px;
+  border-radius: 14px;
+  background: var(--porcelana);
+  box-shadow: 0 0 0 1px var(--filete-2);
+  break-inside: avoid;
+}
+.salida-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 12px;
+}
+.salida-destino {
+  margin: 0;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 650;
+}
+.salida-estado {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--hundido);
+  color: var(--tinta-3);
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.salida-estado[data-estado="lista"] {
+  background: rgb(30 156 79 / 0.1);
+  color: var(--verde-tinta);
+}
+.salida-estado[data-estado="espera_firma"] {
+  background: rgb(201 136 0 / 0.12);
+  color: var(--ambar-tinta);
+}
+.salida-pedido {
+  margin: 4px 0 0 !important;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--tinta-2);
+}
+.salida-texto {
+  margin-top: 12px;
+  padding: 14px 16px 6px;
+  border-radius: 10px;
+  background: var(--hundido);
+}
+.salida-texto p {
+  font-size: 14px;
+  line-height: 21px;
+  overflow-wrap: anywhere;
+}
+.salida-hueco {
+  display: block;
+  height: 6px;
+}
+.salida-acciones {
+  display: flex;
+  gap: 20px;
+}
 .aviso-titular p {
   max-width: 68ch;
   margin-bottom: 8px !important;

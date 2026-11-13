@@ -323,6 +323,24 @@ export interface TableroDTO {
   geo: GeoEstadoDTO;
 }
 
+/**
+ * Un pedido que no va a los proveedores de internet: al titular (cortar la fuente), a la CDN, al
+ * hosting o a la plataforma donde se promocionó el enlace. Offside lo arma listo para enviar; el
+ * simulador no modela a estos destinatarios, así que no se envía.
+ */
+export interface SalidaDTO {
+  id: string;
+  tipo: "titular" | "cdn" | "hosting" | "plataforma";
+  destinatario: string;
+  /** Una línea: qué se le pide. */
+  pedido: string;
+  /** lista: hay una orden firmada que la respalda · espera_firma: la medida espera al juez · sin_orden: rechazada o sin medida. */
+  estado: "lista" | "espera_firma" | "sin_orden";
+  /** Qué orden la respalda, si hay una. */
+  fundamento: string | null;
+  texto: string;
+}
+
 export interface ExpedienteDTO extends ExpedienteResumenDTO {
   /** Lo mismo que GET /api/estado (`estado`, heredado del resumen, es el del expediente). */
   estado_general: EstadoDTO;
@@ -341,6 +359,8 @@ export interface ExpedienteDTO extends ExpedienteResumenDTO {
   }[];
   /** Texto del aviso al titular para cortar la fuente de la filtración. El simulador no lo modela. */
   aviso_titular: string;
+  /** Los pedidos a quienes no son proveedores de internet, listos para enviar. */
+  salidas: SalidaDTO[];
   auditoria: AuditoriaItemDTO[];
 }
 

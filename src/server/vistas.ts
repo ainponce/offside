@@ -20,6 +20,7 @@ import type {
 } from "../compartido/tipos.ts";
 import { type Contexto, nombreProveedor } from "./contexto.ts";
 import { estadoGeo, intermediarioDe, ubicarServidor } from "./geo.ts";
+import { salidasDe } from "./salidas.ts";
 import {
   type FilaDeteccion,
   type FilaExpediente,
@@ -710,7 +711,7 @@ export function expedienteDTO(ctx: Contexto, id: string, seq = 0): ExpedienteDTO
     "SELECT seq, contenido, hash FROM auditoria ORDER BY seq",
   ).filter((f) => agujas.some((a) => f.contenido.includes(a)));
   const p = ctx.estado.partido;
-  return {
+  const base: Omit<ExpedienteDTO, "salidas"> = {
     ...resumen,
     estado_general: estadoDTO(ctx, seq),
     partido: p ? { id: p.id, nombre: p.nombre, titular_derechos: p.titular_derechos ?? null } : null,
@@ -729,6 +730,7 @@ export function expedienteDTO(ctx: Contexto, id: string, seq = 0): ExpedienteDTO
     aviso_titular: avisoTitular(ctx, e, resumen.servidores),
     auditoria: auditoriaItems(ctx, propias),
   };
+  return { ...base, salidas: salidasDe(ctx, base) };
 }
 
 // --- transparencia -------------------------------------------------------------------------------

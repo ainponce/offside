@@ -2,9 +2,9 @@
 // vertebral, cada medida como un acto con su sello, y la cadena de auditoría.
 // Pensado para que lo lea un juez en pantalla y para imprimirse en A4.
 
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { ExpedienteDTO, MedidaDTO, OrdenDTO } from "../../compartido/tipos.ts";
+import type { ExpedienteDTO, MedidaDTO, OrdenDTO, SalidaDTO } from "../../compartido/tipos.ts";
 import { Cargando, Cortes, HashCompleto, IconoExportar, IconoImprimir, IconoVolver, Luz, Tilde, useFondo, useTitulo } from "../componentes/comunes.tsx";
 import { MarcasRegla, TrazoFiltracion, fraccion, useAncho } from "../componentes/Escala.tsx";
 import { DominioPartido, HostPartido, Levantamiento, OrdenId, Promocion, QueCambio, Ratificacion, Verificaciones } from "../componentes/Medida.tsx";
@@ -195,16 +195,17 @@ function Foja({ e }: { e: ExpedienteDTO }) {
       </section>
 
       <section className="foja-seccion">
-        <h2 className="foja-titulo">Aviso al titular</h2>
-        <div className="aviso-titular">
-          {e.aviso_titular
-            .split("\n")
-            .filter((l) => !/^nota:/i.test(l.trim()))
-            .map((l, i) => (
-              <p key={i}>{sinFicticio(l)}</p>
-            ))}
-        </div>
-        <p className="foja-nota">El simulador no modela este aviso: se genera, pero no tiene a quién enviarse.</p>
+        <h2 className="foja-titulo">Más allá de los proveedores</h2>
+        <p className="foja-nota">
+          Pedidos listos para enviar a quienes también pueden cortar la filtración: el titular de la señal, la CDN, el hosting y cada
+          plataforma donde se promocionó el enlace. El simulador del desafío no modela a estos destinatarios: Offside los arma, pero no los
+          envía.
+        </p>
+        <ol className="salidas">
+          {e.salidas.map((s) => (
+            <Salida key={s.id} s={s} expediente={e.id} />
+          ))}
+        </ol>
       </section>
 
       <section className="foja-seccion">
@@ -442,5 +443,71 @@ function Acto({ m }: { m: MedidaDTO }) {
         {m.ordenes.length === 0 && m.estado === "aprobada" && <p className="foja-nota">Todavía no salió ninguna orden.</p>}
       </div>
     </section>
+  );
+}
+
+// --- salidas más allá de los proveedores -----------------------------------------------------------
+
+const ESTADO_SALIDA: Record<SalidaDTO["estado"], string> = {
+  lista: "Lista para enviar",
+  espera_firma: "Espera la firma del juez",
+  sin_orden: "Sin orden firmada",
+};
+
+function copiarTexto(texto: string): Promise<void> {
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(texto);
+  // En la red local por http no hay portapapeles moderno: se copia a la vieja usanza.
+  return new Promise((resolver, rechazar) => {
+    const area = document.createElement("textarea");
+    area.value = texto;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    area.remove();
+    if (ok) resolver();
+    else rechazar(new Error("No se pudo copiar"));
+  });
+}
+
+function Salida({ s, expediente }: { s: SalidaDTO; expediente: string }) {
+  const [copia, setCopia] = useState<"" | "ok" | "error">("");
+  const copiar = () => {
+    copiarTexto(s.texto)
+      .then(() => setCopia("ok"))
+      .catch(() => setCopia("error"))
+      .finally(() => window.setTimeout(() => setCopia(""), 1800));
+  };
+  const descargar = () => {
+    const url = URL.createObjectURL(new Blob([`${s.texto}\n`], { type: "text/plain;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${expediente}-${s.id}.txt`;
+    a.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  return (
+    <li className="salida" data-tipo={s.tipo}>
+      <div className="salida-cabeza">
+        <p className="salida-destino">{s.destinatario}</p>
+        <span className="salida-estado" data-estado={s.estado}>
+          {ESTADO_SALIDA[s.estado]}
+        </span>
+      </div>
+      <p className="salida-pedido">{s.pedido}</p>
+      <div className="aviso-titular salida-texto">
+        {s.texto.split("\n").map((l, i) => (l.trim() ? <p key={i}>{l}</p> : <span key={i} className="salida-hueco" aria-hidden="true" />))}
+      </div>
+      <div className="salida-acciones no-imprimir">
+        <button type="button" className="boton-texto" onClick={copiar}>
+          {copia === "ok" ? "Copiado" : copia === "error" ? "No se pudo copiar" : "Copiar el texto"}
+        </button>
+        <button type="button" className="boton-texto" onClick={descargar}>
+          Descargar .txt
+        </button>
+      </div>
+    </li>
   );
 }
