@@ -1,6 +1,6 @@
 # Offside
 
-Plataforma federal de órdenes de bloqueo en vivo contra transmisiones ilegales.
+Plataforma federal de órdenes de bloqueo en vivo contra transmisiones ilegales. **Cada vez que el pirata se adelanta, queda en offside.**
 Hackathon Argentina Space 2026 · track QualyData Streaming · [Desafío Fútbol](https://github.com/qualydata-org/desafio-futbol).
 
 > Todo corre contra el simulador oficial del desafío. No se bloquea nada real: proveedores, juzgados, jueces, dominios e IPs son ficticios.
@@ -29,12 +29,13 @@ Cada pedido dice si ya lo respalda una orden firmada o si espera al juez. El sim
 ## El circuito
 
 1. **Ingesta.** Offside consulta las detecciones del simulador y descarta sola las que no son piratas: licenciatario en su dominio, señal de otro partido, stream sin marca.
-2. **Expediente.** Abre o amplía el expediente de esa filtración y congela lo que verá el juez (la *instantánea*); su SHA-256 es la *huella*.
-3. **Juez.** El juez de turno ve una tarjeta con cuatro verificaciones y firma o rechaza. Entra con su usuario; fuera de turno, solo lectura. Al cambiar el turno, lo pendiente pasa al entrante.
+2. **Expediente.** Abre o amplía el expediente de esa filtración y congela lo que verá el juez (la *instantánea*); su SHA-256 es la *huella*. Ubica además el servidor en el mapa, en cualquier país, y marca si está detrás de una CDN.
+3. **Juez.** El juez de turno ve una tarjeta con cuatro verificaciones y firma o rechaza. Entra con su usuario; fuera de turno, solo lectura. Al cambiar el turno, lo pendiente pasa al entrante. Le avisa con sonido y vibración y, con la guardia activa, con una notificación del sistema aunque esté en otra pestaña.
 4. **Despacho.** Sale una orden por proveedor, en el tipo de bloqueo que cada uno admite. Si un proveedor falla, se reintenta; si para entonces cambió el turno, el reenvío espera la ratificación del juez entrante.
 5. **Vencimiento.** Todas las órdenes vencen con el final del partido.
 6. **Auditoría.** Cada paso queda en un registro encadenado por hashes.
 7. **Reclamos.** Si un sitio legítimo reclama, se verifica contra las órdenes vigentes y el juez de turno levanta la orden en todos los proveedores y la reemplaza por una más precisa.
+8. **Más allá de los proveedores.** Con la orden firmada, el expediente arma los pedidos al titular (cortar la fuente), a la CDN, al hosting y a cada plataforma donde se promocionó el enlace.
 
 ## Cómo correrlo
 
@@ -238,7 +239,9 @@ Con el error forzado (`pnpm ensayo -- --simulacro --permitir-colateral`), que bl
 | `src/server/reclamos.ts` | Reclamos y levantamientos |
 | `src/server/evidencia.ts`, `auditoria.ts`, `exportar.ts` | Hashes, registro encadenado y exportación |
 | `src/server/api.ts`, `vistas.ts`, `sesiones.ts` | API, textos que lee el juez e ingreso |
-| `src/server/geo.ts`, `src/web/mapa/` | Ubicación simulada de los servidores y mapa del tablero |
+| `src/server/geo.ts`, `src/web/mapa/` | Geolocalización (base GeoIP local, o simulada para las IPs de documentación), aviso de CDN y mapa del tablero |
+| `src/server/salidas.ts` | Pedidos al titular, la CDN, el hosting y las plataformas |
+| `src/web/nucleo/avisos.ts` | Guardia del juez: avisos del sistema y pantalla siempre prendida |
 | `src/compartido/tipos.ts` | Contrato entre el servidor y la interfaz |
 | `src/web/` | Interfaz (React) |
 | `herramientas/` | Verificador independiente y generador de escenarios |
@@ -265,13 +268,14 @@ Con el error forzado (`pnpm ensayo -- --simulacro --permitir-colateral`), que bl
 - Un subdominio de un dominio autorizado del licenciatario se considera autorizado.
 - Los reintentos por falla de un proveedor no piden una firma nueva mientras el juez que aprobó sigue de turno; después de un cambio de turno, sí.
 - La detección cruda se guarda como texto JSON compacto del objeto recibido; no es byte a byte la respuesta HTTP del simulador.
-- El aviso al titular y el canal para proveedores chicos no se pueden probar contra el simulador.
+- Los pedidos al titular, a la CDN, al hosting y a las plataformas, y el canal para proveedores chicos, no se pueden probar contra el simulador: se arman, pero no se envían.
+- Las IPs del simulador son de documentación y no tienen ubicación real: su ubicación en el mapa es simulada. Las IPs públicas se ubican con una base GeoIP local.
 
 ## Qué existía antes del evento
 
 Nada del código de este repositorio. Todo se escribió durante el hackathon, con asistencia de Claude Code.
 
-Librerías y herramientas públicas: Node.js (incluido su SQLite), TypeScript, tsx, Hono, React, React Router, Vite, Tailwind CSS y Python. El simulador, el verificador y los datos son de la organización y se clonan aparte.
+Librerías y herramientas públicas: Node.js (incluido su SQLite), TypeScript, tsx, Hono, React, React Router, Vite, Tailwind CSS, d3-geo y d3-zoom (mapa), mmdb-lib (lectura de la base GeoIP) y Python. Datos públicos: la cartografía de Natural Earth (dominio público, vía world-atlas) y, si se baja con `pnpm geoip`, la base IP to City Lite de [DB-IP](https://db-ip.com) (CC BY 4.0). El simulador, el verificador y los datos del desafío son de la organización y se clonan aparte.
 
 `config/jueces.demo.json` reproduce los jueces, juzgados y claves de firma de demostración que publica la organización en `datos/juzgados.json`, y agrega usuarios y contraseñas de demostración. No hay claves reales ni datos personales.
 
