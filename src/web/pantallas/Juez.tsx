@@ -4,7 +4,20 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Link, Navigate } from "react-router-dom";
 import type { ColaDTO, EstadoDTO, ExpedienteDTO, MedidaDTO, UsuarioDTO } from "../../compartido/tipos.ts";
-import { Cargando, Cortes, IconoCerrar, IconoSilencio, IconoSonido, PildoraTurno, RelojPartido, movimientoReducido, useFondo } from "../componentes/comunes.tsx";
+import {
+  Cargando,
+  Cortes,
+  IconoCampana,
+  IconoCampanaApagada,
+  IconoCerrar,
+  IconoSilencio,
+  IconoSonido,
+  PildoraTurno,
+  RelojPartido,
+  movimientoReducido,
+  useFondo,
+} from "../componentes/comunes.tsx";
+import { type Guardia, activarGuardia, apagarGuardia, avisarMedidas, cerrarAvisosSalvo, mantenerPantalla, useGuardia } from "../nucleo/avisos.ts";
 import { Despacho, LucesOrdenes, aplicadasDe } from "../componentes/Despacho.tsx";
 import { HojaRechazo, RESORTE, SALIDA } from "../componentes/HojaRechazo.tsx";
 import { objetivoDe } from "../componentes/Medida.tsx";
@@ -146,6 +159,7 @@ export function Juez() {
     }
   });
   const sonidoListo = useAudioListo();
+  const guardia = useGuardia();
   const altoBarra = useRef(0);
 
   useEffect(() => {
@@ -279,8 +293,18 @@ export function Juez() {
       }
       const cuantas = entro ? ids.length : nuevas.length;
       titilarTitulo(`● ${plural(cuantas, "medida nueva", "medidas nuevas")}`, document.hidden ? 60_000 : 5000);
+      // Con la guardia activa y la pestaña fuera de vista, además avisa el sistema operativo.
+      avisarMedidas(entro ? cola.pendientes : cola.pendientes.filter((m) => nuevas.includes(m.id)));
     }
+    cerrarAvisosSalvo(new Set(cola.yo.de_turno ? ids : []));
   }, [cola]);
+
+  // Mientras está de turno y el partido sigue, la pantalla no se apaga (si la guardia está activa).
+  const hayCola = Boolean(cola);
+  useEffect(() => {
+    void mantenerPantalla(hayCola && deTurno && !finalizado);
+  }, [hayCola, deTurno, finalizado]);
+  useEffect(() => () => void mantenerPantalla(false), []);
 
   useEffect(() => {
     const n = deTurno ? pendientes.length : 0;
@@ -487,6 +511,8 @@ export function Juez() {
         notaSecundaria={notaSecundaria}
         alSilenciar={alternarSilencio}
         alActivarSonido={() => void activarSonido()}
+        guardia={guardia}
+        alAlternarGuardia={() => void (guardia.activa ? apagarGuardia() : activarGuardia())}
         sinServidor={sinServidor}
       />
 
@@ -601,6 +627,8 @@ function CabezaJuez(p: {
   notaSecundaria: boolean;
   alSilenciar: () => void;
   alActivarSonido: () => void;
+  guardia: Guardia;
+  alAlternarGuardia: () => void;
   sinServidor: boolean;
 }) {
   const e = p.estado;
@@ -618,6 +646,14 @@ function CabezaJuez(p: {
       : puedeVibrar()
         ? "Aviso encendido: sonido y vibración"
         : "Aviso sonoro encendido";
+  const g = p.guardia;
+  const partesGuardia = [
+    g.avisos === "granted" ? "avisos del sistema" : g.avisos === "denied" ? "avisos bloqueados por el navegador" : null,
+    g.pantalla === "prendida" ? "pantalla siempre prendida" : g.pantalla === "libre" && p.deTurno ? "la pantalla se prende al volver a la pestaña" : null,
+  ].filter(Boolean);
+  const ayudaGuardia = g.activa
+    ? `Guardia activa${partesGuardia.length ? `: ${partesGuardia.join(", ")}` : ""}. Tocá para apagarla.`
+    : "Guardia apagada. Tocá para recibir avisos del sistema con la pestaña en segundo plano y mantener la pantalla prendida durante el turno.";
   return (
     <header className="cabeza-juez">
       <div className="cabeza-juez-interior">
@@ -627,7 +663,7 @@ function CabezaJuez(p: {
         </div>
         <p className="cabeza-juzgado">{juzgadoBreve(p.yo?.juzgado_nombre)}</p>
         {e && (
-          <div className="cabeza-reloj">
+          <div className="cabeza-reloj" data-guardia={g.disponible ? "" : undefined}>
             <RelojPartido estado={e} className="cabeza-cifra" />
             <ReglaChica estado={e} />
             <span className="cabeza-fin num">de {minutoEntero(e.fin_min || 105)}′</span>
@@ -643,6 +679,20 @@ function CabezaJuez(p: {
             >
               {apagado ? <IconoSilencio /> : <IconoSonido />}
             </button>
+            {g.disponible && (
+              <button
+                type="button"
+                className="boton-icono"
+                onClick={p.alAlternarGuardia}
+                aria-pressed={g.activa}
+                aria-label={g.activa ? "Apagar la guardia: avisos del sistema y pantalla prendida" : "Activar la guardia: avisos del sistema y pantalla prendida"}
+                title={ayudaGuardia}
+                data-apagado={g.activa ? undefined : ""}
+                data-guardia-activa={g.activa ? "" : undefined}
+              >
+                {g.activa ? <IconoCampana /> : <IconoCampanaApagada />}
+              </button>
+            )}
           </div>
         )}
         {e?.finalizado ? (

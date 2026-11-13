@@ -568,6 +568,12 @@ a {
 .boton-icono[data-apagado] {
   color: var(--tinta-3);
 }
+.boton-icono[data-guardia-activa] {
+  color: var(--grafito);
+}
+.cabeza-reloj[data-guardia] {
+  grid-template-columns: auto minmax(0, 1fr) auto 44px 44px;
+}
 .regla-chica {
   position: relative;
   display: block;

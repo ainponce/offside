@@ -89,7 +89,7 @@ Si el simulador se reinicia con Offside en marcha (el reloj vuelve atrás, cambi
 
 | Ruta | Para quién | Qué muestra |
 |---|---|---|
-| `/juez` | Juez (pensada para el celular) | La cola de medidas, cada una con cuatro verificaciones, el plan por proveedor y dos acciones: firmar o rechazar |
+| `/juez` | Juez (pensada para el celular) | La cola de medidas, cada una con cuatro verificaciones, el plan por proveedor y dos acciones: firmar o rechazar. Avisa con sonido y vibración; con la guardia (la campana), también con una notificación del sistema cuando la pestaña está en segundo plano, y mantiene la pantalla prendida durante el turno. La guardia necesita https o localhost: en la red local por http el navegador no la ofrece |
 | `/tablero` | Fiscalía | El partido en vivo: expedientes, saltos de servidor (en carriles o en el mapa), estado por proveedor, daño evitado y auditoría |
 | `/expediente/:id` | Juez y fiscalía | El expediente completo, imprimible |
 | `/transparencia` | Público | Qué está bloqueado, por orden de quién y hasta cuándo |
@@ -181,7 +181,7 @@ Un cambio de un carácter en un expediente, una detección, una orden, una decis
 pnpm test
 ```
 
-Pruebas unitarias de reglas, evidencia, auditoría, motor, API, exportación y reclamos, con un simulador en memoria.
+Pruebas unitarias de reglas, evidencia, auditoría, motor, API, exportación, reclamos y geolocalización, con un simulador en memoria. El escenario oficial usa solo IPv4; `pruebas/ipv6.test.ts` corre el circuito con direcciones IPv6: la exclusiva se bloquea por IP, se aplica y vence, y la compartida pasa a dominio.
 
 ```bash
 pnpm ensayo

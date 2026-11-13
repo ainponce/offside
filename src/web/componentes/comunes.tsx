@@ -187,6 +187,19 @@ export const IconoSilencio = ({ tam }: { tam?: number }) => (
     <path d="M16 9.8l4.4 4.4M20.4 9.8L16 14.2" />
   </Icono>
 );
+export const IconoCampana = ({ tam }: { tam?: number }) => (
+  <Icono tam={tam}>
+    <path d="M6.2 16.4h11.6l-1.5-2.1V10.4a4.3 4.3 0 0 0-8.6 0v3.9z" />
+    <path d="M10.3 19.2a1.9 1.9 0 0 0 3.4 0" />
+  </Icono>
+);
+export const IconoCampanaApagada = ({ tam }: { tam?: number }) => (
+  <Icono tam={tam}>
+    <path d="M6.2 16.4h11.6l-1.5-2.1V10.4a4.3 4.3 0 0 0-8.6 0v3.9z" />
+    <path d="M10.3 19.2a1.9 1.9 0 0 0 3.4 0" />
+    <path d="M4.5 4.5l15 15" />
+  </Icono>
+);
 export const IconoCerrar = ({ tam }: { tam?: number }) => (
   <Icono tam={tam}>
     <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />

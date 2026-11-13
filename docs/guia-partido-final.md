@@ -61,6 +61,7 @@ Paso a paso para el viernes 13. Pensada para una sola persona que hace de los do
    - **Pestaña 2:** ingresá como el juez del segundo turno. Va a decir "Fuera de turno" hasta el minuto 50.
    - **Pestaña 3:** ingresá como fiscalía y abrí el tablero.
 5. Activá el sonido en las pestañas de los jueces (un clic en la página alcanza).
+6. En las dos pestañas de los jueces, tocá la campana que está al lado del parlante para activar la guardia, y aceptá el permiso de avisos que pide el navegador. Con la guardia, una medida nueva avisa con una notificación del sistema aunque estés mirando el tablero en otra pestaña, y la pantalla no se apaga mientras el juez está de turno. Tocar la notificación trae la pestaña del juez al frente. Solo avisa la pestaña del juez de turno.
 
 ## Durante el partido
 
