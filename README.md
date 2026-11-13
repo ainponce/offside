@@ -195,7 +195,7 @@ Pruebas unitarias de reglas, evidencia, auditoría, motor, API, exportación, re
 pnpm ensayo
 ```
 
-Corre un partido entero contra el simulador oficial con un juez de ensayo que entra por el mismo ingreso que un juez real, y lo evalúa con `evaluacion/verificar.py`. Falla si hay daño colateral, falsos positivos, órdenes fuera de turno, bloqueos por IP después del partido o alguna fase pirata sin bloquear. El juez de ensayo existe solo para ensayar: en el partido final firma una persona.
+Corre un partido entero contra el simulador oficial con un juez de ensayo que entra por el mismo ingreso que un juez real, y lo evalúa con `evaluacion/verificar.py`. Falla si hay daño colateral, falsos positivos, órdenes fuera de turno, bloqueos por IP después del partido o alguna fase pirata sin bloquear. El juez de ensayo existe solo para ensayar y no se usó en el partido final. Cómo se firmó el final está en [entrega/README.md](entrega/README.md).
 
 Para probar con partidos que nadie vio, [herramientas/generar_escenario.py](herramientas/generar_escenario.py) genera escenarios con otros sitios, IPs, tiempos, jueces y turnos, y agrega casos que la práctica no trae (retransmisión de la señal de un licenciatario, un imitador en la IP del licenciatario, un stream sin marca, un proveedor que solo bloquea por IP):
 
